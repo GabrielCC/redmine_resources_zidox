@@ -1,0 +1,24 @@
+<%
+resources = Resource.all
+resources.map! { |e| {:value => e.name, :label => e.name, :id => e.id}  }
+%>
+<p>
+<%= label_tag("resource", 'Resource:') %>
+<%= text_field_tag(:resource) %>
+<%= hidden_field_tag(:resource_id) %>
+</p>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		var sources = <%= raw resources.to_json %>;
+
+		$('#resource').autocomplete({
+			source: sources,
+			select: function( event, ui ) {
+		        $( "#resource" ).val( ui.item.label );
+		        $( "#resource_id" ).val( ui.item.id );
+		        return false;
+		      }
+			});
+	});	
+</script>

@@ -21,7 +21,7 @@
   </div>
   <div class="field">
     <%= f.label :department %><br />
-    <%= f.text_field :department %>
+    <%= f.select(:department_id, @departments, :required => true, :include_blank => true)%>
   </div>
   <div class="actions">
     <%= f.submit %>

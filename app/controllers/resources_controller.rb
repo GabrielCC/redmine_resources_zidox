@@ -1,4 +1,5 @@
-class ResourcesController < ApplicationController
+class ResourcesController < BaseController
+  before_filter :set_departments
   # GET /resources
   # GET /resources.json
   def index
@@ -25,7 +26,7 @@ class ResourcesController < ApplicationController
   # GET /resources/new.json
   def new
     @resource = Resource.new
-
+    
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @resource }
@@ -35,13 +36,15 @@ class ResourcesController < ApplicationController
   # GET /resources/1/edit
   def edit
     @resource = Resource.find(params[:id])
+    
   end
 
   # POST /resources
   # POST /resources.json
   def create
     @resource = Resource.new(params[:resource])
-
+    department = Department.find(params[:resource][:department_id])
+    @resource.department = department
     respond_to do |format|
       if @resource.save
         format.html { redirect_to @resource, notice: 'Resource was successfully created.' }
@@ -80,4 +83,12 @@ class ResourcesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def set_departments
+    @departments = Department.all
+    @departments.map! { |e| 
+      [e.name, e.id.to_i]  
+    }
+  end
+
 end
