@@ -45,4 +45,9 @@ Redmine::Plugin.register :resources do
   menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
   menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
   menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
+
+  project_module :resources do
+    permission :view_resources, :resources => :index
+    permission :edit_resources, :resources => :edit
+  end
 end

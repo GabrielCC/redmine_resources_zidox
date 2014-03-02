@@ -1,6 +1,5 @@
 class DepartmentsController < BaseController
   
-  before_filter :authorize_global
   # GET /departments
   # GET /departments.json
   def index

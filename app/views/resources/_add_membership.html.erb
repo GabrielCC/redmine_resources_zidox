@@ -1,25 +1,28 @@
-<%
-resources = Resource.all
-resources.map! { |e| {:value => e.name, :label => e.name, :id => e.id}  }
-%>
-<p>
-<%= label_tag("resource", 'Resource:') %>
-<%= text_field_tag(:resource, nil, :class => 'resources_autocomplete') %>
-<%= hidden_field_tag(:resource_id) %>
-</p>
+<% if @project.module_enabled?("resources") %>
+	<%
+	resources = Resource.all
+	resources.map! { |e| {:value => e.name, :label => e.name, :id => e.id}  }
+	%>
+	<p>
+	<%= label_tag("resource", 'Resource:') %>
+	<%= text_field_tag(:resource, nil, :class => 'resources_autocomplete') %>
+	<%= hidden_field_tag(:resource_id) %>
+	</p>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		var sources = <%= raw resources.to_json %>;
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var sources = <%= raw resources.to_json %>;
 
-		$('.resources_autocomplete').autocomplete({
-			source: sources,
-			select: function( event, ui ) {
-				var id = $(this).attr('id');
-		        $( "#" + id ).val( ui.item.label );
-		        $( "#" + id + "_id" ).val( ui.item.id );
-		        return false;
-		      }
-			});
-	});	
-</script>
+			$('.resources_autocomplete').autocomplete({
+				source: sources,
+				select: function( event, ui ) {
+					var id = $(this).attr('id');
+			        $( "#" + id ).val( ui.item.label );
+			        $( "#" + id + "_id" ).val( ui.item.id );
+			        return false;
+			      }
+				});
+		});	
+	</script>
+
+<% end %>

@@ -1,3 +1,4 @@
+<% if @project.module_enabled?("resources") %>
   <% code = member.resource.name unless  member.resource.nil? %>
   <% resource_id = member.resource.id unless  member.resource.nil? %>
   <td class="resources">
@@ -21,5 +22,5 @@
                                "$('#member-#{member.id}-resources').show(); $('#member-#{member.id}-resources-form').hide(); return false;") %>
         </p>
       <% end %>
- 
   </td>
+<% end %>
