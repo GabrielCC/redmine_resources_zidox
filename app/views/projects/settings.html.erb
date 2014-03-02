@@ -1,0 +1,7 @@
+<h2><%=l(:label_settings)%></h2>
+<% tabs = project_settings_tabs
+tabs << {:name => 'resource_trackers', :action => 'resources/trackers', :partial => 'projects/settings/resources_trackers', :label => "Resources Trackers"}
+%> 
+<%= render_tabs tabs %>
+
+<% html_title(l(:label_settings)) -%>

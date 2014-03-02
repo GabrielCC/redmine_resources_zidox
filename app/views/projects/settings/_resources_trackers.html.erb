@@ -1,0 +1,30 @@
+<%= form_tag('trackers', :method => :put, :class => "tabular") do %>
+
+<table class="list">
+  <thead>
+  <tr>
+    <th>Trackers</th>
+  </tr></thead>
+
+  <tr>
+    <td class="name">
+      <% trackers = Tracker.all %>
+      <% trackers.each { |tracker|  
+        %>
+        <%= tracker %>
+        <%
+      }
+      %>
+    </td>
+  </tr>
+</table>
+
+<div class="contextual">
+<%= link_to(l(:button_reset), project_enumerations_path(@project),
+            :method => :delete,
+            :data => {:confirm => l(:text_are_you_sure)},
+            :class => 'icon icon-del') %>
+</div>
+
+<%= submit_tag l(:button_save) %>
+<% end %>
