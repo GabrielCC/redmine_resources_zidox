@@ -10,7 +10,6 @@ module MembershipPatch
 
     # Same as typing in the class 
     base.class_eval do
-      Rails.logger.info "teste aici"
       has_one :member_resource
       has_one :resource, :through => :member_resource
       

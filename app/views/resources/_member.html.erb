@@ -1,4 +1,25 @@
+  <% code = member.resource.name unless  member.resource.nil? %>
+  <% resource_id = member.resource.id unless  member.resource.nil? %>
   <td class="resources">
-    <span id="member-<%= member.id %>-resources"><%= member.resource.code unless member.resource.nil? %></span>
-     
+    <span id="member-<%= member.id %>-resources"><%= code %></span>
+          <%= form_for(member,
+                   {:as => :membership, :remote => true,
+                    :url => membership_path(member),
+                    :method => :put,
+                    :html => { :id => "member-#{member.id}-resources-form", :class => 'hol' }}
+             ) do |f| %>
+        <p>
+         <%= label_tag("member-#{member.id}-resource", 'Resource:') %>
+			<%= text_field_tag("member-#{member.id}-resource", code, :class => "resources_autocomplete" ) %>
+			<%= hidden_field_tag("member-#{member.id}-resource_id", resource_id) %>
+			</p>
+			</script>
+        </p>
+        <p>
+          <%= submit_tag l(:button_save), :class => "small" %>
+          <%= link_to_function(l(:button_cancel),
+                               "$('#member-#{member.id}-resources').show(); $('#member-#{member.id}-resources-form').hide(); return false;") %>
+        </p>
+      <% end %>
+ 
   </td>
