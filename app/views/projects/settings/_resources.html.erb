@@ -1,0 +1,40 @@
+<%= form_tag('/resources/settings/trackers', :method => :post) do %>
+<% settings = ResourceSetting.where(:project_id => @project.id)
+map = {"Tracker" => [], "Role" => []}
+settings.each { |e|
+  map[e.setting_object_type] << e.setting_object_id
+}
+ %>
+<%= hidden_field_tag 'project_id', @project.id %>
+<fieldset>
+  <legend>Trackers</legend>
+      <% trackers = Tracker.all %>
+      <% trackers.each { |tracker|  
+        %>
+         <% check_box = check_box_tag 'trackers[]', tracker.id, (map["Tracker"].include? tracker.id), {:id => 'trackers_' + tracker.name } %>
+        <%= label_tag 'trackers_' + tracker.name, check_box.html_safe + tracker.to_s %>
+
+      
+        <%
+      }
+      %>
+</fieldset>
+
+<fieldset>
+  <legend>Visible for</legend>
+      <% roles = Role.all %>
+      <% roles.each { |role|  
+        %>
+         <% check_box = check_box_tag 'roles[]', role.id, (map["Role"].include? role.id), {:id => "roles_#{role.id}"  } %>
+        <%= label_tag "roles_#{role.id}", check_box.html_safe + role.to_s %>
+
+      
+        <%
+      }
+      %>
+</fieldset>
+
+<p>
+<%= submit_tag l(:button_save) %>
+</p>
+<% end %>

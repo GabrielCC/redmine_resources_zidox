@@ -1,5 +1,7 @@
 class ResourcesController < BaseController
   before_filter :set_departments
+  before_filter :find_project_by_project_id, :only => [:trackers]
+
   # GET /resources
   # GET /resources.json
   def index
@@ -89,6 +91,26 @@ class ResourcesController < BaseController
     @departments.map! { |e| 
       [e.name, e.id.to_i]  
     }
+  end
+
+  def trackers
+    ResourceSetting.destroy_all(:project_id => @project.id)
+
+    trackers = Tracker.find params[:trackers]
+    roles = Role.find params[:roles]
+    elements = trackers + roles
+    elements.each { |element|
+      settings = ResourceSetting.new
+      settings.setting_object = element
+      settings.project = @project
+      settings.save
+    }
+    flash[:notice] = l(:notice_successful_update)
+    redirect_to_settings_project
+  end
+
+  def redirect_to_settings_project
+    redirect_to settings_project_path(@project, :tab => 'resources')
   end
 
 end

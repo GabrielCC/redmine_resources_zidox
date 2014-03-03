@@ -31,7 +31,7 @@ Redmine::Plugin.register :resources do
 
   require 'patches/application_helper_patch'
   require_dependency 'application_helper'
-  require_dependency 'members_hook_listener'
+  require_dependency 'hook_listener'
   ApplicationHelper.send(:include, ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? ApplicationHelperPatch
 
 

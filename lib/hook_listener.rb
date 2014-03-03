@@ -1,4 +1,4 @@
-class MembersHookListener < Redmine::Hook::ViewListener
+class HookListener < Redmine::Hook::ViewListener
   def view_projects_settings_members_table_header(context={} )
     return content_tag("th", "Resource Label") if context[:project].module_enabled?("resources")
   end
