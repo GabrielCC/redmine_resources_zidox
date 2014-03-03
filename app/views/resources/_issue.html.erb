@@ -1,0 +1,17 @@
+<br/>
+<div id='resources'>
+	<h3>Resources</h3>
+	<%
+	members = project.members
+	resources = []
+	members.each { |member|
+		resources << member.resource
+	}
+	# resources = Resource.find resources
+	 resources.each { |e|
+		%>
+		<%=e.code %>
+		<%
+	}
+	%>
+</div>
