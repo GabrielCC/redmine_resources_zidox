@@ -4,5 +4,5 @@ class HookListener < Redmine::Hook::ViewListener
   end
   render_on :view_projects_settings_members_table_row, :partial => 'resources/member'
   render_on :view_projects_settings_add_members, :partial => 'resources/add_membership'
-  render_on :view_issues_sidebar_issues_bottom, :partial => 'resources/issue'
+  render_on :view_issues_show_description_bottom, :partial => 'resources/issue'
 end

@@ -1,17 +1,18 @@
-<br/>
-<div id='resources'>
-	<h3>Resources</h3>
-	<%
-	members = project.members
-	resources = []
-	members.each { |member|
-		resources << member.resource
-	}
-	# resources = Resource.find resources
-	 resources.each { |e|
-		%>
-		<%=e.code %>
-		<%
-	}
-	%>
-</div>
+<% if resources_visible(@issue, @project) %>
+	<div id='resources' class='hidden'>
+		<h2>Resources</h2>
+		<table id='resources_list'>
+			<% issue_resources = @issue.issue_resource
+			issue_resources.each { |resource_issue|
+				%>
+				<tr>
+					<td><%= resource_issue.resource.code %></td>
+					<td><%= resource_issue.estimation %></td>
+					<td>edit</td>
+				</tr>
+				<%
+			}
+     %>
+		</table>
+	</div>
+<% end %>

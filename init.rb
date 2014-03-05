@@ -10,10 +10,31 @@ ActionDispatch::Callbacks.to_prepare do
     Member.send(:include, MembershipPatch)
   end
 
+  require_dependency 'role'
+  require 'patches/resource_setting_patch'
+  # Guards against including the module multiple time (like in tests)
+  # and registering multiple callbacks
+  unless Role.included_modules.include? ResourceSettingPatch
+    Role.send(:include, ResourceSettingPatch)
+  end
+
+  require_dependency 'tracker'
+  # Guards against including the module multiple time (like in tests)
+  # and registering multiple callbacks
+  unless Tracker.included_modules.include? ResourceSettingPatch
+    Tracker.send(:include, ResourceSettingPatch)
+  end
+
   require_dependency 'members_controller'
   require 'patches/members_controller_patch'
   unless MembersController.included_modules.include? MembersControllerPatch
     MembersController.send(:include, MembersControllerPatch)
+  end
+
+  require_dependency 'issue'
+  require 'patches/issue_patch'
+  unless Issue.included_modules.include? IssuePatch
+    Issue.send(:include, IssuePatch)
   end
 
 end
