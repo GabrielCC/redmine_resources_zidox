@@ -37,6 +37,10 @@ ActionDispatch::Callbacks.to_prepare do
     Issue.send(:include, IssuePatch)
   end
 
+  require 'patches/application_helper_patch'
+  require_dependency 'application_helper'
+  ApplicationHelper.send(:include, ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? ApplicationHelperPatch
+
 end
 
 Redmine::Plugin.register :resources do
@@ -49,12 +53,7 @@ Redmine::Plugin.register :resources do
   
   # Patches to the Redmine core.
 
-
-  require 'patches/application_helper_patch'
-  require_dependency 'application_helper'
   require_dependency 'hook_listener'
-  ApplicationHelper.send(:include, ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? ApplicationHelperPatch
-
 
 
   permission :view_resources_departments, :departments => [:index, :show]

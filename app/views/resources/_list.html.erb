@@ -1,0 +1,16 @@
+<table id='resources_list'>
+      <% 
+      issue ||= @issue_resource.issue
+      issue_resources = issue.issue_resource
+      issue_resources.each { |ri|
+        %>
+        <tr>
+          <td><%= ri.estimation %></td>
+          <td><%= ri.resource.code %></td>
+
+          <td>edit</td>
+        </tr>
+        <%
+      }
+     %>
+</table>

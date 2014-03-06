@@ -26,10 +26,10 @@ module ApplicationHelperPatch
 
           def resources_for_project(project)
             members = project.members
-            resources = []
+            resources = {}
             members.each { |member|
               resource = member.resource
-              resources[resource.id] = resource
+              resources[resource.id] = resource unless resource.nil?
             }
             resources
           end
