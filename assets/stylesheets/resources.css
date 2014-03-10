@@ -9,3 +9,18 @@
 td.department_name {
   text-align: right;
 }
+
+td.estimation_cell {
+  text-align: left;
+  cursor: pointer;
+}
+.resource_estimation {
+  display: inline;
+  text-align: right;
+  margin-left: 2px;
+}
+.resource_estimation input {
+  width: 20px !important;
+  margin-left: 2px;
+}
+

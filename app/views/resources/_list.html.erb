@@ -4,24 +4,21 @@
       departments = issue.resources_with_departments
       departments.each_pair { |department_name, issues_list| %>
         <tr>
-          <td colspan='3' class='department_name'>
+          <td colspan='2' class='department_name'>
             <strong><%=department_name%></strong>
+          </td>
+          <td>
+            <strong>&nbsp;</strong>
           </td>
         </tr>
         <% issues_list.each { |ri| %>  
           <tr>
-            <td>
-            <div id='resource-<%=ri.id %>' class='resource_estimation'>
-              <%= ri.estimation %>
-            </div>
+            <td class='estimation_cell' id='cell-<%=ri.id %>'>
+            <div id='resource-<%=ri.id %>' class='resource_estimation' data-resource-id='<%= ri.id %>'><%= ri.estimation %></div>h
             </td>
             <td><%= ri.resource.code %></td>
 
-             <td class="buttons">
-                <%= link_to_function l(:button_edit),
-                                     "
-                                     return false;",
-                                     :class => 'icon icon-edit' %>
+             <td>
                 <%= delete_link issue_resource_path(ri),
                                 :remote => true if true %>
              </td>

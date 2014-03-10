@@ -57,15 +57,12 @@ class IssueResourcesController < BaseController
   def update
     @issue_resource = IssueResource.find(params[:id])
 
-    respond_to do |format|
-      if @issue_resource.update_attributes(params[:issue_resource])
-        format.html { redirect_to @issue_resource, notice: 'IssueResource was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @issue_resource.errors, status: :unprocessable_entity }
-      end
+    if @issue_resource.update_attributes(params[:issue_resource])
+      partial = "issue_resources/updated"
+    else
+      partial = "issue_resources/failed"
     end
+    render :partial => partial, :layout => false, :content_type => 'application/javascript'
   end
 
   # DELETE /issue_resources/1
