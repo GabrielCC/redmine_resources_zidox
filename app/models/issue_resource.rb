@@ -25,4 +25,11 @@ class IssueResource < ActiveRecord::Base
     end
     issue_resource
   end
+
+  def to_json
+    hash = {}
+    hash[:estimation] = self.estimation
+    hash[:code] = self.resource.code
+    hash
+  end
 end
