@@ -10,7 +10,11 @@
         </tr>
         <% issues_list.each { |ri| %>  
           <tr>
-            <td><%= ri.estimation %></td>
+            <td>
+            <div id='resource-<%=ri.id %>' class='resource_estimation'>
+              <%= ri.estimation %>
+            </div>
+            </td>
             <td><%= ri.resource.code %></td>
 
              <td class="buttons">
