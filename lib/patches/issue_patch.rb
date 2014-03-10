@@ -19,7 +19,16 @@ module IssuePatch
   end
   
   module InstanceMethods
-   
+    def resources_with_departments
+      list = IssueResource.includes(resource: :department).where(:issue_id => self.id)
+      result = {}
+      list.each{|e|
+        department_name = e.resource.department.name 
+        result[department_name] = [] if result[department_name].nil?
+        result[department_name] << e 
+      }
+      result
+    end
 
   end    
 end

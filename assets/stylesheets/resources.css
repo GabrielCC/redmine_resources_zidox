@@ -6,3 +6,6 @@
 #resources td.edit_actions {
   width: 120px;
 }
+td.department_name {
+  text-align: right;
+}

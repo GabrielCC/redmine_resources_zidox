@@ -1,16 +1,27 @@
 <table id='resources_list'>
       <% 
       issue ||= @issue_resource.issue
-      issue_resources = issue.issue_resource
-      issue_resources.each { |ri|
-        %>
+      departments = issue.resources_with_departments
+      departments.each_pair { |department_name, issues_list| %>
         <tr>
-          <td><%= ri.estimation %></td>
-          <td><%= ri.resource.code %></td>
-
-          <td>edit</td>
+          <td colspan='3' class='department_name'>
+            <strong><%=department_name%></strong>
+          </td>
         </tr>
-        <%
-      }
-     %>
+        <% issues_list.each { |ri| %>  
+          <tr>
+            <td><%= ri.estimation %></td>
+            <td><%= ri.resource.code %></td>
+
+             <td class="buttons">
+                <%= link_to_function l(:button_edit),
+                                     "
+                                     return false;",
+                                     :class => 'icon icon-edit' %>
+                <%= delete_link issue_resource_path(ri),
+                                :remote => true if true %>
+             </td>
+          </tr>
+        <% } %>
+      <% } %>
 </table>

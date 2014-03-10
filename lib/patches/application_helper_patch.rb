@@ -24,13 +24,15 @@ module ApplicationHelperPatch
             visible && trackers.has_resources
           end
 
-          def resources_for_project(project)
+          def resources_for_project(project, issue = nil)
             members = project.members
             resources = {}
+            created_resources = issue.nil? ? [] : issue.resource
             members.each { |member|
               resource = member.resource
-              resources[resource.id] = resource unless resource.nil?
+              resources[resource.id] = resource unless resource.nil? || created_resources.include?(resource)
             }
+
             resources
           end
         end

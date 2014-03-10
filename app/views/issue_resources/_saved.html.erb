@@ -1,2 +1,19 @@
 $('#resources_list_container').html('<%= escape_javascript(render :partial => 'resources/list') %>');
 hideOnLoad();
+$('#estimation').val('');
+$('#resource').val('');
+$('#resource_id').val('');
+<% resources = resources_for_project(@issue_resource.issue.project, @issue_resource.issue).values %>
+<% resources.map! { |e| {:value => e.code, :label => e.code, :id => e.id} } %>
+window.get_resources_autocomplete_source = function() {
+  return <%= raw resources.to_json %>;
+}
+$('.resources_autocomplete').autocomplete({
+        source: window.get_resources_autocomplete_source(),
+        select: function( event, ui ) {
+          var id = $(this).attr('id');
+              $( "#" + id ).val( ui.item.label );
+              $( "#" + id + "_id" ).val( ui.item.id );
+              return false;
+            }
+});

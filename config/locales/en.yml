@@ -2,3 +2,4 @@
 en:
   # my_label: "My label"
   project_module_resources: Resources
+  notice_failed_to_save_resource: "Failed to save resource: %{errors}."

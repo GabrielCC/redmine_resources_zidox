@@ -43,7 +43,7 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params(params)
 
-    
+      
     if @issue_resource.save
       partial = "issue_resources/saved"
     else
@@ -74,9 +74,7 @@ class IssueResourcesController < BaseController
     @issue_resource = IssueResource.find(params[:id])
     @issue_resource.destroy
 
-    respond_to do |format|
-      format.html { redirect_to issue_resources_url }
-      format.json { head :no_content }
-    end
+    partial = "issue_resources/saved"
+    render :partial => partial, :layout => false, :content_type => 'application/javascript'
   end
 end

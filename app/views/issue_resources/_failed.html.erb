@@ -1,2 +1,2 @@
- <% errors =  issue_resources.errors.full_messages.flatten.uniq.join(', ') %>
-  alert('<%= raw(escape_javascript(l(:notice_failed_to_save_members, :errors => errors))) %>');
+ <% errors =  @issue_resource.errors.full_messages.flatten.uniq.join(', ') %>
+  alert('<%= raw(escape_javascript(l(:notice_failed_to_save_resource, :errors => errors))) %>');
