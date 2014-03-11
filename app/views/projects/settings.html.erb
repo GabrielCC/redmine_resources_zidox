@@ -1,8 +1,6 @@
 <h2><%=l(:label_settings)%></h2>
 <% tabs = project_settings_tabs
-if @project.module_enabled?("resources") 
-	tabs << {:name => 'resources', :action => 'resources/trackers', :partial => 'projects/settings/resources', :label => :project_module_resources}
-end
+tabs << {:name => 'resources', :action => 'resources/trackers', :partial => 'projects/settings/resources', :label => :project_module_resources}
 %> 
 <%= render_tabs tabs %>
 

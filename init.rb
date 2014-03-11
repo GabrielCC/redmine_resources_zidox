@@ -43,7 +43,7 @@ ActionDispatch::Callbacks.to_prepare do
 
 end
 
-Redmine::Plugin.register :resources do
+Redmine::Plugin.register :redmine_resources do
   name 'Resources plugin'
   author 'Author name'
   description 'This is a plugin for Redmine'
