@@ -73,7 +73,7 @@ api.issue do
   end if include_in_api_response?('watchers') && User.current.allowed_to?(:view_issue_watchers, @issue.project)
 
 
-  api.array :resources do
+  api.array :estimations do
     @issue.resources_with_departments.each_pair { |department,resources|
       api.resource do
         api.department department
@@ -84,5 +84,5 @@ api.issue do
         end
       end
     }
-  end if include_in_api_response?('resources')
+  end if include_in_api_response?('estimations')
 end
