@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  add_inline_editing();          
+});
+
+function add_inline_editing() {
   $('.resource_estimation').each(function(element) {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
@@ -15,5 +19,4 @@ $(document).ready(function() {
 
     })
   });
-          
-});
+}
