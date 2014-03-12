@@ -3,7 +3,7 @@ $(document).ready(function() {
 });
 
 function add_inline_editing() {
-  $('.resource_estimation').each(function(element) {
+  $('.resource_estimation_editable').each(function(element) {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
     $editable_element.editable('/issue_resources/' + id, {

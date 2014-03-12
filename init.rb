@@ -56,10 +56,10 @@ Redmine::Plugin.register :redmine_resources do
   require_dependency 'hook_listener'
 
 
-  permission :view_resources_departments, :departments => [:index, :show]
-  permission :view_resources_resources, :resources => [:index, :show]
-  permission :edit_resources_departments, :departmens => [:edit, :destroy,  :new, :create]
-  permission :edit_resources_resources, :resources => [:edit, :destroy, :new, :create]
+  # permission :view_resources_departments, :departments => [:index, :show]
+  # permission :view_resources_resources, :resources => [:index, :show]
+  # permission :edit_resources_departments, :departmens => [:edit, :destroy,  :new, :create]
+  # permission :edit_resources_resources, :resources => [:edit, :destroy, :new, :create]
 
 
   menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
@@ -67,7 +67,8 @@ Redmine::Plugin.register :redmine_resources do
   menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 
   project_module :resources do
-    permission :view_resources, :resources => :index
-    permission :edit_resources, :resources => :edit
+    # permission :view_resources_plugin, :resources => :index
+    # permission :edit_resources_plugin, :resources => :edit
+    # permission :config_resources_plugin, :resources => :trackers
   end
 end

@@ -1,4 +1,8 @@
-<% if resources_visible(@issue, @project) %>
+<% 
+visible = resources_visible(@issue, @project)
+editable = resources_editable(@issue, @project)
+%>
+<% if visible || editable %>
 	<% content_for :header_tags do %>
     <%= stylesheet_link_tag 'resources.css', :plugin => 'redmine_resources' %>
     <%= javascript_include_tag 'jquery.jeditable.mini.js', :plugin => 'redmine_resources' %>
@@ -11,28 +15,30 @@
 			issue_resource = IssueResource.new 
 			resources = resources_for_project(@project, @issue) 
 		%>
-		<%= form_for(issue_resource,{:remote => true,
-                    :method => :post}) do |f| %>
-			<%= hidden_field_tag :project_id, @project.id %>
-			<%= hidden_field_tag :issue_id, @issue.id %>
-			<table id='resources_form'>
-				<tr>
-					<td><%= text_field_tag :estimation %> hours
-					</td>
-					<td>
-							<%= render partial: 'resources/resource_element', locals: {resources: resources.values} %>
-					</td>
-					<td class='edit_actions'>
-	        <%= link_to_function l(:button_save),
-	                             "$('#new_issue_resource').submit();return false;",
-	                             :class => 'icon icon-save' %>
-	    		<%= link_to l(:button_clear), :class => 'icon icon-reload'  %>
-	       </td>
-				</tr>	
-			</table>
+		<% if editable %>
+			<%= form_for(issue_resource,{:remote => true,
+	                    :method => :post}) do |f| %>
+				<%= hidden_field_tag :project_id, @project.id %>
+				<%= hidden_field_tag :issue_id, @issue.id %>
+				<table id='resources_form'>
+					<tr>
+						<td><%= text_field_tag :estimation %> hours
+						</td>
+						<td>
+								<%= render partial: 'resources/resource_element', locals: {resources: resources.values} %>
+						</td>
+						<td class='edit_actions'>
+		        <%= link_to_function l(:button_save),
+		                             "$('#new_issue_resource').submit();return false;",
+		                             :class => 'icon icon-save' %>
+		    		<%= link_to l(:button_clear), :class => 'icon icon-reload'  %>
+		       </td>
+					</tr>	
+				</table>
+			<% end %>
 		<% end %>
 		<div id='resources_list_container'>
-			<%= render partial: 'resources/list', locals: {issue: @issue} %>
+			<%= render partial: 'resources/list', locals: {issue: @issue, editable: editable} %>
 		</div>
 	</div>
 	<script type="text/javascript">

@@ -1,3 +1,4 @@
+<% editable_class = editable ? 'resource_estimation_editable' : '' %>
 <table id='resources_list'>
       <% 
       issue ||= @issue_resource.issue
@@ -14,13 +15,13 @@
         <% issues_list.each { |ri| %>  
           <tr>
             <td class='estimation_cell' id='cell-<%=ri.id %>'>
-            <div id='resource-<%=ri.id %>' class='resource_estimation' data-resource-id='<%= ri.id %>'><%= ri.estimation %></div>h
+            <div id='resource-<%=ri.id %>' class='resource_estimation <%=editable_class %>' data-resource-id='<%= ri.id %>'><%= ri.estimation %></div>h
             </td>
             <td><%= ri.resource.code %></td>
 
              <td>
                 <%= delete_link issue_resource_path(ri),
-                                :remote => true if true %>
+                                :remote => true if editable %>
              </td>
           </tr>
         <% } %>

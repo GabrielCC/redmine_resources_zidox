@@ -1,6 +1,6 @@
 
 # Patches Redmine's Role dynamically.  Adds a relationship 
-# Role +has_one+ to ResourceSetting
+# Role +has_many+ to ResourceSetting
 module ResourceSettingPatch
   def self.included(base) # :nodoc:
     base.extend(ClassMethods)
@@ -9,7 +9,7 @@ module ResourceSettingPatch
 
     # Same as typing in the class 
     base.class_eval do
-      has_one :resource_setting, :as => :setting_object      
+      has_many :resource_setting, :as => :setting_object      
     end
 
   end
@@ -18,9 +18,12 @@ module ResourceSettingPatch
   end
   
   module InstanceMethods
-    def has_resources
-      @resource ||= resource_setting
-      return !@resource.nil?
+    def can_edit_resources(project)
+      self.resource_setting.editable(project).count > 0
+    end
+
+    def can_view_resources(project) 
+      self.resource_setting.visible(project).count > 0
     end
 
   end    

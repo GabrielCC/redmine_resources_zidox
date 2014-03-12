@@ -18,10 +18,21 @@ module ApplicationHelperPatch
             visible = false;
             roles.each { |role|
               if !visible 
-                visible = role.has_resources
+                visible = role.can_view_resources(project)
               end 
             }
-            visible && trackers.has_resources
+            visible && trackers.can_view_resources(project)
+          end
+
+          def resources_editable(issue, project)
+            roles = User.current.roles_for_project(project)
+            visible = false;
+            roles.each { |role|
+              if !visible 
+                visible = role.can_edit_resources(project)
+              end 
+            }
+            visible
           end
 
           def resources_for_project(project, issue = nil)

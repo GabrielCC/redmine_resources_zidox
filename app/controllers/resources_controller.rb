@@ -95,18 +95,30 @@ class ResourcesController < BaseController
 
   def trackers
     ResourceSetting.destroy_all(:project_id => @project.id)
+    params[:trackers] = {} if params[:trackers].nil?
+    params[:roles] = {} if params[:roles].nil?
+    map = {:visible => ResourceSetting::VIEW_RESOURCES,
+      :editable => ResourceSetting::EDIT_RESOURCES
+    }
+    map.each_pair { |key, val|  
+      create_resource_settings(key, val)
+    }
+    flash[:notice] = l(:notice_successful_update)
+    redirect_to_settings_project
+  end
 
-    trackers = Tracker.find params[:trackers]
-    roles = Role.find params[:roles]
+  private
+  def create_resource_settings(key, val)
+    trackers = Tracker.find_all_by_id params[:trackers][key]
+    roles = Role.find_all_by_id params[:roles][key]
     elements = trackers + roles
     elements.each { |element|
       settings = ResourceSetting.new
       settings.setting_object = element
       settings.project = @project
+      settings.setting = val
       settings.save
     }
-    flash[:notice] = l(:notice_successful_update)
-    redirect_to_settings_project
   end
 
   def redirect_to_settings_project
