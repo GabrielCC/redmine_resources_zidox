@@ -1,4 +1,4 @@
-<% if @project.module_enabled?("resources") %>
+<% if @project.module_enabled?("redmine_resources") %>
   <% code = member.resource.code unless  member.resource.nil? %>
   <% resource_id = member.resource.id unless  member.resource.nil? %>
   <td class="resources">
