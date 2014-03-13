@@ -9,7 +9,7 @@ module MembersControllerPatch
     # Same as typing in the class 
     base.class_eval do
       def create
-        if params[:resource_id]
+        if params[:resource_id] != ''
           resource = Resource.find(params[:resource_id])
         else
           resource = nil

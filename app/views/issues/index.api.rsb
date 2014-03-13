@@ -32,7 +32,7 @@ api.array :issues, api_meta(:total_count => @issue_count, :offset => @offset, :l
       end if include_in_api_response?('relations')
       api.array :estimations do
         issue.resources_with_departments.each_pair { |department,resources|
-          api.resource do
+          api.estimation do
             api.department department
             api.array :resources do
               resources.each {|ir|
