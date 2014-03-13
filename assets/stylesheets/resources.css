@@ -3,6 +3,9 @@
 #resources input {
   width: 30px;
 }
+#resources input.button {
+  width: 45px;
+}
 #resources td.edit_actions {
   width: 120px;
 }
