@@ -9,7 +9,7 @@ module ResourceSettingPatch
 
     # Same as typing in the class 
     base.class_eval do
-      has_many :resource_setting, :as => :setting_object      
+      has_many :resource_setting, :as => :setting_object, dependent: :destroy
     end
 
   end

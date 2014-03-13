@@ -7,6 +7,7 @@ function add_inline_editing() {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
     $editable_element.editable('/issue_resources/' + id, {
+        onblur : 'submit',
         method : 'PUT',
         ajaxoptions : {type : 'PUT'},
         name : 'issue_resource[estimation]',

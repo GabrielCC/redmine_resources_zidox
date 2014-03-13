@@ -9,7 +9,7 @@ module IssuePatch
 
     # Same as typing in the class 
     base.class_eval do
-      has_many :issue_resource
+      has_many :issue_resource, dependent: :destroy
       has_many :resource, :through => :issue_resource
     end
 

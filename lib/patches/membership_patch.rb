@@ -10,7 +10,7 @@ module MembershipPatch
 
     # Same as typing in the class 
     base.class_eval do
-      has_one :member_resource
+      has_one :member_resource, dependent: :destroy
       has_one :resource, :through => :member_resource
       
     end

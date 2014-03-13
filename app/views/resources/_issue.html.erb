@@ -28,10 +28,8 @@ editable = resources_editable(@issue, @project)
 								<%= render partial: 'resources/resource_element', locals: {resources: resources.values} %>
 						</td>
 						<td class='edit_actions'>
-		        <%= link_to_function l(:button_save),
-		                             "$('#new_issue_resource').submit();return false;",
-		                             :class => 'icon icon-save' %>
-		    		<%= link_to l(:button_clear), :class => 'icon icon-reload'  %>
+						<%= submit_tag l(:button_save), :class => "small" %>	
+		        
 		       </td>
 					</tr>	
 				</table>
