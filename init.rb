@@ -66,7 +66,8 @@ Redmine::Plugin.register :redmine_resources do
   menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
   menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 
-  project_module :resources do
+  project_module :redmine_resources do
+    permission :view_resources_plugin, { :resources => [:index, :edit, :trackers] }, :public => true
     # permission :view_resources_plugin, :resources => :index
     # permission :edit_resources_plugin, :resources => :edit
     # permission :config_resources_plugin, :resources => :trackers
