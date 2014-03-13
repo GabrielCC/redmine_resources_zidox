@@ -1,6 +1,8 @@
 <h2><%=l(:label_settings)%></h2>
 <% tabs = project_settings_tabs
-tabs << {:name => 'resources', :action => 'resources/trackers', :partial => 'projects/settings/resources', :label => :project_module_resources}
+if @project.module_enabled?("redmine_resources")
+  tabs << {:name => 'resources', :action => 'resources/trackers', :partial => 'projects/settings/resources', :label => :project_module_resources}
+end
 %> 
 <%= render_tabs tabs %>
 
