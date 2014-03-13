@@ -45,11 +45,11 @@ end
 
 Redmine::Plugin.register :redmine_resources do
   name 'Resources plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
-  version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  author 'Gabriel Croitoru'
+  description 'Redmine Resources Plugin'
+  version '1.0.0'
+  url 'http://gabrielcc.github.io/redmine_resources/'
+  author_url 'http://gabrielcc.github.io/'
   
   # Patches to the Redmine core.
 
@@ -64,7 +64,7 @@ Redmine::Plugin.register :redmine_resources do
 
   menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
   menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
-  menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
+  # menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 
   project_module :redmine_resources do
     permission :view_resources_plugin, { :resources => [:index, :edit, :trackers] }, :public => true
