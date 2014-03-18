@@ -13,12 +13,8 @@ api.array :memberships, api_meta(:total_count => @member_count, :offset => @offs
           end 
         end
       end
-      api.resource :resource do
-        unless membership.resource.nil? 
-          api.id membership.resource.id
-          api.name membership.resource.name
-          api.code membership.resource.code
-        end
+      unless membership.resource.nil? 
+         api.resource :id => membership.resource.id, :name => membership.resource.name, :code => membership.resource.code
       end
     end
   end

@@ -11,11 +11,5 @@ api.membership do
       end 
     end
   end
-  api.resource :resource do
-    unless @member.resource.nil? 
-      api.id @member.resource.id
-      api.name @member.resource.name
-      api.code @member.resource.code
-    end
-  end
+
 end
