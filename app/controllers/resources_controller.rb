@@ -1,7 +1,7 @@
 class ResourcesController < BaseController
   before_filter :set_departments
   before_filter :find_project_by_project_id, :only => [:trackers]
-
+  before_filter :set_department, :only => [:update,:create]
   # GET /resources
   # GET /resources.json
   def index
@@ -45,8 +45,6 @@ class ResourcesController < BaseController
   # POST /resources.json
   def create
     @resource = Resource.new(params[:resource])
-    department = Department.find(params[:resource][:department_id])
-    @resource.department = department
     respond_to do |format|
       if @resource.save
         format.html { redirect_to @resource, notice: 'Resource was successfully created.' }
@@ -123,6 +121,13 @@ class ResourcesController < BaseController
 
   def redirect_to_settings_project
     redirect_to settings_project_path(@project, :tab => 'resources')
+  end
+  
+  def set_department
+    department = Department.find(params[:resource][:department_id])
+    if !department.nil?
+      params[:resource][:department] = department
+    end
   end
 
 end

@@ -1,6 +1,9 @@
 <%= text_field_tag(:resource, nil, :class => 'resources_autocomplete') %>
-  <%= hidden_field_tag(:resource_id) %>
-  
+<%= hidden_field_tag(:resource_id) %>
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'chosen.min.css', :plugin => 'redmine_resources' %>
+    <%= javascript_include_tag 'chosen.min.jquery.js', :plugin => 'redmine_resources' %>
+	<% end %>
   <script type="text/javascript">
     $(document).ready(function() {
       <% resources.map! { |e| {:value => e.code, :label => e.code, :id => e.id} } %>
