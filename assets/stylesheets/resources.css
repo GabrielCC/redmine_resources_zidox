@@ -1,6 +1,6 @@
 #resources {
 }
-#resources input {
+#resources input#estimation {
   width: 30px;
 }
 #resources input.button {

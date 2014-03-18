@@ -1,24 +1,14 @@
-<%= text_field_tag(:resource, nil, :class => 'resources_autocomplete') %>
-<%= hidden_field_tag(:resource_id) %>
 <% content_for :header_tags do %>
     <%= stylesheet_link_tag 'chosen.min.css', :plugin => 'redmine_resources' %>
-    <%= javascript_include_tag 'chosen.min.jquery.js', :plugin => 'redmine_resources' %>
+    <%= javascript_include_tag 'chosen.jquery.min.js', :plugin => 'redmine_resources' %>
 	<% end %>
+<%= select_tag "resource_id", "<option></option>#{options_from_collection_for_select(resources, 'id', 'code')}".html_safe, class: 'resources_autocomplete' %>
+
   <script type="text/javascript">
     $(document).ready(function() {
-      <% resources.map! { |e| {:value => e.code, :label => e.code, :id => e.id} } %>
-      window.get_resources_autocomplete_source = function() {
-        return <%= raw resources.to_json %>;
-      }
-
-      $('.resources_autocomplete').autocomplete({
-        source: window.get_resources_autocomplete_source(),
-        select: function( event, ui ) {
-          var id = $(this).attr('id');
-              $( "#" + id ).val( ui.item.label );
-              $( "#" + id + "_id" ).val( ui.item.id );
-              return false;
-            }
-        });
+      $('.resources_autocomplete').chosen({
+        'width': '90px',
+        'placeholder_text_single': 'Select'
+      });
     }); 
   </script>

@@ -48,6 +48,7 @@
       <%= link_to_function l(:button_edit),
                            "$('#member-#{member.id}-roles').hide(); $('#member-#{member.id}-roles-form').show(); 
                            $('#member-#{member.id}-resources').hide(); $('#member-#{member.id}-resources-form').show();
+$('#member-#{member.id}-resource_id').chosen({'width': '100px'});
                            return false;",
                            :class => 'icon icon-edit' %>
       <%= delete_link membership_path(member),

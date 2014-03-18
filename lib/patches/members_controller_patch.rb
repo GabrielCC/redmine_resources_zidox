@@ -49,10 +49,8 @@ module MembersControllerPatch
         if params[:membership]
           @member.role_ids = params[:membership][:role_ids]
         end
-        Rails.logger.info params.to_json
-        if params["member-#{@member.id}-resource".to_sym]
+        if params["member-#{@member.id}-resource_id".to_sym]
           resource = Resource.find(params["member-#{@member.id}-resource_id".to_sym])
-          Rails.logger.info resource.to_json
           @member.resource = resource
         end
         saved = @member.save
