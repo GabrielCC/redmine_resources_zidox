@@ -19,10 +19,6 @@ class IssueResource < ActiveRecord::Base
     rescue Exception => e
       resource = Resource.new
     end
-    if resource.code.nil? || resource.code != params[:resource]
-      resource = Resource.find_by_code params[:resource]
-    end
-        
     unless project.nil? || issue.nil?
       issue_resource.issue = issue
       issue_resource.resource = resource

@@ -42,8 +42,6 @@ class IssueResourcesController < BaseController
   # POST /issue_resources.json
   def create
     @issue_resource = IssueResource.from_params(params)
-
-      
     if @issue_resource.save
       partial = "issue_resources/saved"
     else
