@@ -5,3 +5,4 @@ resources :resources
 resources :issue_resources
 
 post 'resources/settings/trackers', :to => 'resources#trackers'
+post 'resources/settings/workflows', :to => 'resources#workflows'

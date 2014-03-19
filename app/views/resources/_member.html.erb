@@ -12,7 +12,7 @@
              ) do |f| %>
         <p>
       <%= label_tag("member-#{member.id}-resource", 'Resource:') %>
-      <%= select_tag "member-#{member.id}-resource_id", options_from_collection_for_select(resources, "id", "code", member.resource.id), class: 'resources_autocomplete_after_edit' %>
+      <%= select_tag "member-#{member.id}-resource_id", options_from_collection_for_select(resources, "id", "code",  !member.resource.nil? ? member.resource.id : 0), class: 'resources_autocomplete_after_edit' %>
 			</p>
         <p>
           <%= submit_tag l(:button_save), :class => "small" %>

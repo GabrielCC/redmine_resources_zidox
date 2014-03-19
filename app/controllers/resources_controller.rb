@@ -1,6 +1,6 @@
 class ResourcesController < BaseController
   before_filter :set_departments
-  before_filter :find_project_by_project_id, :only => [:trackers]
+  before_filter :find_project_by_project_id, :only => [:trackers, :workflows]
   before_filter :set_department, :only => [:update,:create]
   # GET /resources
   # GET /resources.json
@@ -105,6 +105,18 @@ class ResourcesController < BaseController
     redirect_to_settings_project
   end
 
+  def workflows
+    ResourcesWorkflow.destroy_all( ["project_id=?",params[:project_id]])
+      (params[:issue_status] || []).each { |status_id, transitions|
+        transitions.each { |new_status_id, options|
+          ResourcesWorkflow.create(:project_id => params[:project_id], :old_status_id => status_id, :new_status_id => new_status_id)
+        }
+      }
+
+    flash[:notice] = l(:notice_successful_update)
+    redirect_to_settings_project('resources_workflows')
+  end
+
   private
   def create_resource_settings(key, val)
     trackers = Tracker.find_all_by_id params[:trackers][key]
@@ -119,8 +131,10 @@ class ResourcesController < BaseController
     }
   end
 
-  def redirect_to_settings_project
-    redirect_to settings_project_path(@project, :tab => 'resources')
+
+
+  def redirect_to_settings_project(tab = 'resources')
+    redirect_to settings_project_path(@project, :tab => tab) and return
   end
   
   def set_department
