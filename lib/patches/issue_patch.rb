@@ -37,7 +37,7 @@ module IssuePatch
         :old_status_id => self.status_id_was, 
         :new_status_id => self.status_id
       })
-      unless rules.count > 0 
+      if rules.count > 0 
         if self.resource.count == 0
           errors.add(:base, 'Required resource estimation')
           return false
