@@ -1,5 +1,16 @@
 $(document).ready(function() {
-  add_inline_editing();          
+  add_inline_editing();
+  $('#issue-form').bind('submit', function(){
+    var next_status_id = $('#issue_status_id').val();
+    if($.inArray(next_status_id, window.issue_workflow_list)) {
+      alert('You need to add estimation before moving to this status.');
+      $('#resources_list').scrollTop();
+      return false;
+    }
+    else{
+      return true;
+    }
+  });   
 });
 
 function add_inline_editing() {

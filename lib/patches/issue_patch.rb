@@ -11,7 +11,7 @@ module IssuePatch
     base.class_eval do
       has_many :issue_resource, dependent: :destroy
       has_many :resource, :through => :issue_resource
-      validate :resources_workflow
+      validate :validate_resources_workflow
     end
 
   end
@@ -30,8 +30,14 @@ module IssuePatch
       }
       result
     end
+    def list_resources_workflow
+      ResourcesWorkflow.where({
+        :project_id => self.project_id, 
+        :old_status_id => self.status_id
+      }).pluck(:new_status_id)
+    end
 
-    def resources_workflow
+    def validate_resources_workflow
       rules = ResourcesWorkflow.where({
         :project_id => self.project_id, 
         :old_status_id => self.status_id_was, 

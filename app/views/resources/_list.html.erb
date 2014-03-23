@@ -1,9 +1,11 @@
-<% editable_class = editable ? 'resource_estimation_editable' : '' %>
+<% 
+editable_class = editable ? 'resource_estimation_editable' : '' 
+issue ||= @issue_resource.issue
+departments = issue.resources_with_departments
+issue_workflow_list = issue.list_resources_workflow
+%> 
 <table id='resources_list'>
-      <% 
-      issue ||= @issue_resource.issue
-      departments = issue.resources_with_departments
-      departments.each_pair { |department_name, issues_list| %>
+    <% departments.each_pair { |department_name, issues_list|  %>
         <tr>
           <td colspan='2' class='department_name'>
             <strong><%=department_name%></strong>
@@ -27,3 +29,6 @@
         <% } %>
       <% } %>
 </table>
+<script type='text/javascript'>
+  window.issue_workflow_list = <%= issue_workflow_list.to_json.html_safe %>
+</script>
