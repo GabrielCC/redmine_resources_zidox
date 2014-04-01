@@ -3,7 +3,8 @@ editable_class = editable ? 'resource_estimation_editable' : ''
 issue ||= @issue_resource.issue
 departments = issue.resources_with_departments
 issue_workflow_list = issue.list_resources_workflow
-%> 
+%>
+<%= hidden_field_tag 'has_resources', departments.count %>
 <table id='resources_list'>
     <% departments.each_pair { |department_name, issues_list|  %>
         <tr>
