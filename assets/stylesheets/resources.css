@@ -6,6 +6,10 @@
 #resources input.button {
   width: 45px;
 }
+
+#resources input.button.small {
+  width: 52px;
+}
 #resources td.edit_actions {
   width: 120px;
 }
@@ -27,3 +31,6 @@ td.estimation_cell {
   margin-left: 2px;
 }
 
+.estimation_cell {
+  width: 60px;
+}

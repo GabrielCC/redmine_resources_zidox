@@ -22,7 +22,7 @@ editable = resources_editable(@issue, @project)
 				<%= hidden_field_tag :issue_id, @issue.id %>
 				<table id='resources_form'>
 					<tr>
-						<td><%= text_field_tag :estimation %> h
+						<td class="estimation_cell"><%= text_field_tag :estimation %> h
 						</td>
 						<td>
 								<%= render partial: 'resources/resource_element', locals: {resources: resources.values} %>
