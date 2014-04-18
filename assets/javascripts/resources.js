@@ -3,7 +3,7 @@ $(document).ready(function() {
   $('#issue-form').bind('submit', function(e){
     var next_status_id = $('#issue_status_id').val();
     if ((next_status_id != current_status_id) &&
-        ($.inArray(next_status_id, window.issue_workflow_list)) &&
+        ($.inArray(next_status_id, window.issue_workflow_list) != -1) &&
         $('#has_resources').val() == '0') {  
       alert('You need to add estimation before moving to this status.');
       $('#estimation').focus();
