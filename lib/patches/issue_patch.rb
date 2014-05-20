@@ -38,12 +38,13 @@ module IssuePatch
     end
 
     def validate_resources_workflow
+      trackers = self.tracker
       rules = ResourcesWorkflow.where({
         :project_id => self.project_id, 
         :old_status_id => self.status_id_was, 
         :new_status_id => self.status_id
       })
-      if rules.count > 0 
+      if rules.count > 0 && trackers.can_view_resources(self.project)
         if self.resource.count == 0
           errors.add(:base, 'Required resource estimation')
           return false
