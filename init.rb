@@ -41,6 +41,10 @@ ActionDispatch::Callbacks.to_prepare do
   require_dependency 'application_helper'
   ApplicationHelper.send(:include, ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? ApplicationHelperPatch
 
+  require 'patches/issues_helper_patch'
+  require_dependency 'issues_helper'
+  IssuesHelper.send(:include, IssuesHelperPatch) unless IssuesHelper.included_modules.include? IssuesHelperPatch
+
 end
 
 Redmine::Plugin.register :redmine_resources do

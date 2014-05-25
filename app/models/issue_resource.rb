@@ -10,6 +10,8 @@ class IssueResource < ActiveRecord::Base
   after_destroy 'save_journal(:deleted)'
   after_update 'save_journal(:updated)'
 
+  JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
+
   def self.from_params(params)
     issue_resource = IssueResource.new
     project = Project.find params[:project_id]
@@ -38,15 +40,19 @@ class IssueResource < ActiveRecord::Base
 
   def journal_note(operation)
     messages = {
-      :created => "*Estimation* created #{resource.code} #{estimation}h",
-      :updated => "*Estimation* changed from #{resource.code} #{estimation_was}h to #{resource.code} #{estimation}h",
-      :deleted => "*Estimation* deleted #{resource.code} #{estimation}h"
+      :created => " created #{resource.code} #{estimation}h",
+      :updated => " changed from #{resource.code} #{estimation_was}h to #{resource.code} #{estimation}h",
+      :deleted => " deleted #{resource.code} #{estimation}h"
     }
     messages[operation]
   end
 
   def save_journal(operation)
-    journal = issue.init_journal(User.current, journal_note(operation))
+    journal = issue.init_journal(User.current, nil)
+    journal.details << JournalDetail.new(:property => IssueResource::JOURNAL_DETAIL_PROPERTY,
+                                  :prop_key => id,
+                                  :old_value => '',
+                                  :value => journal_note(operation))
     journal.save
   end
 end
