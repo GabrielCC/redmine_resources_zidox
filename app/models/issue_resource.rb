@@ -1,6 +1,6 @@
 class IssueResource < ActiveRecord::Base
   unloadable
-  belongs_to :issue
+  belongs_to :issue, :touch => true
   belongs_to :resource
   validates_presence_of :issue_id, :resource_id, :estimation
   validates :estimation, numericality: { only_integer: true }
