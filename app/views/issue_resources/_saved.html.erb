@@ -8,3 +8,4 @@ options = '<%="<option></option>#{options_from_collection_for_select(resources, 
 $('#resource_id').empty().append(options).trigger("chosen:updated");
 
 add_inline_editing();
+$('input.button', $('#new_issue_resource')).removeAttr('disabled');
