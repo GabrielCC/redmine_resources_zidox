@@ -12,6 +12,12 @@ $(document).ready(function() {
       return false;
     }
   });
+  
+  $('#new_issue_resource').bind('submit', function() { 
+    $('input.button', $(this)).attr('disabled', true); 
+    return true; 
+  });
+  
   window.current_status_id = $('#issue_status_id').val(); 
 });
 
