@@ -1,4 +1,4 @@
-redmine_resources
-=================
+redmine_resources_zidox
+=======================
 
-Redmine Resources plugin
+Zidox specific integration for Redmine Resources plugin
