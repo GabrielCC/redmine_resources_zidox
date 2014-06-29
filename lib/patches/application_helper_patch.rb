@@ -37,11 +37,9 @@ module ApplicationHelperPatch
           end
 
           def resources_for_project(project, issue = nil)
-            members = project.members
             resources = {}
             created_resources = issue.nil? ? [] : issue.resource
-            members.each { |member|
-              resource = member.resource
+            project.resource.each { |resource|
               resources[resource.id] = resource unless resource.nil? || created_resources.include?(resource)
             }
 

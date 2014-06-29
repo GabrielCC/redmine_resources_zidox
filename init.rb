@@ -10,6 +10,14 @@ ActionDispatch::Callbacks.to_prepare do
     Member.send(:include, MembershipPatch)
   end
 
+  require_dependency 'project'
+  require 'patches/project_patch'
+  # Guards against including the module multiple time (like in tests)
+  # and registering multiple callbacks
+  unless Project.included_modules.include? ProjectPatch
+    Project.send(:include, ProjectPatch)
+  end
+
   require_dependency 'role'
   require 'patches/resource_setting_patch'
   # Guards against including the module multiple time (like in tests)
@@ -66,8 +74,8 @@ Redmine::Plugin.register :redmine_resources do
   # permission :edit_resources_resources, :resources => [:edit, :destroy, :new, :create]
 
 
-  menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
-  menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
+  # menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
+  # menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
   # menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 
   project_module :redmine_resources do
