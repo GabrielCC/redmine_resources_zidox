@@ -1,6 +1,7 @@
 class ProjectResourcesController < BaseController
   # GET /project/:project_id/resources
   # GET /project/:project_id/resources.json
+  accept_api_auth :index, :create
   def index
     @project_resources = ProjectResource.includes(:resource).find_all_by_project_id(params[:project_id])
     @resources = []
