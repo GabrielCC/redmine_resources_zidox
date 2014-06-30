@@ -37,6 +37,7 @@ class ProjectResourcesController < BaseController
       if errors.count == 0 
         status = true
       else
+        raise ActiveRecord::Rollback
       end
     end
     respond_to do |format|
