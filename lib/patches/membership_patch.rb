@@ -12,7 +12,7 @@ module MembershipPatch
     base.class_eval do
       has_one :member_resource, dependent: :destroy
       has_one :resource, :through => :member_resource
-      validates :resource, :presence => { :message => " cannot be blank" }, if: Proc.new { |a| a.project.module_enabled?("redmine_resources") }
+      # validates :resource, :presence => { :message => " cannot be blank" }, if: Proc.new { |a| a.project.module_enabled?("redmine_resources") }
     end
 
   end
