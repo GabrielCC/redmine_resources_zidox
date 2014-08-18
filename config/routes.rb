@@ -7,6 +7,9 @@ resources :issue_resources
 get 'resources-workflows', :to => 'resources_workflows#index', :as => 'resources_workflows'
 post 'resources-workflows', :to => 'resources_workflows#save'
 
+get 'resources-settings', :to => 'resources_settings#index', :as => 'resources_settings'
+post 'resources-settings', :to => 'resources_settings#save'
+
 post 'resources/settings/trackers', :to => 'resources#trackers'
 post 'resources/settings/workflows', :to => 'resources#workflows'
 

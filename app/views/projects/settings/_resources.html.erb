@@ -1,4 +1,18 @@
 <%= form_tag('/resources/settings/trackers', :method => :post) do %>
+<%= hidden_field_tag 'project_id', @project.id %>
+<fieldset>
+  <legend>Project Specific Resource Workflow</legend>
+        <% check_box = check_box_tag 'project_specific_resource_workflow', 'true', ResourceSetting.project_workflow_editable(@project.id)  , {:id => "project_specific_resource_workflow"  } %>
+        <%= label_tag "project_specific_resource_workflow", check_box.html_safe + 'Active' %>
+</fieldset>
+
+<fieldset>
+  <legend>Project Specific Resource Trackers</legend>
+        <% check_box = check_box_tag 'project_specific_resource_tracker', 'true', ResourceSetting.project_tracker_editable(@project.id)  , {:id => "project_specific_resource_tracker"  } %>
+        <%= label_tag "project_specific_resource_tracker", check_box.html_safe + 'Active' %>
+</fieldset>
+
+<% if ResourceSetting.project_tracker_editable(@project.id) %>
 <% settings = ResourceSetting.where(:project_id => @project.id)
 map = {"Tracker" => {
   :visible => [],
@@ -13,55 +27,50 @@ settings.each { |e|
   map[e.setting_object_type][e.setting_key] << e.setting_object_id if map.has_key? e.setting_object_type
 }
  %>
-<%= hidden_field_tag 'project_id', @project.id %>
-<fieldset>
-  <legend>Trackers</legend>
-      <% trackers = Tracker.all %>
-      <% trackers.each { |tracker|  
-        %>
-         <% check_box = check_box_tag 'trackers[visible][]', tracker.id, (map["Tracker"][:visible].include? tracker.id), {:id => 'trackers_' + tracker.name } %>
-        <%= label_tag 'trackers_' + tracker.name, check_box.html_safe + tracker.to_s %>
+    
+    <fieldset>
+      <legend>Trackers</legend>
+          <% trackers = Tracker.all %>
+          <% trackers.each { |tracker|  
+            %>
+             <% check_box = check_box_tag 'trackers[visible][]', tracker.id, (map["Tracker"][:visible].include? tracker.id), {:id => 'trackers_' + tracker.name } %>
+            <%= label_tag 'trackers_' + tracker.name, check_box.html_safe + tracker.to_s %>
 
-      
-        <%
-      }
-      %>
-</fieldset>
+          
+            <%
+          }
+          %>
+    </fieldset>
 
-<fieldset>
-  <legend>Visible for</legend>
-      <% roles = Role.all %>
-      <% roles.each { |role|  
-        %>
-         <% check_box = check_box_tag 'roles[visible][]', role.id, (map["Role"][:visible].include? role.id), {:id => "roles_visible_#{role.id}"  } %>
-        <%= label_tag "roles_visible_#{role.id}", check_box.html_safe + role.to_s %>
+    <fieldset>
+      <legend>Visible for</legend>
+          <% roles = Role.all %>
+          <% roles.each { |role|  
+            %>
+             <% check_box = check_box_tag 'roles[visible][]', role.id, (map["Role"][:visible].include? role.id), {:id => "roles_visible_#{role.id}"  } %>
+            <%= label_tag "roles_visible_#{role.id}", check_box.html_safe + role.to_s %>
 
-      
-        <%
-      }
-      %>
-</fieldset>
+          
+            <%
+          }
+          %>
+    </fieldset>
 
-<fieldset>
-  <legend>Editable for</legend>
-      <% roles = Role.all %>
-      <% roles.each { |role|  
-        %>
-         <% check_box = check_box_tag 'roles[editable][]', role.id, (map["Role"][:editable].include? role.id), {:id => "roles_editable_#{role.id}"  } %>
-        <%= label_tag "roles_editable_#{role.id}", check_box.html_safe + role.to_s %>
+    <fieldset>
+      <legend>Editable for</legend>
+          <% roles = Role.all %>
+          <% roles.each { |role|  
+            %>
+             <% check_box = check_box_tag 'roles[editable][]', role.id, (map["Role"][:editable].include? role.id), {:id => "roles_editable_#{role.id}"  } %>
+            <%= label_tag "roles_editable_#{role.id}", check_box.html_safe + role.to_s %>
 
-      
-        <%
-      }
-      %>
-</fieldset>
+          
+            <%
+          }
+          %>
+    </fieldset>
 
-<fieldset>
-  <legend>Project Specific Resource Workflow</legend>
-        <%= @project_id %>
-        <% check_box = check_box_tag 'project_specific_resource_workflow', 'true', ResourceSetting.project_workflow_editable(@project.id)  , {:id => "project_specific_resource_workflow"  } %>
-        <%= label_tag "project_specific_resource_workflow", check_box.html_safe + 'Active' %>
-</fieldset>
+<% end %>
 
 <p>
 <%= submit_tag l(:button_save) %>

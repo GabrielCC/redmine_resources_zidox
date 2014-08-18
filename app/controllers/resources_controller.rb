@@ -92,17 +92,23 @@ class ResourcesController < BaseController
   end
 
   def trackers
-    ResourceSetting.destroy_all(:project_id => @project.id)
-    params[:trackers] = {} if params[:trackers].nil?
-    params[:roles] = {} if params[:roles].nil?
-    map = {:visible => ResourceSetting::VIEW_RESOURCES,
-      :editable => ResourceSetting::EDIT_RESOURCES
-    }
-    map.each_pair { |key, val|  
-      create_resource_settings(key, val)
-    }
+    if ResourceSetting.project_tracker_editable(@project.id)
+      ResourceSetting.destroy_all(:project_id => @project.id)
+      params[:trackers] = {} if params[:trackers].nil?
+      params[:roles] = {} if params[:roles].nil?
+      map = {:visible => ResourceSetting::VIEW_RESOURCES,
+        :editable => ResourceSetting::EDIT_RESOURCES
+      }
+      map.each_pair { |key, val|  
+        create_resource_settings(key, val)
+      }
+    end
+
     if params[:project_specific_resource_workflow]
       ResourceSetting.activate_project_workflow_editable(@project.id)
+    end
+    if params[:project_specific_resource_tracker]
+      ResourceSetting.activate_project_tracker_editable(@project.id)
     end
 
     flash[:notice] = l(:notice_successful_update)

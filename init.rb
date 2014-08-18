@@ -75,6 +75,7 @@ Redmine::Plugin.register :redmine_resources do
 
 
    menu :admin_menu, :resources_workflows, { :controller => 'resources_workflows', :action => 'index' }, :caption => 'Resources Workflows'
+   menu :admin_menu, :resources_settings, { :controller => 'resources_settings', :action => 'index' }, :caption => 'Resources Settings'
   # menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
   # menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 

@@ -9,6 +9,7 @@ module RedmineResources
         # Same as typing in the class 
         base.class_eval do
           has_many :resource_setting, :as => :setting_object, dependent: :destroy
+          has_many :instance_resource_setting, :as => :setting_object, dependent: :destroy
         end
 
       end
@@ -18,13 +19,22 @@ module RedmineResources
       
       module InstanceMethods
         def can_edit_resources(project)
-          self.resource_setting.editable(project).count > 0
+          activated_resource_setting(project).editable(project).count > 0
+          
         end
 
         def can_view_resources(project) 
-          self.resource_setting.visible(project).count > 0
+          activated_resource_setting(project).visible(project).count > 0
         end
 
+
+        def activated_resource_setting(project)
+          if ResourceSetting.project_tracker_editable(project.id)
+            self.resource_setting
+          else
+            self.instance_resource_setting
+          end
+        end
       end    
     end
   end
