@@ -7,10 +7,10 @@ map = {"Tracker" => {
   "Role" => {
   :visible => [],
   :editable => []
-  }
+  },
 }
 settings.each { |e|
-  map[e.setting_object_type][e.setting_key] << e.setting_object_id
+  map[e.setting_object_type][e.setting_key] << e.setting_object_id if map.has_key? e.setting_object_type
 }
  %>
 <%= hidden_field_tag 'project_id', @project.id %>
@@ -54,6 +54,13 @@ settings.each { |e|
         <%
       }
       %>
+</fieldset>
+
+<fieldset>
+  <legend>Project Specific Resource Workflow</legend>
+        <%= @project_id %>
+        <% check_box = check_box_tag 'project_specific_resource_workflow', 'true', ResourceSetting.project_workflow_editable(@project.id)  , {:id => "project_specific_resource_workflow"  } %>
+        <%= label_tag "project_specific_resource_workflow", check_box.html_safe + 'Active' %>
 </fieldset>
 
 <p>

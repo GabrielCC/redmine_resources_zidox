@@ -101,6 +101,10 @@ class ResourcesController < BaseController
     map.each_pair { |key, val|  
       create_resource_settings(key, val)
     }
+    if params[:project_specific_resource_workflow]
+      ResourceSetting.activate_project_workflow_editable(@project.id)
+    end
+
     flash[:notice] = l(:notice_successful_update)
     redirect_to_settings_project
   end

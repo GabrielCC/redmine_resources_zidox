@@ -1,7 +1,7 @@
 <% 
 visible = resources_visible(@issue, @project)
 editable = resources_editable(@issue, @project)
-%>
+%> 
 <% if visible || editable %>
 	<% content_for :header_tags do %>
     <%= stylesheet_link_tag 'resources.css', :plugin => 'redmine_resources' %>

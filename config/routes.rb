@@ -4,6 +4,9 @@ resources :departments
 resources :resources
 resources :issue_resources
 
+get 'resources-workflows', :to => 'resources_workflows#index', :as => 'resources_workflows'
+post 'resources-workflows', :to => 'resources_workflows#save'
+
 post 'resources/settings/trackers', :to => 'resources#trackers'
 post 'resources/settings/workflows', :to => 'resources#workflows'
 
