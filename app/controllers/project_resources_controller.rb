@@ -19,29 +19,29 @@ class ProjectResourcesController < BaseController
   # POST /resources.json
   def create
     resources = params[:resources]
-    status = false
     errors = []
-    ActiveRecord::Base.transaction do
-      ProjectResource.where(:project_id => params[:project_id]).delete_all
-      resources.each { |resource|
-        begin
-          resource_entry = Resource.find_or_create_by_params(resource)
-          pr = ProjectResource.new
-          pr.resource = resource_entry
-          pr.project_id = params[:project_id]
-          pr.save   
-        rescue Exception => e
-          errors << {:message => e.message, :resource => resource}  
-        end 
-      }
-      if errors.count == 0 
-        status = true
-      else
-        raise ActiveRecord::Rollback
+    begin
+      project = Project.find params[:project_id]
+    rescue Exception => e
+      errors << {:message => e.message, :resource => {}}
+    end
+    if errors.count == 0
+      ActiveRecord::Base.transaction do
+        clean_resource_associations
+        resources.each { |resource|
+          resource_status = process_resource(resource, project)
+          if resource_status != true
+            errors << {:message => resource_status, :resource => resource}
+          end
+        }
+        if errors.count != 0 
+          raise ActiveRecord::Rollback
+        end
       end
     end
+
     respond_to do |format|
-      if status
+      if errors.count == 0
         format.json { render json: {:message => 'Resources saved successfully'}, status: :created, location: @resource }
       else
         format.json { render json: errors, status: :unprocessable_entity }
@@ -134,6 +134,36 @@ class ProjectResourcesController < BaseController
     department = Department.find(params[:resource][:department_id])
     if !department.nil?
       params[:resource][:department] = department
+    end
+  end
+
+  def clean_resource_associations
+    [ProjectResource, ProjectResourceEmail].each { |model|  
+      model.where(:project_id => params[:project_id]).delete_all
+    }
+  end
+
+  def process_resource(resource, project)
+    begin
+      resource_entry = Resource.find_or_create_by_params(resource)
+      pr = ProjectResource.new
+      pr.resource = resource_entry
+      pr.project_id = params[:project_id]
+      pr.save
+      if resource[:users].nil?
+         return 'Users array not provided';
+      else
+        resource[:users].each { |email|  
+          pre = ProjectResourceEmail.new
+          pre.project = project
+          pre.resource = resource_entry
+          pre.email = email
+          pre.save
+        }
+        return true
+      end
+    rescue Exception => e
+      return e.message
     end
   end
 
