@@ -1,5 +1,7 @@
-module ApplicationHelperPatch       
-    def self.included(base)
+module RedmineResources
+  module Patches
+    module ApplicationHelperPatch       
+      def self.included(base)
         # base.send(:include, InstanceMethods)
         base.class_eval do
           # 
@@ -46,5 +48,7 @@ module ApplicationHelperPatch
             resources
           end
         end
-    end
-end # module patch
+      end
+    end # module patch
+  end
+end 

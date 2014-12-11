@@ -3,55 +3,55 @@ require "redmine"
 # Patches to the Redmine core.
 ActionDispatch::Callbacks.to_prepare do 
   require_dependency 'member'
-  require 'patches/membership_patch'
+  require 'redmine_resources/patches/membership_patch'
   # Guards against including the module multiple time (like in tests)
   # and registering multiple callbacks
-  unless Member.included_modules.include? MembershipPatch
-    Member.send(:include, MembershipPatch)
+  unless Member.included_modules.include? RedmineResources::Patches::MembershipPatch
+    Member.send(:include, RedmineResources::Patches::MembershipPatch)
   end
 
   require_dependency 'project'
-  require 'patches/project_patch'
+  require 'redmine_resources/patches/project_patch'
   # Guards against including the module multiple time (like in tests)
   # and registering multiple callbacks
-  unless Project.included_modules.include? ProjectPatch
-    Project.send(:include, ProjectPatch)
+  unless Project.included_modules.include? RedmineResources::Patches::ProjectPatch
+    Project.send(:include, RedmineResources::Patches::ProjectPatch)
   end
 
   require_dependency 'role'
-  require 'patches/resource_setting_patch'
+  require 'redmine_resources/patches/resource_setting_patch'
   # Guards against including the module multiple time (like in tests)
   # and registering multiple callbacks
-  unless Role.included_modules.include? ResourceSettingPatch
-    Role.send(:include, ResourceSettingPatch)
+  unless Role.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
+    Role.send(:include, RedmineResources::Patches::ResourceSettingPatch)
   end
 
   require_dependency 'tracker'
   # Guards against including the module multiple time (like in tests)
   # and registering multiple callbacks
-  unless Tracker.included_modules.include? ResourceSettingPatch
-    Tracker.send(:include, ResourceSettingPatch)
+  unless Tracker.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
+    Tracker.send(:include, RedmineResources::Patches::ResourceSettingPatch)
   end
 
   require_dependency 'members_controller'
-  require 'patches/members_controller_patch'
-  unless MembersController.included_modules.include? MembersControllerPatch
-    MembersController.send(:include, MembersControllerPatch)
+  require 'redmine_resources/patches/members_controller_patch'
+  unless MembersController.included_modules.include? RedmineResources::Patches::MembersControllerPatch
+    MembersController.send(:include, RedmineResources::Patches::MembersControllerPatch)
   end
 
   require_dependency 'issue'
-  require 'patches/issue_patch'
-  unless Issue.included_modules.include? IssuePatch
-    Issue.send(:include, IssuePatch)
+  require 'redmine_resources/patches/issue_patch'
+  unless Issue.included_modules.include? RedmineResources::Patches::IssuePatch
+    Issue.send(:include, RedmineResources::Patches::IssuePatch)
   end
 
-  require 'patches/application_helper_patch'
+  require 'redmine_resources/patches/application_helper_patch'
   require_dependency 'application_helper'
-  ApplicationHelper.send(:include, ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? ApplicationHelperPatch
+  ApplicationHelper.send(:include, RedmineResources::Patches::ApplicationHelperPatch) unless ApplicationHelper.included_modules.include? RedmineResources::Patches::ApplicationHelperPatch
 
-  require 'patches/issues_helper_patch'
+  require 'redmine_resources/patches/issues_helper_patch'
   require_dependency 'issues_helper'
-  IssuesHelper.send(:include, IssuesHelperPatch) unless IssuesHelper.included_modules.include? IssuesHelperPatch
+  IssuesHelper.send(:include, RedmineResources::Patches::IssuesHelperPatch) unless IssuesHelper.included_modules.include? RedmineResources::Patches::IssuesHelperPatch
 
 end
 
@@ -65,7 +65,7 @@ Redmine::Plugin.register :redmine_resources do
   
   # Patches to the Redmine core.
 
-  require_dependency 'hook_listener'
+  require 'redmine_resources/hook_listener'
 
 
   # permission :view_resources_departments, :departments => [:index, :show]
@@ -74,7 +74,8 @@ Redmine::Plugin.register :redmine_resources do
   # permission :edit_resources_resources, :resources => [:edit, :destroy, :new, :create]
 
 
-  # menu :admin_menu, :resources_departments, { :controller => 'departments', :action => 'index' }, :caption => 'Departments'
+   menu :admin_menu, :resources_workflows, { :controller => 'resources_workflows', :action => 'index' }, :caption => 'Resources Workflows'
+   menu :admin_menu, :resources_settings, { :controller => 'resources_settings', :action => 'index' }, :caption => 'Resources Settings'
   # menu :admin_menu, :resources_resources, { :controller => 'resources', :action => 'index' }, :caption => 'Resources'
   # menu :project_menu, :resources_trackers, { :controller => 'trackers', :action => 'index'}, :caption => 'Resources'
 
