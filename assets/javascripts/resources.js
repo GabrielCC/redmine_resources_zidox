@@ -4,7 +4,7 @@ $(document).ready(function() {
     var next_status_id = $('#issue_status_id').val();
     if ((next_status_id != current_status_id) &&
         ($.inArray(parseInt(next_status_id), window.issue_workflow_list) != -1) &&
-        $('#has_resources').val() == '0') {  
+        $('#has_resources').val() == '0') {
       alert('You need to add estimation before moving to this status.');
       $('#estimation').focus();
       e.preventDefault();
@@ -12,13 +12,13 @@ $(document).ready(function() {
       return false;
     }
   });
-  
-  $('#new_issue_resource').bind('submit', function() { 
-    $('input.button', $(this)).attr('disabled', true); 
-    return true; 
+
+  $('#new_issue_resource').bind('submit', function() {
+    $('input.button', $(this)).attr('disabled', true);
+    return true;
   });
-  
-  window.current_status_id = $('#issue_status_id').val(); 
+
+  window.current_status_id = $('#issue_status_id').val();
 });
 
 function add_inline_editing() {
@@ -33,7 +33,7 @@ function add_inline_editing() {
         tooltip   : "Click to edit...",
         'event' : 'editable'
     });
-    $('#cell-' + id).live('click', function() {
+    $('#cell-' + id).on('click', function() {
       $editable_element.trigger('editable');
       $('input', $editable_element).trigger('focus').trigger('select');
 
