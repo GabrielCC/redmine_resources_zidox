@@ -1,5 +1,8 @@
 require_dependency 'member'
 
+module RedmineResources
+  module Patches
+
 # Patches Redmine's Member dynamically.  Adds a relationship
 # Member +has_one+ to Resource
 module MembershipPatch
@@ -23,7 +26,9 @@ module MembershipPatch
   module InstanceMethods
   end
 end
+  end
+end
 
-  unless Member.included_modules.include? MembershipPatch
-    Member.send(:include, MembershipPatch)
+  unless Member.included_modules.include? RedmineResources::Patches::MembershipPatch
+    Member.send(:include, RedmineResources::Patches::MembershipPatch)
   end

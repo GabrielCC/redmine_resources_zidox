@@ -1,4 +1,5 @@
-
+module RedmineResources
+  module Patches
 # Patches Redmine's Role dynamically.  Adds a relationship
 # Role +has_many+ to ResourceSetting
 module ResourceSettingPatch
@@ -28,12 +29,14 @@ module ResourceSettingPatch
 
   end
 end
+  end
+end
 
   unless Role.included_modules.include? ResourceSettingPatch
     Role.send(:include, ResourceSettingPatch)
   end
 
 
-    unless Tracker.included_modules.include? ResourceSettingPatch
-    Tracker.send(:include, ResourceSettingPatch)
+    unless Tracker.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
+    Tracker.send(:include, RedmineResources::Patches::ResourceSettingPatch)
   end
