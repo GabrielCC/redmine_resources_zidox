@@ -8,7 +8,7 @@ module RedmineResources
           has_many :resource, through: :issue_resource
           validate :validate_resources_workflow
           before_save :mark_resource_estimation_added
-          after_save :add_resource_estimation, if: -> { resource_estimation_added? }
+          after_save :add_resource_estimation, if: :resource_estimation_added?
         end
       end
 
@@ -52,7 +52,7 @@ module RedmineResources
             issue_id: id,
             resource_id: determine_resource_type_id,
             estimation: estimated_hours
-          })
+          }).save
         end
 
         def resource_estimation_added?
@@ -62,7 +62,8 @@ module RedmineResources
         def determine_resource_type_id
           user_id = assigned_to_id || author_id
           member = Member.where(user_id: user_id, project_id: project_id).first
-          member.resource.id
+          member_resource = member.resource
+          member_resource ? member_resource.id : nil
         end
       end
     end
