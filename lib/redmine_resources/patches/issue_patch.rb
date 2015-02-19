@@ -7,6 +7,8 @@ module RedmineResources
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
           validate :validate_resources_workflow
+          before_save :mark_resource_estimation_added
+          after_save :add_resource_estimation, if: -> { resource_estimation_added? }
         end
       end
 
@@ -38,6 +40,29 @@ module RedmineResources
             errors.add(:base, 'Required resource estimation')
             return false
           end
+        end
+
+        def mark_resource_estimation_added
+          @estimation_added = estimated_hours_changed? ? :added : :not_added
+        end
+
+        def add_resource_estimation
+          IssueResource.from_params({
+            project_id: project_id,
+            issue_id: id,
+            resource_id: determine_resource_type_id,
+            estimation: estimated_hours
+          })
+        end
+
+        def resource_estimation_added?
+          @estimation_added == :added
+        end
+
+        def determine_resource_type_id
+          user_id = assigned_to_id || author_id
+          member = Member.where(user_id: user_id, project_id: project_id).first
+          member.resource.id
         end
       end
     end
