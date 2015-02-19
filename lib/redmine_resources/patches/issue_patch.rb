@@ -47,12 +47,11 @@ module RedmineResources
         end
 
         def add_resource_estimation
-          IssueResource.from_params({
-            project_id: project_id,
-            issue_id: id,
-            resource_id: determine_resource_type_id,
-            estimation: estimated_hours
-          }).save
+          issue_resource = IssueResource.where(issue_id: id,
+            resource_id: determine_resource_type_id
+          ).first_or_initialize
+          issue_resource.estimation = estimated_hours.to_i
+          issue_resource.save
         end
 
         def resource_estimation_added?
