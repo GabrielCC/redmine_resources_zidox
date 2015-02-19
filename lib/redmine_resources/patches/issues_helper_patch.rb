@@ -1,4 +1,4 @@
-module IssuesHelperPatch       
+module IssuesHelperPatch
   def self.included(base)
     # base.send(:include, InstanceMethods)
     base.class_eval do
@@ -23,3 +23,5 @@ module IssuesHelperPatch
     end
   end
 end # module patch
+
+  IssuesHelper.send(:include, IssuesHelperPatch) unless IssuesHelper.included_modules.include? IssuesHelperPatch

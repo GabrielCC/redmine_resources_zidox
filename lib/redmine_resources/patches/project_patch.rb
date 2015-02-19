@@ -1,6 +1,6 @@
 require_dependency 'project'
 
-# Patches Redmine's Project dynamically.  Adds a relationship 
+# Patches Redmine's Project dynamically.  Adds a relationship
 # Project +has_many+ to Resource
 module ProjectPatch
   def self.included(base) # :nodoc:
@@ -8,17 +8,22 @@ module ProjectPatch
 
     base.send(:include, InstanceMethods)
 
-    # Same as typing in the class 
+    # Same as typing in the class
     base.class_eval do
       has_many :project_resource, dependent: :destroy
       has_many :resource, :through => :project_resource
     end
 
   end
-  
+
   module ClassMethods
   end
-  
+
   module InstanceMethods
-  end    
+  end
 end
+
+
+  unless Project.included_modules.include? ProjectPatch
+    Project.send(:include, ProjectPatch)
+  end

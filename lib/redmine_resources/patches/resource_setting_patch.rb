@@ -1,5 +1,5 @@
 
-# Patches Redmine's Role dynamically.  Adds a relationship 
+# Patches Redmine's Role dynamically.  Adds a relationship
 # Role +has_many+ to ResourceSetting
 module ResourceSettingPatch
   def self.included(base) # :nodoc:
@@ -7,24 +7,33 @@ module ResourceSettingPatch
 
     base.send(:include, InstanceMethods)
 
-    # Same as typing in the class 
+    # Same as typing in the class
     base.class_eval do
       has_many :resource_setting, :as => :setting_object, dependent: :destroy
     end
 
   end
-  
+
   module ClassMethods
   end
-  
+
   module InstanceMethods
     def can_edit_resources(project)
       self.resource_setting.editable(project).count > 0
     end
 
-    def can_view_resources(project) 
+    def can_view_resources(project)
       self.resource_setting.visible(project).count > 0
     end
 
-  end    
+  end
 end
+
+  unless Role.included_modules.include? ResourceSettingPatch
+    Role.send(:include, ResourceSettingPatch)
+  end
+
+
+    unless Tracker.included_modules.include? ResourceSettingPatch
+    Tracker.send(:include, ResourceSettingPatch)
+  end
