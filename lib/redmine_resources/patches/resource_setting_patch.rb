@@ -1,42 +1,29 @@
 module RedmineResources
   module Patches
-# Patches Redmine's Role dynamically.  Adds a relationship
-# Role +has_many+ to ResourceSetting
-module ResourceSettingPatch
-  def self.included(base) # :nodoc:
-    base.extend(ClassMethods)
+    module ResourceSettingPatch
+      def self.included(base)
+        base.send(:include, InstanceMethods)
+        base.class_eval do
+          has_many :resource_setting, as: :setting_object, dependent: :destroy
+        end
+      end
 
-    base.send(:include, InstanceMethods)
+      module InstanceMethods
+        def can_edit_resources(project)
+          self.resource_setting.editable(project).count > 0
+        end
 
-    # Same as typing in the class
-    base.class_eval do
-      has_many :resource_setting, :as => :setting_object, dependent: :destroy
+        def can_view_resources(project)
+          self.resource_setting.visible(project).count > 0
+        end
+
+      end
     end
-
-  end
-
-  module ClassMethods
-  end
-
-  module InstanceMethods
-    def can_edit_resources(project)
-      self.resource_setting.editable(project).count > 0
-    end
-
-    def can_view_resources(project)
-      self.resource_setting.visible(project).count > 0
-    end
-
-  end
-end
   end
 end
 
-  unless Role.included_modules.include? ResourceSettingPatch
-    Role.send(:include, ResourceSettingPatch)
+[Tracker, Role].each do |base|
+  unless base.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
+    base.send(:include, RedmineResources::Patches::ResourceSettingPatch)
   end
-
-
-    unless Tracker.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
-    Tracker.send(:include, RedmineResources::Patches::ResourceSettingPatch)
-  end
+end
