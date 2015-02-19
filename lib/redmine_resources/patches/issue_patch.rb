@@ -33,7 +33,7 @@ module RedmineResources
             old_status_id: status_id_was,
             new_status_id: status_id
           ).count
-          return true unless rules_count > 0 && tracker.can_view_resources project
+          return true unless rules_count > 0 && tracker.can_view_resources(project)
           if self.resource.count == 0
             errors.add(:base, 'Required resource estimation')
             return false
