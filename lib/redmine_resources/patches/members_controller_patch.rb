@@ -32,7 +32,7 @@ module RedmineResources
               format.api do
                 @member = members.first
                 if @member.valid?
-                  render :show, status: :created, location: membership_url @member
+                  render :show, status: :created, location: membership_url(@member)
                 else
                   render_validation_errors @member
                 end

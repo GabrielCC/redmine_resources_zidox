@@ -10,7 +10,6 @@ ActionDispatch::Callbacks.to_prepare do
   require_dependency 'issue'
   require_dependency 'application_helper'
   require_dependency 'issues_helper'
-  require_dependency 'hook_listener'
 
   Dir[File.dirname(__FILE__) + '/lib/redmine_resources/patches/*_patch.rb'].each do |file|
     require_dependency file
