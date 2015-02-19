@@ -1,3 +1,6 @@
+module RedmineResources
+  module Patches
+
 # Patches Redmine's MemberController dynamically.
 # Save the resource type
 module MembersControllerPatch
@@ -79,8 +82,10 @@ module MembersControllerPatch
 
   end
 end
+  end
+end
 
 
-  unless MembersController.included_modules.include? MembersControllerPatch
-    MembersController.send(:include, MembersControllerPatch)
+  unless MembersController.included_modules.include? RedmineResources::Patches::MembersControllerPatch
+    MembersController.send(:include, RedmineResources::Patches::MembersControllerPatch)
   end

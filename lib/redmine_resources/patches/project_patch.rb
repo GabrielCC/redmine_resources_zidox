@@ -1,5 +1,6 @@
 require_dependency 'project'
-
+module RedmineResources
+  module Patches
 # Patches Redmine's Project dynamically.  Adds a relationship
 # Project +has_many+ to Resource
 module ProjectPatch
@@ -22,8 +23,10 @@ module ProjectPatch
   module InstanceMethods
   end
 end
+  end
+end
 
 
-  unless Project.included_modules.include? ProjectPatch
-    Project.send(:include, ProjectPatch)
+  unless Project.included_modules.include? RedmineResources::Patches::ProjectPatch
+    Project.send(:include, RedmineResources::Patches::ProjectPatch)
   end

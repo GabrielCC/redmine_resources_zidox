@@ -1,3 +1,5 @@
+module RedmineResources
+  module Patches
 module IssuesHelperPatch
   def self.included(base)
     # base.send(:include, InstanceMethods)
@@ -23,5 +25,7 @@ module IssuesHelperPatch
     end
   end
 end # module patch
+end
+end # module patch
 
-  IssuesHelper.send(:include, IssuesHelperPatch) unless IssuesHelper.included_modules.include? IssuesHelperPatch
+  IssuesHelper.send(:include, RedmineResources::Patches::IssuesHelperPatch) unless IssuesHelper.included_modules.include? RedmineResources::Patches::IssuesHelperPatch
