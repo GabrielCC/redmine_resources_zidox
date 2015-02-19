@@ -6,7 +6,7 @@ module MembersControllerPatch
 
     base.send(:include, InstanceMethods)
 
-    # Same as typing in the class 
+    # Same as typing in the class
     base.class_eval do
       def create
         if params.has_key?("resource_id") && params[:resource_id] != ''
@@ -70,12 +70,17 @@ module MembersControllerPatch
     end
 
   end
-  
+
   module ClassMethods
   end
-  
+
   module InstanceMethods
 
 
   end
 end
+
+
+  unless MembersController.included_modules.include? MembersControllerPatch
+    MembersController.send(:include, MembersControllerPatch)
+  end
