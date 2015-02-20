@@ -6,7 +6,6 @@ class IssueResource < ActiveRecord::Base
   validates :estimation, numericality: { only_integer: true }
   validates_uniqueness_of :issue_id, scope: :resource_id,
     message: ' only one estimation for resource'
-
   after_save :update_issue_timestamp_without_lock
   after_destroy :update_issue_timestamp_without_lock
 
@@ -32,22 +31,29 @@ class IssueResource < ActiveRecord::Base
     }
   end
 
-  def journal_entry(operation)
+  def journal_entry(operation, old_value = nil)
     JournalDetail.new(
       property: IssueResource::JOURNAL_DETAIL_PROPERTY,
       prop_key: id,
       old_value: '',
-      value: journal_note(operation)
+      value: journal_note(operation, old_value)
     )
+  end
+
+  def save_journal(operation, old_value = nil)
+    journal = issue.init_journal User.current, nil
+    return unless journal
+    journal.details << journal_entry(operation, old_value)
+    journal.save
   end
 
   private
 
-  def journal_note(operation)
+  def journal_note(operation, old_value = nil)
     @messages ||= {
-      :created => " created #{resource.code} #{estimation}h",
-      :updated => " changed from #{resource.code} #{estimation_was}h to #{resource.code} #{estimation}h",
-      :deleted => " deleted #{resource.code} #{estimation}h"
+      create: " created #{resource.code} #{estimation}h",
+      update: " changed from #{resource.code} #{old_value}h to #{resource.code} #{estimation}h",
+      destroy: " deleted #{resource.code} #{estimation}h"
     }
     @messages[operation]
   end

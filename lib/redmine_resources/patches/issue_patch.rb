@@ -46,9 +46,10 @@ module RedmineResources
             resource_id: determine_resource_type_id
           ).first_or_initialize
           issue_resource.estimation = estimated_hours.to_i
-          mode = issue_resource.new_record? ? :created : :updated
-          current_journal.details << issue_resource.journal_entry(mode)
+          mode = issue_resource.new_record? ? :create : :update
           issue_resource.save
+          return unless current_journal
+          current_journal.details << issue_resource.journal_entry(mode)
         end
 
         def determine_resource_type_id

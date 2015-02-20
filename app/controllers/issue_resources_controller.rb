@@ -31,6 +31,7 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save
+      @issue_resource.save_journal :create
       partial = 'issue_resources/saved'
     else
       partial = 'issue_resources/failed'
@@ -40,7 +41,9 @@ class IssueResourcesController < BaseController
 
   def update
     @issue_resource = IssueResource.find params[:id]
+    old_value = @issue_resource.estimation
     if @issue_resource.update_attributes params[:issue_resource]
+      @issue_resource.save_journal :update, old_value
       partial = 'issue_resources/updated'
     else
       partial = 'issue_resources/failed'
@@ -51,6 +54,7 @@ class IssueResourcesController < BaseController
   def destroy
     @issue_resource = IssueResource.find params[:id]
     @issue_resource.destroy
+    @issue_resource.save_journal :destroy
     partial = 'issue_resources/saved'
     render partial: partial, layout: false, content_type: 'application/javascript'
   end
