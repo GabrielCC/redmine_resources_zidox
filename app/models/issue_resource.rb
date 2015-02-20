@@ -7,10 +7,6 @@ class IssueResource < ActiveRecord::Base
   validates_uniqueness_of :issue_id, scope: :resource_id,
     message: ' only one estimation for resource'
 
-  after_create 'save_journal(:created)'
-  after_destroy 'save_journal(:deleted)'
-  after_update 'save_journal(:updated)'
-
   after_save :update_issue_timestamp_without_lock
   after_destroy :update_issue_timestamp_without_lock
 
@@ -36,6 +32,15 @@ class IssueResource < ActiveRecord::Base
     }
   end
 
+  def journal_entry(operation)
+    JournalDetail.new(
+      property: IssueResource::JOURNAL_DETAIL_PROPERTY,
+      prop_key: id,
+      old_value: '',
+      value: journal_note(operation)
+    )
+  end
+
   private
 
   def journal_note(operation)
@@ -47,16 +52,6 @@ class IssueResource < ActiveRecord::Base
     @messages[operation]
   end
 
-  def save_journal(operation)
-    journal = issue.init_journal User.current, nil
-    journal.details << JournalDetail.new(
-      property: IssueResource::JOURNAL_DETAIL_PROPERTY,
-      prop_key: id,
-      old_value: '',
-      value: journal_note(operation)
-    )
-    journal.save
-  end
 
   def update_issue_timestamp_without_lock
     issue.update_column :updated_on, Time.now

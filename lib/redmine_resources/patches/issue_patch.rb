@@ -7,8 +7,7 @@ module RedmineResources
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
           validate :validate_resources_workflow
-          before_save :mark_resource_estimation_added
-          after_save :add_resource_estimation, if: :resource_estimation_added?
+          before_save :add_resource_estimation
         end
       end
 
@@ -42,20 +41,14 @@ module RedmineResources
           end
         end
 
-        def mark_resource_estimation_added
-          @estimation_added = estimated_hours_changed? ? :added : :not_added
-        end
-
         def add_resource_estimation
           issue_resource = IssueResource.where(issue_id: id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
           issue_resource.estimation = estimated_hours.to_i
+          mode = issue_resource.new_record? ? :created : :updated
+          current_journal.details << issue_resource.journal_entry(mode)
           issue_resource.save
-        end
-
-        def resource_estimation_added?
-          @estimation_added == :added
         end
 
         def determine_resource_type_id
