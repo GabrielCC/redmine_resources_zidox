@@ -38,13 +38,12 @@ function add_inline_editing() {
             estimation += parseInt($(this)[0].innerHTML);
           });
           $('.issue-attributes td.estimated-hours')[0].innerHTML=estimation+'.00 hours';
-          $('#issue-form #issue_estimated_hours').val(estimation);
+          $('#issue-form #issue_estimated_hours').val(estimation+'.0');
         }
     });
     $('#cell-' + id).on('click', function() {
       $editable_element.trigger('editable');
       $('input', $editable_element).trigger('focus').trigger('select');
-
     })
   });
 }
