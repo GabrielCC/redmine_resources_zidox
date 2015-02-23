@@ -42,14 +42,42 @@ module RedmineResources
         end
 
         def add_resource_estimation
-          issue_resource = IssueResource.where(issue_id: id,
+          p "Estimated hour changed? #{estimated_hours_changed?}"
+          return unless estimated_hours_changed?
+          old_value = estimated_hours_was.to_i
+          p "Old value: #{old_value}"
+          new_value = estimated_hours.to_i
+          p "New value: #{new_value}"
+          difference = new_value - old_value
+          p "Difference: #{difference}"
+          issue_resource = find_issue_resource
+          p "IssueResource: #{issue_resource.inspect}"
+          estimation = issue_resource.estimation.to_i + difference
+          p "Estimation: #{estimation}"
+          if estimation < 0
+            errors.add :estimation, 'can\'t be decreased that much'
+            return false
+          elsif estimation == 0
+            issue_resource.destroy
+            mode = :destroy
+          else
+            issue_resource.estimation = estimation
+            mode = issue_resource.new_record? ? :create : :update
+            issue_resource.save
+            estimated_hours = find_total_estimated_hours
+          end
+          return unless @current_journal
+          @current_journal.details << issue_resource.journal_entry(mode, old_value)
+        end
+
+        def find_issue_resource
+          IssueResource.where(issue_id: id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
-          issue_resource.estimation = estimated_hours.to_i
-          mode = issue_resource.new_record? ? :create : :update
-          issue_resource.save
-          return unless current_journal
-          current_journal.details << issue_resource.journal_entry(mode)
+        end
+
+        def find_total_estimated_hours
+          IssueResource.where(issue_id: id).sum(:estimation)
         end
 
         def determine_resource_type_id
