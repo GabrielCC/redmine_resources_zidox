@@ -43,24 +43,28 @@ module RedmineResources
 
         def add_resource_estimation
           return unless estimated_hours_changed?
-          old_value = estimated_hours_was.to_i
-          new_value = estimated_hours.to_i
-          difference = new_value - old_value
+          old_value = estimated_hours_was || 0
+          new_value = estimated_hours || 0
+          difference = (new_value - old_value).floor
+          p "Difference: #{difference}"
           issue_resource = find_issue_resource
-          estimation = issue_resource.estimation.to_i + difference
+          estimation = (issue_resource.estimation || 0) + difference
+          mode = nil
           if estimation < 0
             errors.add :estimation, 'can\'t be decreased that much'
             return false
           elsif estimation == 0
-            issue_resource.destroy
-            mode = :destroy
+            unless issue_resource.new_record?
+              issue_resource.destroy
+              mode = :destroy
+            end
           else
             issue_resource.estimation = estimation
             mode = issue_resource.new_record? ? :create : :update
             issue_resource.save
-            estimated_hours = find_total_estimated_hours
           end
-          return unless @current_journal
+          self.estimated_hours = find_total_estimated_hours
+          return unless @current_journal && mode
           @current_journal.details << issue_resource.journal_entry(mode, old_value)
         end
 
