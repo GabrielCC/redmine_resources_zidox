@@ -42,18 +42,12 @@ module RedmineResources
         end
 
         def add_resource_estimation
-          p "Estimated hour changed? #{estimated_hours_changed?}"
           return unless estimated_hours_changed?
           old_value = estimated_hours_was.to_i
-          p "Old value: #{old_value}"
           new_value = estimated_hours.to_i
-          p "New value: #{new_value}"
           difference = new_value - old_value
-          p "Difference: #{difference}"
           issue_resource = find_issue_resource
-          p "IssueResource: #{issue_resource.inspect}"
           estimation = issue_resource.estimation.to_i + difference
-          p "Estimation: #{estimation}"
           if estimation < 0
             errors.add :estimation, 'can\'t be decreased that much'
             return false
