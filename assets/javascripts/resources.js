@@ -26,12 +26,20 @@ function add_inline_editing() {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
     $editable_element.editable('/issue_resources/' + id, {
-        onblur : 'submit',
-        method : 'PUT',
-        ajaxoptions : {type : 'PUT'},
-        name : 'issue_resource[estimation]',
-        tooltip   : "Click to edit...",
-        'event' : 'editable'
+        onblur: 'submit',
+        method: 'PUT',
+        ajaxoptions: {type : 'PUT'},
+        name: 'issue_resource[estimation]',
+        tooltip: "Click to edit...",
+        'event': 'editable',
+        callback: function(values, setting){
+          var estimation = 0
+          $('.estimation_cell .resource_estimation').each(function(index) {
+            estimation += parseInt($(this)[0].innerHTML);
+          });
+          $('.issue-attributes td.estimated-hours')[0].innerHTML=estimation+'.00 hours';
+          $('#issue-form #issue_estimated_hours').val(estimation);
+        }
     });
     $('#cell-' + id).on('click', function() {
       $editable_element.trigger('editable');
