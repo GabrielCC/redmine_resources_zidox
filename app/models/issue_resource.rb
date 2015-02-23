@@ -40,13 +40,6 @@ class IssueResource < ActiveRecord::Base
     )
   end
 
-  def save_journal(operation, old_value = nil)
-    journal = issue.init_journal User.current, nil
-    return unless journal
-    journal.details << journal_entry(operation, old_value)
-    journal.save
-  end
-
   private
 
   def journal_note(operation, old_value = nil)
