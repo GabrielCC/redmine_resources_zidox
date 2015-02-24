@@ -25,6 +25,8 @@ function add_inline_editing() {
   $('.resource_estimation_editable').each(function(element) {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
+    var old_value = $editable_element.text();
+    console.log(old_value);
     $editable_element.editable('/issue_resources/' + id, {
         onblur: 'submit',
         method: 'PUT',
@@ -32,13 +34,20 @@ function add_inline_editing() {
         name: 'issue_resource[estimation]',
         tooltip: "Click to edit...",
         'event': 'editable',
-        callback: function(values, setting) {
-          var estimation = 0
-          $('.estimation_cell .resource_estimation').each(function(index) {
-            estimation += parseInt($(this).text());
-          });
-          $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
-          $('#issue-form #issue_estimated_hours').val(estimation+'.0');
+        callback: function(value, settings) {
+          if (isNaN(parseInt(value))) {
+            eval(value);
+            $(this).text(old_value);
+          }
+          else {
+            old_value = value;
+            var estimation = 0
+            $('.estimation_cell .resource_estimation').each(function(index) {
+              estimation += parseInt($(this).text());
+            });
+            $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
+            $('#issue-form #issue_estimated_hours').val(estimation+'.0');
+          }
         }
     });
     $('#cell-' + id).on('click', function() {
