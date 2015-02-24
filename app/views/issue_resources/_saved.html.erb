@@ -6,6 +6,11 @@ $('#resource_id').val('');
 <% resources = resources_for_project(@issue_resource.issue.project, @issue_resource.issue).values %>
 options = '<%="<option></option>#{options_from_collection_for_select(resources, 'id', 'code')}".squish.html_safe %>';
 $('#resource_id').empty().append(options).trigger("chosen:updated");
-
+var estimation = 0
+$('.estimation_cell .resource_estimation').each(function(index) {
+	estimation += parseInt($(this)[0].innerHTML);
+});
+$('.issue-attributes td.estimated-hours')[0].innerHTML=estimation+'.00 hours';
+$('#issue-form #issue_estimated_hours').val(estimation+'.0');
 add_inline_editing();
 $('input.button', $('#new_issue_resource')).removeAttr('disabled');
