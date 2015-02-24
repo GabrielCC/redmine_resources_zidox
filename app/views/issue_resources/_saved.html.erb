@@ -7,7 +7,14 @@ $('#resource_id').val('');
 options = '<%="<option></option>#{options_from_collection_for_select(resources, 'id', 'code')}".squish.html_safe %>';
 $('#resource_id').empty().append(options).trigger("chosen:updated");
 var estimation = 0
-$('.estimation_cell .resource_estimation').each(function(index) {
+var fields = $('.estimation_cell .resource_estimation')
+if (fields.length > 1) {
+  $('#issue-form #issue_estimated_hours').prop('disabled', true);
+}
+else {
+  $('#issue-form #issue_estimated_hours').prop('disabled', false);
+}
+fields.each(function(index) {
 	estimation += parseInt($(this).text());
 });
 $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
