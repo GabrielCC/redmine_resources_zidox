@@ -26,20 +26,26 @@ function add_inline_editing() {
     var $editable_element = $(this);
     var id = $editable_element.data('resource-id');
     var old_value = $editable_element.text();
-    console.log(old_value);
-    $editable_element.editable('/issue_resources/' + id, {
-        onblur: 'submit',
-        method: 'PUT',
-        ajaxoptions: {type : 'PUT'},
-        name: 'issue_resource[estimation]',
-        tooltip: "Click to edit...",
-        'event': 'editable',
-        callback: function(value, settings) {
-          if (isNaN(parseInt(value))) {
-            eval(value);
-            $(this).text(old_value);
-          }
-          else {
+    $editable_element.editable(function(value, settings) {
+        var hours = parseInt(value);
+        if (isNaN(hours)) {
+          alert("Failed to save resource: estimation is not a number.");
+          return(old_value);
+        }
+        if (hours <= 0) {
+          alert("Failed to save resource: estimation must be greater than 0.");
+          return(old_value);
+        }
+        $.ajax({
+          url:'/issue_resources/'+ id,
+          type:'PUT',
+          data: {
+            id: id,
+            issue_resource: {
+              estimation: value
+            }
+          },
+          success: function(value) {
             old_value = value;
             var estimation = 0
             $('.estimation_cell .resource_estimation').each(function(index) {
@@ -47,9 +53,19 @@ function add_inline_editing() {
             });
             $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
             $('#issue-form #issue_estimated_hours').val(estimation+'.0');
+          },
+          error: function(req) {
+            alert("Error in request. Please try again later.");
           }
-        }
-    });
+        });
+        return hours;
+      },
+      {
+        onblur: 'submit',
+        tooltip: "Click to edit...",
+        'event': 'editable',
+      }
+    );
     $('#cell-' + id).on('click', function() {
       $editable_element.trigger('editable');
       $('input', $editable_element).trigger('focus').trigger('select');
