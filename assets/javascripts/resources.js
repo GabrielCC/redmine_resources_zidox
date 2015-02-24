@@ -62,7 +62,8 @@ function add_inline_editing() {
             fields.each(function(index) {
               estimation += parseInt($(this).text());
             });
-            $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
+            var hour_label = estimation < 2 ? 'hour' : 'hours';
+            $('.issue-attributes td.estimated-hours').text(estimation+'.00 '+hour_label);
             $('#issue-form #issue_estimated_hours').val(estimation+'.0');
           },
           error: function(req) {

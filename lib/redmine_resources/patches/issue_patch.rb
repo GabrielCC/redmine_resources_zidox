@@ -84,7 +84,8 @@ module RedmineResources
         end
 
         def find_total_estimated_hours
-          IssueResource.where(issue_id: id).sum(:estimation)
+          IssueResource.where(issue_id: id).sum(:estimation) +
+            Issue.where(parent_id: id).select(:estimated_hours).sum(:estimated_hours)
         end
 
         def determine_resource_type_id

@@ -13,14 +13,9 @@ class IssueResource < ActiveRecord::Base
 
   def self.from_params(params)
     issue_resource = IssueResource.new
-    project = Project.exists? id: params[:project_id]
-    issue = Issue.where(id: params[:issue_id]).first
-    if project && issue
-      resource = Resource.where(id: params[:resource_id]).first || Resource.new
-      issue_resource.issue = issue
-      issue_resource.resource = resource
-      issue_resource.estimation = params[:estimation]
-    end
+    issue_resource.issue_id = params[:issue_id]
+    issue_resource.resource_id = params[:resource_id]
+    issue_resource.estimation = params[:estimation]
     issue_resource
   end
 
