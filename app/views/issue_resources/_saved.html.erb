@@ -8,9 +8,9 @@ options = '<%="<option></option>#{options_from_collection_for_select(resources, 
 $('#resource_id').empty().append(options).trigger("chosen:updated");
 var estimation = 0
 $('.estimation_cell .resource_estimation').each(function(index) {
-	estimation += parseInt($(this)[0].innerHTML);
+	estimation += parseInt($(this).text());
 });
-$('.issue-attributes td.estimated-hours')[0].innerHTML=estimation+'.00 hours';
+$('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
 $('#issue-form #issue_estimated_hours').val(estimation+'.0');
 add_inline_editing();
 $('input.button', $('#new_issue_resource')).removeAttr('disabled');

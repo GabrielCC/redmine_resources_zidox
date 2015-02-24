@@ -32,12 +32,12 @@ function add_inline_editing() {
         name: 'issue_resource[estimation]',
         tooltip: "Click to edit...",
         'event': 'editable',
-        callback: function(values, setting){
+        callback: function(values, setting) {
           var estimation = 0
           $('.estimation_cell .resource_estimation').each(function(index) {
-            estimation += parseInt($(this)[0].innerHTML);
+            estimation += parseInt($(this).text());
           });
-          $('.issue-attributes td.estimated-hours')[0].innerHTML=estimation+'.00 hours';
+          $('.issue-attributes td.estimated-hours').text(estimation+'.00 hours');
           $('#issue-form #issue_estimated_hours').val(estimation+'.0');
         }
     });
