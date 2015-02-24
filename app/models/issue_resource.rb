@@ -3,7 +3,7 @@ class IssueResource < ActiveRecord::Base
   belongs_to :issue
   belongs_to :resource
   validates_presence_of :issue_id, :resource_id, :estimation
-  validates :estimation, numericality: { only_integer: true }
+  validates :estimation, numericality: { only_integer: true, greater_than: 0 }
   validates_uniqueness_of :issue_id, scope: :resource_id,
     message: ' only one estimation for resource'
   after_save :update_issue_timestamp_without_lock
