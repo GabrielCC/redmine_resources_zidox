@@ -78,7 +78,8 @@ module RedmineResources
         end
 
         def find_issue_resource
-          IssueResource.where(issue_id: id,
+          issue_id = IssueResource.find_parent_feature_id_for(id) || id
+          IssueResource.where(issue_id: issue_id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
         end

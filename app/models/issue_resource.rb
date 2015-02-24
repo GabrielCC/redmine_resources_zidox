@@ -11,14 +11,6 @@ class IssueResource < ActiveRecord::Base
 
   JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
 
-  def self.from_params(params)
-    issue_resource = IssueResource.new
-    issue_resource.issue_id = find_parent_feature_id_for params[:issue_id]
-    issue_resource.resource_id = params[:resource_id]
-    issue_resource.estimation = params[:estimation]
-    issue_resource
-  end
-
   def to_json
     {
       estimation: estimation,
@@ -35,6 +27,21 @@ class IssueResource < ActiveRecord::Base
     )
   end
 
+  def self.from_params(params)
+    issue_resource = IssueResource.new
+    issue_resource.issue_id = find_parent_feature_id_for params[:issue_id]
+    issue_resource.resource_id = params[:resource_id]
+    issue_resource.estimation = params[:estimation]
+    issue_resource
+  end
+
+  def self.find_parent_feature_id_for(issue_id)
+    return unless issue_id
+    parent = Issue.where(id: issue_id).select([:id, :parent_id, :tracker_id]).first
+    return parent.id if parent.tracker_id == 2
+    find_parent_feature_id_for parent.parent_id
+  end
+
   private
 
   def journal_note(operation, old_value = nil)
@@ -49,12 +56,5 @@ class IssueResource < ActiveRecord::Base
 
   def update_issue_timestamp_without_lock
     issue.update_column :updated_on, Time.now
-  end
-
-  def self.find_parent_feature_id_for(issue_id)
-    return unless issue_id
-    parent = Issue.where(id: issue_id).select([:id, :parent_id, :tracker_id]).first
-    return parent.id if parent.tracker_id == 2
-    find_parent_feature_id_for parent.parent_id
   end
 end
