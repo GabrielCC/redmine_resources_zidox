@@ -1,6 +1,6 @@
 class IssueResource < ActiveRecord::Base
   unloadable
-  belongs_to :issue, :touch => true
+  belongs_to :issue
   belongs_to :resource
   validates_presence_of :issue_id, :resource_id, :estimation
   validates :estimation, numericality: { only_integer: true }
@@ -10,6 +10,9 @@ class IssueResource < ActiveRecord::Base
   after_destroy 'save_journal(:deleted)'
   after_update 'save_journal(:updated)'
 
+  after_save :update_issue_timestamp_without_lock
+  after_destroy :update_issue_timestamp_without_lock
+
   JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
 
   def self.from_params(params)
@@ -17,7 +20,7 @@ class IssueResource < ActiveRecord::Base
     project = Project.find params[:project_id]
     issue = Issue.find params[:issue_id]
     begin
-      resource = Resource.find params[:resource_id]  
+      resource = Resource.find params[:resource_id]
     rescue Exception => e
       resource = Resource.new
     end
@@ -54,5 +57,9 @@ class IssueResource < ActiveRecord::Base
                                   :old_value => '',
                                   :value => journal_note(operation))
     journal.save
+  end
+
+  def update_issue_timestamp_without_lock
+    issue.update_column :updated_on, Time.now
   end
 end
