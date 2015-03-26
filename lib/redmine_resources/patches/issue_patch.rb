@@ -90,7 +90,7 @@ module RedmineResources
         end
 
         def determine_resource_type_id
-          user_id = assigned_to_id || author_id
+          user_id = assigned_to_id || User.current.id
           member = Member.where(user_id: user_id, project_id: project_id).first
           return nil unless member
           member_resource = member.resource
