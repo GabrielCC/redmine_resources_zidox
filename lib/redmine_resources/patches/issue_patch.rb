@@ -8,7 +8,8 @@ module RedmineResources
           has_many :resource, through: :issue_resource
           validate :validate_resources_workflow
           before_save :add_resource_estimation
-          after_save :save_resource_estimation, if: -> { @add_resource_after_save }
+          after_save :save_resource_estimation, if: -> { @resource_estimation_added }
+          after_save :update_parent_estimation
         end
       end
 
@@ -64,10 +65,11 @@ module RedmineResources
             unless new_record?
               @altered_resource.save
             else
-              @add_resource_after_save = true
+              @resource_estimation_added = true
             end
           end
           self.estimated_hours = new_record? ? estimation : find_total_estimated_hours
+          update_parent_estimation
           return unless @current_journal && mode
           @current_journal.details << @altered_resource.journal_entry(mode, old_value)
         end
@@ -78,8 +80,7 @@ module RedmineResources
         end
 
         def find_issue_resource
-          issue_id = IssueResource.find_parent_feature_id_for(id) || id
-          IssueResource.where(issue_id: issue_id,
+          IssueResource.where(issue_id: id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
         end
@@ -95,6 +96,16 @@ module RedmineResources
           return nil unless member
           member_resource = member.resource
           member_resource ? member_resource.id : nil
+        end
+
+        def update_parent_estimation
+          parent = Issue.where(id: parent_id).first
+          return if !parent || parent.blocked?
+          children_estimation_total = IssueResource.joins(:issue)
+            .where('issues.tracker_id NOT IN (2,5,6) AND issue_resources.issue_id IN (?)', Issue.where(parent_id: parent_id))
+            .sum(:estimation)
+          parent.update_column :estimated_hours, children_estimation_total
+          parent.update_parent_estimation
         end
       end
     end

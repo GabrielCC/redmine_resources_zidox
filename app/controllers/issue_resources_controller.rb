@@ -67,6 +67,7 @@ class IssueResourcesController < BaseController
     @new_value = @issue.find_total_estimated_hours
     @issue.update_column(:estimated_hours, @new_value)
     journal = @issue.init_journal User.current, nil
+    @issue.update_parent_estimation
     return unless journal
     journal.details << @issue_resource.journal_entry(mode, old_value)
     journal.details << estimation_change_journal_entry
