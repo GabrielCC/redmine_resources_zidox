@@ -1,23 +1,9 @@
 $(document).ready(function() {
   add_inline_editing();
-  $('#issue-form').bind('submit', function(e){
-    var next_status_id = $('#issue_status_id').val();
-    if ((next_status_id != current_status_id) &&
-        $('#has_resources').val() == '0') {
-      alert('You need to add estimation before moving to this status.');
-      $('#estimation').focus();
-      e.preventDefault();
-      $(e.target).removeAttr('data-submitted');
-      return false;
-    }
-  });
-
   $('#new_issue_resource').bind('submit', function() {
     $('input.button', $(this)).attr('disabled', true);
     return true;
   });
-
-  window.current_status_id = $('#issue_status_id').val();
 });
 
 function add_inline_editing() {
