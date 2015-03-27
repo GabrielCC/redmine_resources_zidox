@@ -51,7 +51,7 @@ module RedmineResources
           estimation = (@altered_resource.estimation || 0) + difference
           mode = nil
           if estimation < 0
-            errors.add :estimation, 'can\'t be decreased that much'
+            errors.add :estimation, "can't be decreased that much (#{@altered_resource.estimation.to_i} possible, #{difference.abs} decreased)."
             return false
           elsif estimation == 0
             unless @altered_resource.new_record?
