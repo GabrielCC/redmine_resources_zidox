@@ -39,7 +39,7 @@ class IssueResource < ActiveRecord::Base
     return unless issue_id
     parent = Issue.where(id: issue_id).select([:id, :parent_id, :tracker_id]).first
     return parent.id if parent.tracker_id == 2
-    find_parent_feature_id_for parent.parent_id
+    nil
   end
 
   private
