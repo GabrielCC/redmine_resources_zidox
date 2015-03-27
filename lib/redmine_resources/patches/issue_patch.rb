@@ -104,6 +104,7 @@ module RedmineResources
           children_estimation_total = IssueResource.joins(:issue)
             .where('issues.tracker_id NOT IN (2,5,6) AND issue_resources.issue_id IN (?)', Issue.where(parent_id: parent_id))
             .sum(:estimation)
+          children_estimation_total += Issue.where(parent_id: parent_id, tracker_id: 2).sum(:estimated_hours).to_i if parent.tracker_id == 5
           parent.update_column :estimated_hours, children_estimation_total
           parent.update_parent_estimation
         end
