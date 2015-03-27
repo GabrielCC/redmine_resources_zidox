@@ -21,10 +21,10 @@ ActionDispatch::Callbacks.to_prepare do
 end
 
 Redmine::Plugin.register :redmine_resources do
-  name 'Resources plugin'
+  name 'Redmine Resources Zidox'
   author 'Gabriel Croitoru'
   description 'Redmine Resources Plugin'
-  version '1.0.0'
+  version '1.1.0'
   url 'http://gabrielcc.github.io/redmine_resources/'
   author_url 'http://gabrielcc.github.io/'
 

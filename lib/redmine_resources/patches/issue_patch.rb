@@ -6,7 +6,6 @@ module RedmineResources
         base.class_eval do
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
-          validate :validate_resources_workflow
           before_save :add_resource_estimation
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :update_parent_estimation
@@ -23,24 +22,6 @@ module RedmineResources
             result[department_name] << element
           end
           result
-        end
-
-        def list_resources_workflow
-          ResourcesWorkflow.where(project_id: project_id, old_status_id: status_id)
-            .pluck(:new_status_id)
-        end
-
-        def validate_resources_workflow
-          rules_count = ResourcesWorkflow.where(
-            project_id: project_id,
-            old_status_id: status_id_was,
-            new_status_id: status_id
-          ).count
-          return true unless rules_count > 0 && tracker.can_view_resources(project)
-          if self.resource.count == 0
-            errors.add(:base, 'Required resource estimation')
-            return false
-          end
         end
 
         def add_resource_estimation
