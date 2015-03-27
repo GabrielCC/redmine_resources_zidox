@@ -7,8 +7,9 @@ module RedmineResources
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
           before_save :add_resource_estimation, if: -> do
+            estimated_hours_changed? &&
             ResourceSetting.where(project_id: project_id, setting: 1, setting_object_type: 'Tracker')
-              .pluck(:setting_object_id).include?(tracker_id) && estimated_hours_changed?
+              .pluck(:setting_object_id).include?(tracker_id)
           end
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :update_parent_estimation
@@ -52,7 +53,6 @@ module RedmineResources
             end
           end
           self.estimated_hours = new_record? ? estimation : find_total_estimated_hours
-          update_parent_estimation
           return unless @current_journal && mode
           @current_journal.details << @altered_resource.journal_entry(mode, old_value)
         end
