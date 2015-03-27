@@ -40,17 +40,6 @@ function add_inline_editing() {
               estimation: value
             }
           },
-          success: function(value) {
-            old_value = value;
-            var estimation = 0
-            var fields = $('.estimation_cell .resource_estimation');
-            fields.each(function(index) {
-              estimation += parseInt($(this).text());
-            });
-            var hour_label = estimation < 2 ? 'hour' : 'hours';
-            $('.issue-attributes td.estimated-hours').text(estimation+'.00 '+hour_label);
-            $('#issue-form #issue_estimated_hours').val(estimation+'.0');
-          },
           error: function(req) {
             alert("Error in request. Please try again later.");
           }
