@@ -6,7 +6,10 @@ module RedmineResources
         base.class_eval do
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
-          before_save :add_resource_estimation
+          before_save :add_resource_estimation, if: -> do
+            ResourceSetting.where(project_id: project_id, setting: 1, setting_object_type: 'Tracker')
+              .pluck(:setting_object_id).include? tracker_id
+          end
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :update_parent_estimation
         end
