@@ -29,16 +29,10 @@ module RedmineResources
         end
 
         def add_resource_estimation
-          old_value = estimated_hours_was.to_i.floor
-          new_value = estimated_hours.to_i.ceil
-          difference = new_value - old_value
+          estimation = find_total_estimated_hours_for_resource + estimated_hours
           @altered_resource = find_issue_resource
-          estimation = @altered_resource.estimation.to_i + difference
           mode = nil
-          if estimation < 0
-            errors.add :estimation, "can't be decreased that much (#{@altered_resource.estimation.to_i} possible, #{difference.abs} decreased)."
-            return false
-          elsif estimation == 0
+          if estimation == 0
             unless @altered_resource.new_record?
               @altered_resource.destroy
               mode = :destroy
@@ -63,7 +57,7 @@ module RedmineResources
         end
 
         def find_issue_resource
-          IssueResource.where(issue_id: id,
+          IssueResource.where(issue_id: parent_id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
         end
@@ -74,6 +68,12 @@ module RedmineResources
           else
             IssueResource.where(issue_id: id).sum(:estimation)
           end
+        end
+
+        def find_total_estimated_hours_for_resource
+          Issue.joins(:issue_resource)
+            .where('issues.parent_id = ? AND issue_resources.resource_id = ?', id, determine_resource_type_id)
+            .sum(:estimated_hours)
         end
 
         def determine_resource_type_id
