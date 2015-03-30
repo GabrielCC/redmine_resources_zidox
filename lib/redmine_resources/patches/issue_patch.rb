@@ -7,9 +7,7 @@ module RedmineResources
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
           before_save :keep_estimation_value
-          before_save :add_resource_estimation_to_parent, if: -> do
-            estimated_hours_changed? && parent_gets_resources?
-          end
+          before_save :add_resource_estimation_to_parent, if: -> { parent_gets_resources? }
           after_save :add_resource_estimation_to_self, if: -> do
             tracker_id == 2 && !Issue.where(parent_id: id).exists?
           end
@@ -77,10 +75,17 @@ module RedmineResources
         end
 
         def find_total_estimated_hours_for_resource
-          Issue.joins(:issue_resource)
-            .where('issues.parent_id = ? AND issue_resources.resource_id = ? AND issues.id <> ?',
-              parent_id, determine_resource_type_id, id)
-            .sum(:estimated_hours).to_i
+          issues = Issue.where('issues.parent_id = ? AND issues.id <> ?', parent_id, id)
+          resource_id = determine_resource_type_id
+          estimated = 0
+          issues.each do |issue|
+            member = Member.where(user_id: issue.assigned_to_id, project_id: project_id).first
+            next unless member
+            member_resource = member.resource
+            next unless member_resource
+            estimated += issue.estimated_hours if member_resource.id == resource_id
+          end
+          estimated.to_i
         end
 
         def determine_resource_type_id
