@@ -6,11 +6,7 @@ module RedmineResources
         base.class_eval do
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
-          before_save :add_resource_estimation, if: -> do
-            estimated_hours_changed? &&
-            ResourceSetting.where(project_id: project_id, setting: 1, setting_object_type: 'Tracker')
-              .pluck(:setting_object_id).include?(tracker_id)
-          end
+          before_save :add_resource_estimation, if: -> { estimated_hours_changed? }
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :update_parent_estimation
         end
@@ -29,8 +25,9 @@ module RedmineResources
         end
 
         def add_resource_estimation
-          estimation = find_total_estimated_hours_for_resource + estimated_hours
+          estimation = find_total_estimated_hours_for_resource + estimated_hours.to_f
           @altered_resource = find_issue_resource
+          old_value = estimated_hours_was.to_f
           mode = nil
           if estimation == 0
             unless @altered_resource.new_record?
@@ -48,6 +45,7 @@ module RedmineResources
           end
           self.estimated_hours = new_record? ? estimation : find_total_estimated_hours
           return unless @current_journal && mode
+          p @altered_resource.inspect
           @current_journal.details << @altered_resource.journal_entry(mode, old_value)
         end
 
@@ -57,23 +55,28 @@ module RedmineResources
         end
 
         def find_issue_resource
-          IssueResource.where(issue_id: parent_id,
+          add_resource_on_self = ResourceSetting.where(project_id: project_id, setting: 1,
+              setting_object_type: 'Tracker')
+            .pluck(:setting_object_id).include?(tracker_id)
+          entity_id = add_resource_on_self ? id : parent_id
+          IssueResource.where(issue_id: entity_id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
         end
 
         def find_total_estimated_hours
           if Issue.where(parent_id: id).exists?
-            Issue.where(parent_id: id).sum(:estimated_hours)
+            Issue.where(parent_id: id).sum(:estimated_hours).to_f
           else
-            IssueResource.where(issue_id: id).sum(:estimation)
+            IssueResource.where(issue_id: id).sum(:estimation).to_f
           end
         end
 
         def find_total_estimated_hours_for_resource
           Issue.joins(:issue_resource)
-            .where('issues.parent_id = ? AND issue_resources.resource_id = ?', id, determine_resource_type_id)
-            .sum(:estimated_hours)
+            .where('issues.parent_id = ? AND issue_resources.resource_id = ?', id,
+              determine_resource_type_id)
+            .sum(:estimated_hours).to_f
         end
 
         def determine_resource_type_id
@@ -88,10 +91,10 @@ module RedmineResources
           parent = Issue.where(id: parent_id).first
           return if !parent || parent.blocked?
           children_estimation_total = Issue.where(
-              'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', parent_id
-            ).sum(:estimated_hours)
-          children_estimation_total += Issue.where(parent_id: parent_id, tracker_id: 2)
-            .sum(:estimated_hours).to_i if parent.tracker_id == 5
+              'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', parent.id
+            ).sum(:estimated_hours).to_f
+          children_estimation_total += Issue.where(parent_id: parent.id, tracker_id: 2)
+            .sum(:estimated_hours).to_f if parent.tracker_id == 5
           parent.update_column :estimated_hours, children_estimation_total
           parent.update_parent_estimation
         end
