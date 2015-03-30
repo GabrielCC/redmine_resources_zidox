@@ -6,8 +6,12 @@ module RedmineResources
         base.class_eval do
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
+          before_save :keep_estimation_value
           before_save :add_resource_estimation_to_parent, if: -> do
             estimated_hours_changed? && parent_gets_resources?
+          end
+          after_save :add_resource_estimation_to_self, if: -> do
+            tracker_id == 2 && !Issue.where(parent_id: id).exists?
           end
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
         end
@@ -25,9 +29,24 @@ module RedmineResources
           result
         end
 
+        def keep_estimation_value
+          @old_value = estimated_hours_was
+          @estimation_value = estimated_hours
+        end
+
+        def add_resource_estimation_to_self
+          resource_id = determine_resource_type_id
+          @altered_resource = find_issue_resource id
+          @altered_resource.estimation = @estimation_value.to_i
+          mode = @altered_resource.new_record? ? :create : :update
+          @altered_resource.save!
+          return true unless @current_journal
+          @current_journal.details << @altered_resource.journal_entry(mode, @old_value)
+        end
+
         def add_resource_estimation_to_parent
           estimation = find_total_estimated_hours_for_resource + estimated_hours.to_i
-          @altered_resource = find_issue_resource
+          @altered_resource = find_issue_resource parent_id
           old_value = estimated_hours_was.to_i
           mode = nil
           if estimation == 0
@@ -51,8 +70,8 @@ module RedmineResources
           @altered_resource.save!
         end
 
-        def find_issue_resource
-          IssueResource.where(issue_id: parent_id,
+        def find_issue_resource(id)
+          IssueResource.where(issue_id: id,
             resource_id: determine_resource_type_id
           ).first_or_create!(estimation: 1)
         end
