@@ -31,7 +31,7 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save
-      update_issue_estimation :create
+      add_journal_entry :create
       partial = 'issue_resources/saved'
     else
       partial = 'issue_resources/failed'
@@ -43,7 +43,7 @@ class IssueResourcesController < BaseController
     @issue_resource = IssueResource.find params[:id]
     old_value = @issue_resource.estimation
     if @issue_resource.update_attributes params[:issue_resource]
-      update_issue_estimation :update, old_value
+      add_journal_entry :update, old_value
       partial = 'issue_resources/updated'
     else
       partial = 'issue_resources/failed'
@@ -54,32 +54,18 @@ class IssueResourcesController < BaseController
   def destroy
     @issue_resource = IssueResource.find params[:id]
     @issue_resource.destroy
-    update_issue_estimation :destroy
+    add_journal_entry :destroy
     partial = 'issue_resources/saved'
     render partial: partial, layout: false, content_type: 'application/javascript'
   end
 
   private
 
-  def update_issue_estimation(mode, old_value = nil)
+  def add_journal_entry(mode, old_value = nil)
     @issue = Issue.where(id: @issue_resource.issue_id).first
-    @old_value = @issue.estimated_hours
-    @new_value = @issue.find_total_estimated_hours
-    @issue.update_column(:estimated_hours, @new_value)
     journal = @issue.init_journal User.current, nil
-    @issue.update_parent_estimation
     return unless journal
     journal.details << @issue_resource.journal_entry(mode, old_value)
-    journal.details << estimation_change_journal_entry
     journal.save
-  end
-
-  def estimation_change_journal_entry
-    JournalDetail.new(
-      property: "attr",
-      prop_key: "estimated_hours",
-      old_value: @old_value,
-      value: @new_value
-    )
   end
 end

@@ -21,7 +21,7 @@ class IssueResource < ActiveRecord::Base
   def journal_entry(operation, old_value = nil)
     JournalDetail.new(
       property: IssueResource::JOURNAL_DETAIL_PROPERTY,
-      prop_key: issue.id,
+      prop_key: id,
       old_value: '',
       value: journal_note(operation, old_value)
     )

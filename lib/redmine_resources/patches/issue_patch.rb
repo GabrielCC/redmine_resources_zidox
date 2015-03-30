@@ -6,9 +6,13 @@ module RedmineResources
         base.class_eval do
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
-          before_save :add_resource_estimation, if: -> { estimated_hours_changed? }
+          before_save :add_resource_estimation, if: -> do
+            estimated_hours_changed?  &&
+            ResourceSetting.where(project_id: project_id, setting: 1,
+              setting_object_type: 'Tracker')
+            .pluck(:setting_object_id).include?([2,5,6])
+          end
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
-          after_save :update_parent_estimation
         end
       end
 
@@ -29,47 +33,28 @@ module RedmineResources
           @altered_resource = find_issue_resource
           old_value = estimated_hours_was.to_f
           mode = nil
-          if estimation == 0
-            unless @altered_resource.new_record?
+          if estimation == 0 && !@altered_resource.new_record?
               @altered_resource.destroy
               mode = :destroy
-            end
           else
             @altered_resource.estimation = estimation
             mode = @altered_resource.new_record? ? :create : :update
-            unless new_record?
-              @altered_resource.save
-            else
-              @resource_estimation_added = true
-            end
+            new_record? ? @resource_estimation_added = true : @altered_resource.save!
           end
-          self.estimated_hours = new_record? ? estimation : find_total_estimated_hours
+          estimated_hours = estimation
           return unless @current_journal && mode
-          p @altered_resource.inspect
           @current_journal.details << @altered_resource.journal_entry(mode, old_value)
         end
 
         def save_resource_estimation
           @altered_resource.issue_id = id
-          @altered_resource.save
+          @altered_resource.save!
         end
 
         def find_issue_resource
-          add_resource_on_self = ResourceSetting.where(project_id: project_id, setting: 1,
-              setting_object_type: 'Tracker')
-            .pluck(:setting_object_id).include?(tracker_id)
-          entity_id = add_resource_on_self ? id : parent_id
-          IssueResource.where(issue_id: entity_id,
+          IssueResource.where(issue_id: parent_id,
             resource_id: determine_resource_type_id
           ).first_or_initialize
-        end
-
-        def find_total_estimated_hours
-          if Issue.where(parent_id: id).exists?
-            Issue.where(parent_id: id).sum(:estimated_hours).to_f
-          else
-            IssueResource.where(issue_id: id).sum(:estimation).to_f
-          end
         end
 
         def find_total_estimated_hours_for_resource
