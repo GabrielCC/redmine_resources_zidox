@@ -1,75 +1,71 @@
 class IssueResourcesController < BaseController
-  
-  # GET /issue_resources
-  # GET /issue_resources.json
+
   def index
     @issue_resources = IssueResource.all
-
     respond_to do |format|
-      format.html # index.html.erb
+      format.html
       format.json { render json: @issue_resources }
     end
   end
 
-  # GET /issue_resources/1
-  # GET /issue_resources/1.json
   def show
-    @issue_resource = IssueResource.find(params[:id])
-
+    @issue_resource = IssueResource.find params[:id]
     respond_to do |format|
-      format.html # show.html.erb
+      format.html
       format.json { render json: @issue_resource }
     end
   end
 
-  # GET /issue_resources/new
-  # GET /issue_resources/new.json
   def new
     @issue_resource = IssueResource.new
-
     respond_to do |format|
-      format.html # new.html.erb
+      format.html
       format.json { render json: @issue_resource }
     end
   end
 
-  # GET /issue_resources/1/edit
   def edit
-    @issue_resource = IssueResource.find(params[:id])
+    @issue_resource = IssueResource.find params[:id]
   end
 
-  # POST /issue_resources
-  # POST /issue_resources.json
   def create
-    @issue_resource = IssueResource.from_params(params)
+    @issue_resource = IssueResource.from_params params
     if @issue_resource.save
-      partial = "issue_resources/saved"
+      add_journal_entry :create
+      partial = 'issue_resources/saved'
     else
       partial = 'issue_resources/failed'
     end
-    render :partial => partial, :layout => false, :content_type => 'application/javascript'
+    render partial: partial, layout: false, content_type: 'application/javascript'
   end
 
-  # PUT /issue_resources/1
-  # PUT /issue_resources/1.json
   def update
-    @issue_resource = IssueResource.find(params[:id])
-
-    if @issue_resource.update_attributes(params[:issue_resource])
-      partial = "issue_resources/updated"
+    @issue_resource = IssueResource.find params[:id]
+    old_value = @issue_resource.estimation
+    if @issue_resource.update_attributes params[:issue_resource]
+      add_journal_entry :update, old_value
+      partial = 'issue_resources/updated'
     else
-      partial = "issue_resources/failed"
+      partial = 'issue_resources/failed'
     end
-    render :partial => partial, :layout => false, :content_type => 'application/javascript'
+    render partial: partial, layout: false, content_type: 'application/javascript'
   end
 
-  # DELETE /issue_resources/1
-  # DELETE /issue_resources/1.json
   def destroy
-    @issue_resource = IssueResource.find(params[:id])
+    @issue_resource = IssueResource.find params[:id]
     @issue_resource.destroy
+    add_journal_entry :destroy
+    partial = 'issue_resources/saved'
+    render partial: partial, layout: false, content_type: 'application/javascript'
+  end
 
-    partial = "issue_resources/saved"
-    render :partial => partial, :layout => false, :content_type => 'application/javascript'
+  private
+
+  def add_journal_entry(mode, old_value = nil)
+    @issue = Issue.where(id: @issue_resource.issue_id).first
+    journal = @issue.init_journal User.current, nil
+    return unless journal
+    journal.details << @issue_resource.journal_entry(mode, old_value)
+    journal.save
   end
 end

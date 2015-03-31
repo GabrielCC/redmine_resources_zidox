@@ -1,22 +1,18 @@
 class ProjectResourcesController < BaseController
-  # GET /project/:project_id/resources
-  # GET /project/:project_id/resources.json
   accept_api_auth :index, :create
+
   def index
     @project_resources = ProjectResource.includes(:resource).find_all_by_project_id(params[:project_id])
     @resources = []
     @project_resources.each { |pr|
-      @resources << pr.resource  
+      @resources << pr.resource
     }
     respond_to do |format|
-      format.html # index.html.erb
-      format.api #index.api.rsb
+      format.html
+      format.api
     end
   end
 
-
-  # POST /resources
-  # POST /resources.json
   def create
     resources = params[:resources]
     errors = []
@@ -34,7 +30,7 @@ class ProjectResourcesController < BaseController
             errors << {:message => resource_status, :resource => resource}
           end
         }
-        if errors.count != 0 
+        if errors.count != 0
           raise ActiveRecord::Rollback
         end
       end
@@ -49,8 +45,6 @@ class ProjectResourcesController < BaseController
     end
   end
 
-  # PUT /resources/1
-  # PUT /resources/1.json
   def update
     @resource = Resource.find(params[:id])
 
@@ -65,8 +59,6 @@ class ProjectResourcesController < BaseController
     end
   end
 
-  # DELETE /resources/1
-  # DELETE /resources/1.json
   def destroy
     @resource = Resource.find(params[:id])
     @resource.destroy
@@ -79,8 +71,8 @@ class ProjectResourcesController < BaseController
 
   def set_departments
     @departments = Department.all
-    @departments.map! { |e| 
-      [e.name, e.id.to_i]  
+    @departments.map! { |e|
+      [e.name, e.id.to_i]
     }
   end
 
@@ -91,26 +83,15 @@ class ProjectResourcesController < BaseController
     map = {:visible => ResourceSetting::VIEW_RESOURCES,
       :editable => ResourceSetting::EDIT_RESOURCES
     }
-    map.each_pair { |key, val|  
+    map.each_pair { |key, val|
       create_resource_settings(key, val)
     }
     flash[:notice] = l(:notice_successful_update)
     redirect_to_settings_project
   end
 
-  def workflows
-    ResourcesWorkflow.destroy_all( ["project_id=?",params[:project_id]])
-      (params[:issue_status] || []).each { |status_id, transitions|
-        transitions.each { |new_status_id, options|
-          ResourcesWorkflow.create(:project_id => params[:project_id], :old_status_id => status_id, :new_status_id => new_status_id)
-        }
-      }
-
-    flash[:notice] = l(:notice_successful_update)
-    redirect_to_settings_project('resources_workflows')
-  end
-
   private
+
   def create_resource_settings(key, val)
     trackers = Tracker.find_all_by_id params[:trackers][key]
     roles = Role.find_all_by_id params[:roles][key]
@@ -124,12 +105,10 @@ class ProjectResourcesController < BaseController
     }
   end
 
-
-
   def redirect_to_settings_project(tab = 'resources')
     redirect_to settings_project_path(@project, :tab => tab) and return
   end
-  
+
   def set_department
     department = Department.find(params[:resource][:department_id])
     if !department.nil?
@@ -138,7 +117,7 @@ class ProjectResourcesController < BaseController
   end
 
   def clean_resource_associations
-    [ProjectResource, ProjectResourceEmail].each { |model|  
+    [ProjectResource, ProjectResourceEmail].each { |model|
       model.where(:project_id => params[:project_id]).delete_all
     }
   end
@@ -153,7 +132,7 @@ class ProjectResourcesController < BaseController
       if resource[:users].nil?
          return 'Users array not provided';
       else
-        resource[:users].each { |email|  
+        resource[:users].each { |email|
           pre = ProjectResourceEmail.new
           pre.project = project
           pre.resource = resource_entry
@@ -162,9 +141,8 @@ class ProjectResourcesController < BaseController
         }
         return true
       end
-    rescue Exception => e
-      return e.message
+    rescue StandardError => error
+      return error.message
     end
   end
-
 end

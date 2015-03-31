@@ -1,58 +1,53 @@
 class IssueResource < ActiveRecord::Base
   unloadable
-  belongs_to :issue, :touch => true
+  belongs_to :issue
   belongs_to :resource
   validates_presence_of :issue_id, :resource_id, :estimation
-  validates :estimation, numericality: { only_integer: true }
-  validates_uniqueness_of :issue_id, :scope => :resource_id, :message => ' only one estimation for resource'
-
-  after_create 'save_journal(:created)'
-  after_destroy 'save_journal(:deleted)'
-  after_update 'save_journal(:updated)'
+  validates :estimation, numericality: { only_integer: true, greater_than: 0 }
+  validates_uniqueness_of :issue_id, scope: :resource_id,
+    message: ' only one estimation for resource'
+  after_save :update_issue_timestamp_without_lock
+  after_destroy :update_issue_timestamp_without_lock
 
   JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
 
-  def self.from_params(params)
-    issue_resource = IssueResource.new
-    project = Project.find params[:project_id]
-    issue = Issue.find params[:issue_id]
-    begin
-      resource = Resource.find params[:resource_id]  
-    rescue Exception => e
-      resource = Resource.new
-    end
-    unless project.nil? || issue.nil?
-      issue_resource.issue = issue
-      issue_resource.resource = resource
-      issue_resource.estimation = params[:estimation]
-    end
-    issue_resource
+  def to_json
+    {
+      estimation: estimation,
+      code: resource.code
+    }
   end
 
-  def to_json
-    hash = {}
-    hash[:estimation] = self.estimation
-    hash[:code] = self.resource.code
-    hash
+  def journal_entry(operation, old_value = nil)
+    JournalDetail.new(
+      property: IssueResource::JOURNAL_DETAIL_PROPERTY,
+      prop_key: issue.id,
+      old_value: '',
+      value: journal_note(operation, old_value)
+    )
+  end
+
+  def self.from_params(params)
+    issue_resource = IssueResource.new
+    issue_resource.issue_id = params[:issue_id]
+    issue_resource.resource_id = params[:resource_id]
+    issue_resource.estimation = params[:estimation]
+    issue_resource
   end
 
   private
 
-  def journal_note(operation)
-    messages = {
-      :created => " created #{resource.code} #{estimation}h",
-      :updated => " changed from #{resource.code} #{estimation_was}h to #{resource.code} #{estimation}h",
-      :deleted => " deleted #{resource.code} #{estimation}h"
+  def journal_note(operation, old_value = nil)
+    @messages ||= {
+      create: " created #{resource.code} #{estimation}h",
+      update: " changed from #{resource.code} #{old_value}h to #{resource.code} #{estimation}h",
+      destroy: " deleted #{resource.code} #{estimation}h"
     }
-    messages[operation]
+    @messages[operation]
   end
 
-  def save_journal(operation)
-    journal = issue.init_journal(User.current, nil)
-    journal.details << JournalDetail.new(:property => IssueResource::JOURNAL_DETAIL_PROPERTY,
-                                  :prop_key => id,
-                                  :old_value => '',
-                                  :value => journal_note(operation))
-    journal.save
+
+  def update_issue_timestamp_without_lock
+    issue.update_column :updated_on, Time.now
   end
 end
