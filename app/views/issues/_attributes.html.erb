@@ -63,7 +63,7 @@
 <% end %>
 
 <% if @issue.safe_attribute? 'estimated_hours' %>
-<p><%= f.text_field :estimated_hours, :size => 3, :disabled => !@issue.leaf? || (@issue.resource.count > 0), :required => @issue.required_attribute?('estimated_hours') %> <%= l(:field_hours) %></p>
+<p><%= f.text_field :estimated_hours, :size => 3, :disabled => !@issue.leaf? || (@issue.resource.count > 1), :required => @issue.required_attribute?('estimated_hours') %> <%= l(:field_hours) %></p>
 <% end %>
 
 <% if @issue.safe_attribute?('done_ratio') && @issue.leaf? && Issue.use_field_for_done_ratio? %>

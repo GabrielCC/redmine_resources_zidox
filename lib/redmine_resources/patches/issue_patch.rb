@@ -42,11 +42,13 @@ module RedmineResources
         end
 
         def calculate_resource_estimation_for_self
+          estimation = @estimation_value.to_i
+          return true if estimation == 0
           resource_id = determine_resource_type_id
           @altered_resource = find_issue_resource id
-          @altered_resource.estimation = @estimation_value.to_i
+          @altered_resource.estimation = estimation
           mode = @altered_resource.new_record? ? :create : :update
-          @altered_resource.save!
+          @altered_resource.save
           return true unless @current_journal
           @current_journal.details << @altered_resource.journal_entry(mode, @old_estimation)
         end
@@ -75,7 +77,7 @@ module RedmineResources
         end
 
         def save_resource_estimation
-          @altered_resource.save!
+          @altered_resource.save
         end
 
         def find_issue_resource(id)
