@@ -43,7 +43,8 @@ module RedmineResources
         end
 
         def add_resource_estimation_to_parent
-          estimation = find_total_estimated_hours_for_resource + estimated_hours.to_i
+          estimation = find_total_estimated_hours_for_resource
+          estimation += estimated_hours.to_i unless [6,23].include?(status_id)
           @altered_resource = find_issue_resource parent_id
           old_value = estimated_hours_was.to_i
           mode = nil
@@ -75,7 +76,7 @@ module RedmineResources
         end
 
         def find_total_estimated_hours_for_resource
-          issues = Issue.where('issues.parent_id = ? AND issues.id <> ?', parent_id, id)
+          issues = Issue.where('issues.parent_id = ? AND issues.id <> ? AND issues.status_id NOT IN (?) AND issues.assigned_to_id IS NOT NULL', parent_id, id, [6,23])
           resource_id = determine_resource_type_id
           estimated = 0
           issues.each do |issue|
