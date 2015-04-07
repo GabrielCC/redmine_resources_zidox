@@ -87,11 +87,11 @@ module RedmineResources
         end
 
         def find_total_estimated_hours_for_resource
-          issues = Issue.where('issues.parent_id = ? AND issues.id <> ? AND issues.status_id NOT IN (?) AND issues.assigned_to_id IS NOT NULL', @parent_id, id, [6,23])
+          issues = Issue.where('issues.parent_id = ? AND issues.id <> ? AND issues.status_id NOT IN (?)', @parent_id, id, [6,23])
           resource_id = determine_resource_type_id
           estimated = 0
           issues.each do |issue|
-            member = Member.where(user_id: issue.assigned_to_id, project_id: project_id).first
+            member = Member.where(user_id: (issue.assigned_to_id || issue.author_id), project_id: project_id).first
             next unless member
             member_resource = member.resource
             next unless member_resource
@@ -101,7 +101,7 @@ module RedmineResources
         end
 
         def determine_resource_type_id
-          user_id = assigned_to_id || User.current.id
+          user_id = assigned_to_id || author_id
           member = Member.where(user_id: user_id, project_id: project_id).first
           return nil unless member
           member_resource = member.resource
