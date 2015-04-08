@@ -11,7 +11,7 @@ module RedmineResources
             if: -> { parent_gets_resources? }
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :calculate_resource_estimation_for_parent,
-            if: -> { parent_gets_resources? && @parent_changed }
+            if: -> { @parent_id = @saved_parent_id; parent_gets_resources? && @parent_changed }
           after_save :calculate_resource_estimation_for_self,
             if: -> { tracker_id == 2 && !Issue.where(parent_id: id).exists? }
         end
@@ -71,7 +71,6 @@ module RedmineResources
             end
           end
           estimated_hours = estimation
-          @parent_id = @saved_parent_id if @parent_changed
           return true unless @current_journal && mode
           @current_journal.details << @altered_resource.journal_entry(mode, @old_estimation)
         end
