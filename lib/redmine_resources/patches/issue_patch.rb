@@ -9,6 +9,9 @@ module RedmineResources
           before_save :track_estimation_change
           before_save :calculate_resource_estimation_for_parent,
             if: -> { parent_gets_resources? }
+          before_destroy :track_estimation_change
+          before_destroy :calculate_resource_estimation_for_parent,
+            if: -> { @deleted = true; parent_gets_resources? }
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :calculate_resource_estimation_for_parent,
             if: -> { @parent_id = @saved_parent_id; parent_gets_resources? && @parent_changed }
@@ -55,7 +58,7 @@ module RedmineResources
 
         def calculate_resource_estimation_for_parent
           estimation = find_total_estimated_hours_for_resource
-          estimation += estimated_hours.to_i if parent_issue_id == parent_id && ![6,23].include?(status_id)
+          estimation += estimated_hours.to_i if parent_issue_id == parent_id && ![6,23].include?(status_id) && !@deleted
           @altered_resource = find_issue_resource @parent_id
           mode = nil
           if estimation == 0
