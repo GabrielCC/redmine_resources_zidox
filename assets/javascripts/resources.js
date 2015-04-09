@@ -37,8 +37,7 @@ function add_inline_editing() {
           data: {
             id: id,
             issue_resource: {
-              estimation: value,
-              manually_added: true
+              estimation: value
             }
           },
           error: function(req) {

@@ -58,7 +58,6 @@ module RedmineResources
 
         def calculate_resource_estimation_for_parent
           @altered_resource = find_issue_resource @parent_id
-          return if @altered_resource.manually_added
           estimation = find_total_estimated_hours_for_resource
           estimation += estimated_hours.to_i if parent_issue_id == parent_id && ![6,23].include?(status_id) && !@deleted
           mode = nil
@@ -125,6 +124,7 @@ module RedmineResources
 
         def parent_gets_resources?
           return false unless @parent_id
+          return false if Issue.where(id: @parent_id).pluck(:manually_added_resource_estimation).first
           trackers_with_resources = ResourceSetting.where(project_id: project_id,
             setting: 1, setting_object_type: 'Tracker').pluck(:setting_object_id)
           !trackers_with_resources.include?(tracker_id) && ![2,5,6].include?(tracker_id)
