@@ -32,6 +32,7 @@ class IssueResource < ActiveRecord::Base
     issue_resource.issue_id = params[:issue_id]
     issue_resource.resource_id = params[:resource_id]
     issue_resource.estimation = params[:estimation]
+    issue_resource.manually_added = params[:manually_added].presence || false
     issue_resource
   end
 

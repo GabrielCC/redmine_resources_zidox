@@ -57,9 +57,10 @@ module RedmineResources
         end
 
         def calculate_resource_estimation_for_parent
+          @altered_resource = find_issue_resource @parent_id
+          return if @altered_resource.manually_added
           estimation = find_total_estimated_hours_for_resource
           estimation += estimated_hours.to_i if parent_issue_id == parent_id && ![6,23].include?(status_id) && !@deleted
-          @altered_resource = find_issue_resource @parent_id
           mode = nil
           if estimation == 0
               @altered_resource.destroy

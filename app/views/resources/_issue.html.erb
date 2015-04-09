@@ -20,6 +20,7 @@ editable = resources_editable(@issue, @project)
 	                    :method => :post}) do |f| %>
 				<%= hidden_field_tag :project_id, @project.id %>
 				<%= hidden_field_tag :issue_id, @issue.id %>
+				<%= hidden_field_tag :manually_added, true %>
 				<table id='resources_form'>
 					<tr>
 						<td class="estimation_cell"><%= text_field_tag :estimation %> h
