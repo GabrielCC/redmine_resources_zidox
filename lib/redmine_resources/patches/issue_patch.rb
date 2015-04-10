@@ -7,16 +7,12 @@ module RedmineResources
           has_many :issue_resource, dependent: :destroy
           has_many :resource, through: :issue_resource
           before_save :track_estimation_change
-          before_save :calculate_resource_estimation_for_parent,
-            if: -> { parent_gets_resources? }
           before_destroy :track_estimation_change
-          before_destroy :calculate_resource_estimation_for_parent,
-            if: -> { @deleted = true; parent_gets_resources? }
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
-          after_save :calculate_resource_estimation_for_parent,
-            if: -> { @parent_id = @saved_parent_id; parent_gets_resources? && @parent_changed }
           after_save :calculate_resource_estimation_for_self,
             if: -> { tracker_id == 2 && !Issue.where(parent_id: id).exists? }
+          after_save :calculate_resource_estimation_for_parent
+          after_destroy :calculate_resource_estimation_for_parent
         end
       end
 
@@ -35,13 +31,13 @@ module RedmineResources
         def track_estimation_change
           if parent_issue_id != parent_id
             @parent_changed = true
-            @parent_id = parent_id
-            @saved_parent_id = parent_issue_id
+            @old_parent_id = parent_id
+            @new_parent_id = parent_issue_id
           else
-            @parent_id = parent_issue_id
+            @old_parent_id = parent_issue_id
           end
           @old_estimation = estimated_hours_was.to_i
-          @estimation_value = estimated_hours
+          @new_estimation = estimated_hours
         end
 
         def calculate_resource_estimation_for_self
@@ -56,50 +52,42 @@ module RedmineResources
           @current_journal.details << @altered_resource.journal_entry(mode, @old_estimation)
         end
 
-        def calculate_resource_estimation_for_parent
-          @altered_resource = find_issue_resource @parent_id
-          estimation = find_total_estimated_hours_for_resource
-          estimation += estimated_hours.to_i if parent_issue_id == parent_id && ![6,23].include?(status_id) && !@deleted
-          mode = nil
-          if estimation == 0
-              @altered_resource.destroy
-              mode = :destroy
-          else
-            @altered_resource.estimation = estimation
-            mode = @altered_resource.new_record? ? :create : :update
-            if new_record?
-              @resource_estimation_added = true
-            else
-              save_resource_estimation
-            end
+        def recalculate_resources_for(parent_id)
+          parent_issue = Issue.where(id: parent_id).first || return
+          return unless parent_gets_resources?(parent_issue)
+          ensure_current_issue_resource_for parent_issue
+          parent_issue.estimated_hours = 0
+          issue_resource.all.each do |res|
+            recalculate_from_children res, parent_issue
           end
-          estimated_hours = estimation
-          return true unless @current_journal && mode
-          @current_journal.details << @altered_resource.journal_entry(mode, @old_estimation)
+          update_estimation_for parent_issue
         end
 
-        def save_resource_estimation
-          @altered_resource.save
+        def calculate_resource_estimation_for_parent
+          recalculate_resources_for @old_parent_id if @old_parent_id
+          recalculate_resources_for @new_parent_id if @new_parent_id
         end
 
-        def find_issue_resource(id)
-          IssueResource.where(issue_id: id,
+        def ensure_current_issue_resource_for(parent_id)
+          IssueResource.where(issue_id: parent_id,
             resource_id: determine_resource_type_id
-          ).first_or_create!(estimation: 1)
+          ).first_or_create(estimation: 1)
         end
 
-        def find_total_estimated_hours_for_resource
-          issues = Issue.where('issues.parent_id = ? AND issues.id <> ? AND issues.status_id NOT IN (?)', @parent_id, id, [6,23])
-          resource_id = determine_resource_type_id
+        def recalculate_from_children(res, parent_issue)
+          issues = Issue.where(parent_id: parent_issue.id)
+            .where('issues.status_id NOT IN (?)', [6,23])
+            .select(:estimated_hours, :assigned_to_id, :author_id)
           estimated = 0
           issues.each do |issue|
             member = Member.where(user_id: (issue.assigned_to_id || issue.author_id), project_id: project_id).first
             next unless member
             member_resource = member.resource
             next unless member_resource
-            estimated += issue.estimated_hours if member_resource.id == resource_id
+            estimated += issue.estimated_hours if member_resource.id == res.resource_id
           end
-          estimated.to_i
+          res.estimated = estimated.to_i
+          res.estimated == 0 ? res.destroy : res.save
         end
 
         def determine_resource_type_id
@@ -110,11 +98,10 @@ module RedmineResources
           member_resource ? member_resource.id : nil
         end
 
-        def update_parent_estimation
-          parent = Issue.where(id: @parent_id).first
-          return if !parent || parent.blocked?
+        def update_estimation_for(parent_issue)
+          return if parent.blocked?
           children_estimation_total = Issue.where(
-              'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', @parent_id
+              'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', parent_issue.id
             ).sum(:estimated_hours).to_i
           children_estimation_total += Issue.where(parent_id: @parent_id, tracker_id: 2)
             .sum(:estimated_hours).to_i if parent.tracker_id == 5
@@ -122,12 +109,12 @@ module RedmineResources
           parent.update_parent_estimation
         end
 
-        def parent_gets_resources?
-          return false unless @parent_id
-          return false if Issue.where(id: @parent_id).pluck(:manually_added_resource_estimation).first
+        def parent_gets_resources?(parent_issue)
+          return false if parent_issue.manually_added_resource_estimation
           trackers_with_resources = ResourceSetting.where(project_id: project_id,
             setting: 1, setting_object_type: 'Tracker').pluck(:setting_object_id)
-          !trackers_with_resources.include?(tracker_id) && ![2,5,6].include?(tracker_id)
+          !trackers_with_resources.include?(parent_issue.tracker_id) &&
+            ![2,5,6].include?(parent_issue.tracker_id)
         end
       end
     end
