@@ -49,12 +49,10 @@ module RedmineResources
 
         def calculate_resource_estimation_for_self
           logger.debug  "---calculate_resource_estimation_for_self"
-          estimation = @estimation_value.to_i
-          logger.debug  "estimation: #{estimation}"
-          return true if estimation == 0
+          return true if @new_estimation == 0
           altered_resource = ensure_current_issue_resource_for id
           logger.debug  "altered_resource #{altered_resource}"
-          altered_resource.estimation = estimation
+          altered_resource.estimation = @new_estimation
           altered_resource.save
         end
 
@@ -81,7 +79,7 @@ module RedmineResources
           logger.debug  "---ensure_current_issue_resource_for"
           IssueResource.where(issue_id: issue_id,
             resource_id: determine_resource_type_id
-          ).first_or_create(estimation: 1)
+          ).first_or_create(estimation: @new_estimation)
         end
 
         def recalculate_from_children(res, parent_issue)
@@ -111,7 +109,7 @@ module RedmineResources
           logger.debug  "member: #{member}"
           return nil unless member
           member_resource = member.resource
-          logger.debug  "member resource: #{member_resource.inspecr}"
+          logger.debug  "member resource: #{member_resource.inspect}"
           member_resource ? member_resource.id : nil
         end
 
