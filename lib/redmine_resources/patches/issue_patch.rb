@@ -63,7 +63,7 @@ module RedmineResources
           logger.debug "Parent found"
           ensure_current_issue_resource_for parent_issue
           parent_issue.estimated_hours = 0
-          issue_resource.all.each do |res|
+          parent_issue.issue_resource.all.each do |res|
             recalculate_from_children res, parent_issue
           end
           update_estimation_for parent_issue
@@ -77,16 +77,19 @@ module RedmineResources
 
         def ensure_current_issue_resource_for(issue_id)
           logger.debug "---ensure_current_issue_resource_for #{issue_id}"
-          IssueResource.where(issue_id: issue_id,
+          res = IssueResource.where(issue_id: issue_id,
             resource_id: determine_resource_type_id
           ).first_or_create(estimation: @new_estimation)
+          res.estimation = @new_estimation
+          res.save
+          res
         end
 
         def recalculate_from_children(res, parent_issue)
           logger.debug "---recalculate_from_children #{res.inspect}, #{parent_issue.inspect}"
           issues = Issue.where(parent_id: parent_issue.id)
             .where('issues.status_id NOT IN (?)', [6,23])
-            .select(:estimated_hours, :assigned_to_id, :author_id)
+            .select([:estimated_hours, :assigned_to_id, :author_id])
           estimated = 0
           issues.each do |issue|
             member = Member.where(user_id: (issue.assigned_to_id || issue.author_id), project_id: project_id).first
@@ -96,9 +99,9 @@ module RedmineResources
             next unless member_resource
             estimated += issue.estimated_hours if member_resource.id == res.resource_id
           end
-          res.estimated = estimated.to_i
+          res.estimation = estimated.to_i
           logger.debug "Res: #{res.inspect}"
-          res.estimated == 0 ? res.destroy : res.save
+          res.estimation == 0 ? res.destroy : res.save
         end
 
         def determine_resource_type_id
