@@ -128,11 +128,11 @@ module RedmineResources
           children_estimation_total = Issue.where(
               'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', parent_issue.id
             ).sum(:estimated_hours).to_i
-          children_estimation_total += Issue.where(parent_id: @parent_id, tracker_id: 2)
-            .sum(:estimated_hours).to_i if parent.tracker_id == 5
+          children_estimation_total += Issue.where(parent_id: parent_issue.id, tracker_id: 2)
+            .sum(:estimated_hours).to_i if parent_issue.tracker_id == 5
           logger.debug "children_estimation_total: #{children_estimation_total}"
-          parent.update_column :estimated_hours, children_estimation_total
-          parent.update_estimation_for(parent.parent) if parent.parent_id
+          parent_issue.update_column :estimated_hours, children_estimation_total
+          parent_issue.update_estimation_for(parent_issue.parent) if parent_issue.parent_id
           logger.debug "Parent column updated"
         end
 
