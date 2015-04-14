@@ -50,6 +50,7 @@ module RedmineResources
         def calculate_resource_estimation_for_self
           logger.debug "---calculate_resource_estimation_for_self"
           return true if @new_estimation == 0 || !issue_gets_resources?(self)
+          issue_resource.all.each {|res| res.destroy } unless manually_added_resource_estimation
           altered_resource = ensure_current_issue_resource_for id
           logger.debug "altered_resource #{altered_resource.inspect}"
           altered_resource.estimation = @new_estimation
