@@ -92,12 +92,17 @@ module RedmineResources
             .select([:estimated_hours, :assigned_to_id, :author_id])
           estimated = 0
           issues.each do |issue|
-            member = Member.where(user_id: (issue.assigned_to_id || issue.author_id), project_id: project_id).first
-            logger.debug "Member: #{member.inspect}"
-            next unless member
-            member_resource = member.resource
-            next unless member_resource
-            estimated += issue.estimated_hours if member_resource.id == res.resource_id
+            user_email = User.where(id: (issue.assigned_to_id || issue.author_id)).pluck(:mail).first
+            logger.debug "user_email: #{user_email}"
+            next unless user_email
+            project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first
+            logger.debug "project_resource: #{project_resource.inspect}"
+            next unless project_resource
+            user_resource_id = project_resource.resource_id
+            logger.debug "user_resource_id: #{user_resource_id}"
+            next unless user_resource_id
+            estimated += issue.estimated_hours if user_resource_id == res.resource_id
+            logger.debug "estimated: #{estimated}"
           end
           res.estimation = estimated.to_i
           logger.debug "Res: #{res.inspect}"
@@ -106,14 +111,13 @@ module RedmineResources
 
         def determine_resource_type_id
           logger.debug "---determine_resource_type_id"
-          user_id = assigned_to_id || author_id
-          logger.debug "user id: #{user_id}"
-          member = Member.where(user_id: user_id, project_id: project_id).first
-          logger.debug "member: #{member}"
-          return nil unless member
-          member_resource = member.resource
-          logger.debug "member resource: #{member_resource.inspect}"
-          member_resource ? member_resource.id : nil
+          user_email = User.where(id: (assigned_to_id || author_id)).pluck(:mail).first
+          logger.debug "user_email: #{user_email}"
+          return unless user_email
+          project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first
+          logger.debug "project_resource: #{project_resource.inspect}"
+          return unless project_resource
+          project_resource.resource_id
         end
 
         def update_estimation_for(parent_issue)

@@ -2,11 +2,9 @@ require "redmine"
 
 # Patches to the Redmine core.
 ActionDispatch::Callbacks.to_prepare do
-  require_dependency 'member'
   require_dependency 'project'
   require_dependency 'role'
   require_dependency 'tracker'
-  require_dependency 'members_controller'
   require_dependency 'issue'
   require_dependency 'application_helper'
   require_dependency 'issues_helper'
