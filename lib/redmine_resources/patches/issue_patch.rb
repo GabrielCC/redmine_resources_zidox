@@ -99,7 +99,7 @@ module RedmineResources
             unless project_resource
               user_email = User.where(id: issue.author_id).pluck(:mail).first
               logger.debug "user_email: #{user_email}"
-              return unless user_email
+              next unless user_email
               project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first
             end
             logger.debug "project_resource: #{project_resource.inspect}"
