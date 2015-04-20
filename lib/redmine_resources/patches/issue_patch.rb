@@ -107,7 +107,7 @@ module RedmineResources
             user_resource_id = project_resource.resource_id
             logger.debug "user_resource_id: #{user_resource_id}"
             next unless user_resource_id
-            estimated += issue.estimated_hours if user_resource_id == res.resource_id
+            estimated += issue.estimated_hours.to_i if user_resource_id == res.resource_id
             logger.debug "estimated: #{estimated}"
           end
           res.estimation = estimated.to_i
