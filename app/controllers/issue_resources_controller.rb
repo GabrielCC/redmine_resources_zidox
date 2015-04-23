@@ -31,7 +31,7 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save
-      @issue_resource.issue.update_column(:manually_added_resource_estimation, true)
+      update_columns_for @issue_resource.issue
       add_journal_entry :create
       partial = 'issue_resources/saved'
     else
@@ -44,7 +44,7 @@ class IssueResourcesController < BaseController
     @issue_resource = IssueResource.find params[:id]
     old_value = @issue_resource.estimation
     if @issue_resource.update_attributes params[:issue_resource]
-      @issue_resource.issue.update_column(:manually_added_resource_estimation, true)
+      update_columns_for @issue_resource.issue
       add_journal_entry :update, old_value
       partial = 'issue_resources/updated'
     else
@@ -62,6 +62,13 @@ class IssueResourcesController < BaseController
   end
 
   private
+
+  def update_columns_for(issue)
+    issue.update_column(:manually_added_resource_estimation, true) unless issue.manually_added_resource_estimation
+    return if Issue.where(parent_id: issue.id).count > 0
+    estimation = IssueResource.where(issue_id: issue.id).sum(:estimation)
+    issue.update_column(:estimated_hours, estimation) if issue.estimated_hours != estimation
+  end
 
   def add_journal_entry(mode, old_value = nil)
     @issue = Issue.where(id: @issue_resource.issue_id).first
