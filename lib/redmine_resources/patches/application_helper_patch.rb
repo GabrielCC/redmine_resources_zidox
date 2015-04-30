@@ -8,6 +8,7 @@ module RedmineResources
           end
 
           def resources_visible(issue, project)
+            return true if User.current.admin?
             roles = User.current.roles_for_project project
             trackers = issue.tracker
 
@@ -17,6 +18,7 @@ module RedmineResources
           end
 
           def resources_editable(issue, project)
+            return true if User.current.admin?
             roles = User.current.roles_for_project project
             trackers = issue.tracker
             visible = false;
