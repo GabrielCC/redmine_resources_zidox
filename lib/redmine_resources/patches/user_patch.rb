@@ -8,7 +8,7 @@ module RedmineResources
       module InstanceMethods
         def resource_names
           @resource_names ||= resources.map do |resource|
-              "#{ resource.name } #{ resource.code }"
+              "#{ resource.name }, #{ resource.code }, #{ resource.department.name }"
             end.join(', ')
         end
 
@@ -21,6 +21,7 @@ module RedmineResources
             .where('users.id = ?', id)
             .where('project_resource_emails.email = ?', mail)
             .select('DISTINCT resources.name, resources.code')
+            .includes(:department)
         end
       end
     end
