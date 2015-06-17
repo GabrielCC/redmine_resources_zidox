@@ -1,7 +1,7 @@
 class ResourcesController < BaseController
-  before_filter :set_departments
+  before_filter :set_divisions
   before_filter :find_project_by_project_id, :only => [:trackers]
-  before_filter :set_department, :only => [:update,:create]
+  before_filter :set_division, :only => [:update,:create]
 
   def index
     @resources = Resource.all
@@ -66,9 +66,9 @@ class ResourcesController < BaseController
     end
   end
 
-  def set_departments
-    @departments = Department.all
-    @departments.map! do |e|
+  def set_divisions
+    @divisions = Division.all
+    @divisions.map! do |e|
       [e.name, e.id.to_i]
     end
   end
@@ -106,10 +106,10 @@ class ResourcesController < BaseController
     redirect_to settings_project_path(@project, :tab => tab) and return
   end
 
-  def set_department
-    department = Department.find(params[:resource][:department_id])
-    if !department.nil?
-      params[:resource][:department] = department
+  def set_division
+    division = Division.find(params[:resource][:division_id])
+    if !division.nil?
+      params[:resource][:division] = division
     end
   end
 end

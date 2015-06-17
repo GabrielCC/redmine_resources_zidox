@@ -75,9 +75,9 @@ api.issue do
 
 
   api.array :estimations do
-    @issue.resources_with_departments.each_pair { |department,resources|
+    @issue.resources_with_divisions.each_pair { |division,resources|
       api.estimation do
-        api.department department
+        api.division division
         api.array :resources do
           resources.each {|ir|
             api.resource :estimation => ir.estimation, :code => ir.resource.code

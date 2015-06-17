@@ -20,8 +20,8 @@
     <%= f.text_field :code %>
   </div>
   <div class="field">
-    <%= f.label :department %><br />
-    <%= f.select(:department_id, @departments, :required => true, :include_blank => true)%>
+    <%= f.label :division %><br />
+    <%= f.select(:division_id, @divisions, :required => true, :include_blank => true)%>
   </div>
   <div class="actions">
     <%= f.submit %>

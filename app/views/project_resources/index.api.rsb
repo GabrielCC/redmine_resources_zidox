@@ -4,7 +4,7 @@ api.array :resources do
       api.id resource.id
       api.name     resource.name
       api.code resource.code
-      api.department_name resource.department.name
+      api.division_name resource.division.name
     end
   end
 end
