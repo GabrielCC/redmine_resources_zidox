@@ -7,9 +7,15 @@ module RedmineResources
 
       module InstanceMethods
         def resource_names
-          @resource_names ||= resources.map do |resource|
+          @resource_names ||= begin
+            result = resources.map do |resource|
               "#{ resource.name }, #{ resource.code }, #{ resource.division.name }"
             end.join(', ')
+            if Redmine::Plugin.installed?(:redmine_people)
+              person = Person.find(id)
+              result << ", #{ person.department.name }" if person.department
+            end
+          end
         end
 
         def resources
