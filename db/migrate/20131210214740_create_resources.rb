@@ -7,6 +7,6 @@ class CreateResources < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index :resources, :division_id
+    add_index :resources, :department_id
   end
 end
