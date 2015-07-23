@@ -17,13 +17,13 @@ module RedmineResources
       end
 
       module InstanceMethods
-        def resources_with_departments
-          list = IssueResource.includes(resource: :department).where(issue_id: self.id)
+        def resources_with_divisions
+          list = IssueResource.includes(resource: :division).where(issue_id: self.id)
           result = {}
           list.each do |element|
-            department_name = element.resource.department.name
-            result[department_name] = [] unless result[department_name]
-            result[department_name] << element
+            division_name = element.resource.division.name
+            result[division_name] = [] unless result[division_name]
+            result[division_name] << element
           end
           result
         end

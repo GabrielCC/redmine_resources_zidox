@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class DepartmentTest < ActiveSupport::TestCase
+class DivisionTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

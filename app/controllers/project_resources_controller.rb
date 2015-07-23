@@ -69,9 +69,9 @@ class ProjectResourcesController < BaseController
     end
   end
 
-  def set_departments
-    @departments = Department.all
-    @departments.map! { |e|
+  def set_divisions
+    @divisions = Division.all
+    @divisions.map! { |e|
       [e.name, e.id.to_i]
     }
   end
@@ -109,10 +109,10 @@ class ProjectResourcesController < BaseController
     redirect_to settings_project_path(@project, :tab => tab) and return
   end
 
-  def set_department
-    department = Department.find(params[:resource][:department_id])
-    if !department.nil?
-      params[:resource][:department] = department
+  def set_division
+    division = Division.find(params[:resource][:division_id])
+    if !division.nil?
+      params[:resource][:division] = division
     end
   end
 

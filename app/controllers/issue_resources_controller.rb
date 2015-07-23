@@ -31,7 +31,8 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save
-      update_columns_for @issue_resource.issue
+      @issue = @issue_resource.issue
+      update_columns_for @issue
       add_journal_entry :create
       partial = 'issue_resources/saved'
     else
@@ -44,7 +45,8 @@ class IssueResourcesController < BaseController
     @issue_resource = IssueResource.find params[:id]
     old_value = @issue_resource.estimation
     if @issue_resource.update_attributes params[:issue_resource]
-      update_columns_for @issue_resource.issue
+      @issue = @issue_resource.issue
+      update_columns_for @issue
       add_journal_entry :update, old_value
       partial = 'issue_resources/updated'
     else
@@ -55,7 +57,9 @@ class IssueResourcesController < BaseController
 
   def destroy
     @issue_resource = IssueResource.find params[:id]
+    @issue = @issue_resource.issue
     @issue_resource.destroy
+    update_columns_for @issue
     add_journal_entry :destroy
     partial = 'issue_resources/saved'
     render partial: partial, layout: false, content_type: 'application/javascript'

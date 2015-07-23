@@ -1,15 +1,15 @@
 <%
 editable_class = editable ? 'resource_estimation_editable' : ''
 issue ||= @issue_resource.issue
-departments = issue.resources_with_departments
+divisions = issue.resources_with_divisions
 %>
-<%= hidden_field_tag 'has_resources', departments.count %>
+<%= hidden_field_tag 'has_resources', divisions.count %>
 <div id='resources_list'>
-    <% departments.each_pair { |department_name, issues_list|  %>
+    <% divisions.each_pair { |division_name, issues_list|  %>
     	<table>
 	        <tr>
-	          <td colspan='3' class='department_name'>
-	            <strong><%=department_name%></strong>
+	          <td colspan='3' class='division_name'>
+	            <strong><%=division_name%></strong>
 	          </td>
 	        </tr>
 	        <% issues_list.each { |ri| %>

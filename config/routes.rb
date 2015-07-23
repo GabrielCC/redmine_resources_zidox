@@ -1,6 +1,6 @@
 # Plugin's routes
 # See: http://guides.rubyonrails.org/routing.html
-resources :departments
+resources :divisions
 resources :resources
 resources :issue_resources
 

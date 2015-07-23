@@ -3,9 +3,9 @@
 one:
   name: MyString
   code: MyString
-  department: 
+  division:
 
 two:
   name: MyString
   code: MyString
-  department: 
+  division:
