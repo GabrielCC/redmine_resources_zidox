@@ -31,7 +31,8 @@ class IssueResourcesController < BaseController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save
-      update_columns_for @issue_resource.issue
+      @issue = @issue_resource.issue
+      update_columns_for @issue
       add_journal_entry :create
       partial = 'issue_resources/saved'
     else
