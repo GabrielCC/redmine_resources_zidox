@@ -40,7 +40,6 @@ function add_inline_editing() {
             estimation: value
           }
         },
-      }).done(function(response) {
       }).fail(function(reason) {
         alert("Error in request. Please try again later.");
       });
