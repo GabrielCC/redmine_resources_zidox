@@ -11,7 +11,7 @@
     <% issue_resource = IssueResource.new
       resources = resources_for_project @project, @issue %>
     <% if editable %>
-      <%= form_for issue_resource, { remote: true, method: :post} do |f| %>
+      <%= form_for issue_resource, { remote: true, method: :post } do |f| %>
         <%= hidden_field_tag :project_id, @project.id %>
         <%= hidden_field_tag :issue_id, @issue.id %>
         <table id='resources_form'>
