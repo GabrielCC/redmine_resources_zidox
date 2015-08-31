@@ -1,4 +1,3 @@
-resources :divisions
 resources :resources
 resources :issue_resources
 

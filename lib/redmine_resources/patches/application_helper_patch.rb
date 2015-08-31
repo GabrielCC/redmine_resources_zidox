@@ -4,16 +4,16 @@ module RedmineResources
       def self.included(base)
         base.class_eval do
           def authorize_globally_for(controller, action)
-            User.current.allowed_to_globally?({controller: controller, action: action}, {})
+            User.current.allowed_to_globally?({ controller: controller,
+              action: action }, {})
           end
 
           def resources_visible(issue, project)
             return true if User.current.admin?
             roles = User.current.roles_for_project project
             trackers = issue.tracker
-
-            visible = false;
-            roles.each { |role| visible = role.can_view_resources(project) if !visible }
+            visible = false
+            roles.each {|role| visible = role.can_view_resources(project) if !visible }
             visible && trackers.can_view_resources(project)
           end
 
@@ -21,8 +21,8 @@ module RedmineResources
             return true if User.current.admin?
             roles = User.current.roles_for_project project
             trackers = issue.tracker
-            visible = false;
-            roles.each { |role| visible = role.can_edit_resources(project) if !visible }
+            visible = false
+            roles.each {|role| visible = role.can_edit_resources(project) if !visible }
             visible && trackers.can_view_resources(project)
           end
 
