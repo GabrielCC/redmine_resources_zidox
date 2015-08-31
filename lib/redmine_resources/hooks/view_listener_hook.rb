@@ -1,3 +1,3 @@
 class ViewListenerHook < Redmine::Hook::ViewListener
-  render_on :view_issues_before_sidebar, partial: 'resources/issue'
+  render_on :view_issues_sidebar_top, partial: 'resources/issue'
 end

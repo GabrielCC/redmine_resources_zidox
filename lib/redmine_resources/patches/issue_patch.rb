@@ -161,6 +161,6 @@ module RedmineResources
   end
 end
 
-unless Issue.included_modules.include? RedmineResources::Patches::IssuePatch
-  Issue.send :include, RedmineResources::Patches::IssuePatch
-end
+base = Issue
+patch = RedmineResources::Patches::IssuePatch
+base.send :include, patch unless base.included_modules.include? patch

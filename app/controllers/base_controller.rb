@@ -1,4 +1,4 @@
 class BaseController < ApplicationController
-	layout "admin"
+	layout 'admin'
 	# before_filter :authorize_global
 end

@@ -1,5 +1,3 @@
-require_dependency 'project'
-
 module RedmineResources
   module Patches
     module ProjectPatch
@@ -13,6 +11,6 @@ module RedmineResources
   end
 end
 
-unless Project.included_modules.include? RedmineResources::Patches::ProjectPatch
-  Project.send :include, RedmineResources::Patches::ProjectPatch
-end
+base = Project
+patch = RedmineResources::Patches::ProjectPatch
+base.send :include, patch unless base.included_modules.include? patch

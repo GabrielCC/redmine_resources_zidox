@@ -1,4 +1,4 @@
-$('#resources_list_container').html('<%= escape_javascript(render :partial => 'resources/list', locals: { editable: true}) %>');
+$('#resources_list_container').html('<%= j(render partial: 'resources/list', locals: { editable: true }) %>');
 hideOnLoad();
 $('#estimation').val('');
 $('#resource').val('');

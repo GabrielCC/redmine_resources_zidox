@@ -1,5 +1,4 @@
 class IssueResourcesController < BaseController
-
   def index
     @issue_resources = IssueResource.all
     respond_to do |format|
@@ -38,7 +37,8 @@ class IssueResourcesController < BaseController
     else
       partial = 'issue_resources/failed'
     end
-    render partial: partial, layout: false, content_type: 'application/javascript'
+    render partial: partial, layout: false,
+      content_type: 'application/javascript'
   end
 
   def update
@@ -52,7 +52,8 @@ class IssueResourcesController < BaseController
     else
       partial = 'issue_resources/failed'
     end
-    render partial: partial, layout: false, content_type: 'application/javascript'
+    render partial: partial, layout: false,
+      content_type: 'application/javascript'
   end
 
   def destroy
@@ -62,20 +63,25 @@ class IssueResourcesController < BaseController
     update_columns_for @issue
     add_journal_entry :destroy
     partial = 'issue_resources/saved'
-    render partial: partial, layout: false, content_type: 'application/javascript'
+    render partial: partial, layout: false,
+      content_type: 'application/javascript'
   end
 
   private
 
   def update_columns_for(issue)
-    issue.update_column(:manually_added_resource_estimation, true) unless issue.manually_added_resource_estimation
+    unless issue.manually_added_resource_estimation
+      issue.update_column :manually_added_resource_estimation, true
+    end
     return if Issue.where(parent_id: issue.id).count > 0
     estimation = IssueResource.where(issue_id: issue.id).sum(:estimation)
-    issue.update_column(:estimated_hours, estimation) if issue.estimated_hours != estimation
+    if issue.estimated_hours != estimation
+      issue.update_column :estimated_hours, estimation
+    end
   end
 
   def add_journal_entry(mode, old_value = nil)
-    @issue = Issue.where(id: @issue_resource.issue_id).first
+    @issue = Issue.where(id: @issue_resource.issue_id).first or return
     journal = @issue.init_journal User.current, nil
     return unless journal
     journal.details << @issue_resource.journal_entry(mode, old_value)

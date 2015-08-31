@@ -7,7 +7,8 @@ module RedmineResources
 
           def show_detail(detail, no_html = false, options = {})
             output = original_show_detail detail, no_html, options
-            if output.nil? && detail.property == IssueResource::JOURNAL_DETAIL_PROPERTY
+            if output.nil? &&
+                detail.property == IssueResource::JOURNAL_DETAIL_PROPERTY
               label = l(:label_journal_resource_estimation)
               value = "#{detail.value}"
               unless no_html
@@ -23,6 +24,6 @@ module RedmineResources
   end
 end
 
-unless IssuesHelper.included_modules.include? RedmineResources::Patches::IssuesHelperPatch
-  IssuesHelper.send :include, RedmineResources::Patches::IssuesHelperPatch
-end
+base = IssuesHelper
+patch = RedmineResources::Patches::IssuesHelperPatch
+base.send :include, patch unless base.included_modules.include? patch

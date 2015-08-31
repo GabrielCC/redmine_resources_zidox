@@ -41,6 +41,6 @@ module RedmineResources
   end
 end
 
-unless ApplicationHelper.included_modules.include? RedmineResources::Patches::ApplicationHelperPatch
-  ApplicationHelper.send :include, RedmineResources::Patches::ApplicationHelperPatch
-end
+base = ApplicationHelper
+patch = RedmineResources::Patches::ApplicationHelperPatch
+base.send :include, patch unless base.included_modules.include? patch

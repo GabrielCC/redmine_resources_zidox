@@ -22,8 +22,7 @@ module RedmineResources
   end
 end
 
+patch = RedmineResources::Patches::ResourceSettingPatch
 [Tracker, Role].each do |base|
-  unless base.included_modules.include? RedmineResources::Patches::ResourceSettingPatch
-    base.send(:include, RedmineResources::Patches::ResourceSettingPatch)
-  end
+  base.send :include, patch unless base.included_modules.include? patch
 end
