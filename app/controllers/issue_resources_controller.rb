@@ -1,32 +1,4 @@
-class IssueResourcesController < BaseController
-  def index
-    @issue_resources = IssueResource.all
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resources }
-    end
-  end
-
-  def show
-    @issue_resource = IssueResource.find params[:id]
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resource }
-    end
-  end
-
-  def new
-    @issue_resource = IssueResource.new
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resource }
-    end
-  end
-
-  def edit
-    @issue_resource = IssueResource.find params[:id]
-  end
-
+class IssueResourcesController < ApplicationController
   def create
     @issue_resource = IssueResource.from_params params
     if @issue_resource.save

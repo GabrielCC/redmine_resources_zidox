@@ -1,35 +1,7 @@
-class ResourcesController < BaseController
+class ResourcesController < ApplicationController
   before_filter :set_divisions
   before_filter :find_project_by_project_id, only: :trackers
   before_filter :set_division, only: [:create, :update]
-
-  def index
-    @resources = Resource.all
-    respond_to do |format|
-      format.html
-      format.json { render json: @resources }
-    end
-  end
-
-  def show
-    @resource = Resource.find params[:id]
-    respond_to do |format|
-      format.html
-      format.json { render json: @resource }
-    end
-  end
-
-  def new
-    @resource = Resource.new
-    respond_to do |format|
-      format.html
-      format.json { render json: @resource }
-    end
-  end
-
-  def edit
-    @resource = Resource.find params[:id]
-  end
 
   def create
     @resource = Resource.new params[:resource]
