@@ -1,4 +1,4 @@
-class ProjectResourcesController < BaseController
+class ProjectResourcesController < ApplicationController
   accept_api_auth :index, :create
 
   def index
@@ -8,7 +8,6 @@ class ProjectResourcesController < BaseController
       total << project_resource.resource
     end
     respond_to do |format|
-      format.html
       format.api
     end
   end
