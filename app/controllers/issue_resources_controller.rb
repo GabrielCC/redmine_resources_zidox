@@ -5,12 +5,10 @@ class IssueResourcesController < ApplicationController
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :create
-      partial = 'issue_resources/saved'
+      render js: 'saved'
     else
-      partial = 'issue_resources/failed'
+      render js: 'failed'
     end
-    render partial: partial, layout: false,
-      content_type: 'application/javascript'
   end
 
   def update
@@ -20,12 +18,10 @@ class IssueResourcesController < ApplicationController
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :update, old_value
-      partial = 'issue_resources/updated'
+      render js: 'updated'
     else
-      partial = 'issue_resources/failed'
+      render js: 'failed'
     end
-    render partial: partial, layout: false,
-      content_type: 'application/javascript'
   end
 
   def destroy
@@ -34,9 +30,7 @@ class IssueResourcesController < ApplicationController
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
-    partial = 'issue_resources/saved'
-    render partial: partial, layout: false,
-      content_type: 'application/javascript'
+    render js: 'saved'
   end
 
   private
