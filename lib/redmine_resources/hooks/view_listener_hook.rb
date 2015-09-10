@@ -7,6 +7,7 @@ class ViewListenerHook < Redmine::Hook::ViewListener
 
   def view_layouts_base_html_head(context)
     project, controller = context[:project], context[:controller]
+    return '' unless controller.is_a? IssuesController
     controller.render_to_string partial: 'redmine_resources/header_assets'
   end
 end
