@@ -1,9 +1,10 @@
-$(document).ready(function() {
+$(function () {
   add_inline_editing();
   $('#new_issue_resource').bind('submit', function() {
     $('input.button', $(this)).attr('disabled', true);
     return true;
   });
+  $('.resources_autocomplete').chosen({ width: '90px', placeholder_text_single: 'Select' });
 });
 
 function add_inline_editing() {

@@ -20,7 +20,7 @@
               <%= text_field_tag :estimation %> h
             </td>
             <td>
-              <%= render partial: 'resources/resource_element', locals: { resources: resources.values } %>
+              <%= select_tag 'resource_id', options_from_collection_for_select(resources.values, :id, :code, include_blank: true), class: 'resources_autocomplete' %>
             </td>
             <td class='edit_actions'>
             <%= submit_tag l(:button_save), class: 'small button' %>

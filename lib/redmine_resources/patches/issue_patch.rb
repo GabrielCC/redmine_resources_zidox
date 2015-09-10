@@ -93,7 +93,7 @@ module RedmineResources
             .select([:estimated_hours, :assigned_to_id, :author_id])
           estimated = 0
           issues.each do |issue|
-            user_email = User.where(id: issue.assigned_to_id).pluck(:mail).first
+            user_email = User.where(id: issue.assigned_to_id).first.mail
             logger.debug "user_email: #{user_email}"
             project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first if user_email
             unless project_resource
