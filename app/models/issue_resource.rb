@@ -21,14 +21,6 @@ class IssueResource < ActiveRecord::Base
       value: journal_note(operation, old_value)
   end
 
-  def self.from_params(params)
-    issue_resource = IssueResource.new
-    issue_resource.issue_id = params[:issue_id]
-    issue_resource.resource_id = params[:resource_id]
-    issue_resource.estimation = params[:estimation]
-    issue_resource
-  end
-
   private
 
   def journal_note(operation, old_value = nil)

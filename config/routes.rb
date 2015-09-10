@@ -1,4 +1,4 @@
-resources :resources
+resources :resources, only: [:create, :update, :destroy]
 resources :issue_resources
 
 post 'resources/settings/trackers', to: 'resources#trackers'

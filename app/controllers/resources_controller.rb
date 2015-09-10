@@ -6,16 +6,10 @@ class ResourcesController < ApplicationController
   def create
     @resource = Resource.new params[:resource]
     respond_to do |format|
-      if @resource.save
-        format.html do
-          redirect_to @resource, notice: 'Resource was successfully created.'
-        end
-        format.json do
+      format.json do
+        if @resource.save
           render json: @resource, status: :created, location: @resource
-        end
-      else
-        format.html { render action: "new" }
-        format.json do
+        else
           render json: @resource.errors, status: :unprocessable_entity
         end
       end
@@ -25,14 +19,10 @@ class ResourcesController < ApplicationController
   def update
     @resource = Resource.find params[:id]
     respond_to do |format|
-      if @resource.update_attributes params[:resource]
-        format.html do
-          redirect_to @resource, notice: 'Resource was successfully updated.'
-        end
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json do
+      format.json do
+        if @resource.update_attributes params[:resource]
+          head :no_content
+        else
           render json: @resource.errors, status: :unprocessable_entity
         end
       end
@@ -43,14 +33,7 @@ class ResourcesController < ApplicationController
     @resource = Resource.find params[:id]
     @resource.destroy
     respond_to do |format|
-      format.html { redirect_to resources_url }
       format.json { head :no_content }
-    end
-  end
-
-  def set_divisions
-    @divisions = Division.select([:id, :name]).all.map do |division|
-      [division.name, division.id]
     end
   end
 
@@ -66,6 +49,12 @@ class ResourcesController < ApplicationController
   end
 
   private
+
+  def set_divisions
+    @divisions = Division.select([:id, :name]).all.map do |division|
+      [division.name, division.id]
+    end
+  end
 
   def create_resource_settings(key, val)
     trackers = Tracker.where(id: params[:trackers][key]).all

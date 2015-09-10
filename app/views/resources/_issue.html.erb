@@ -7,15 +7,15 @@
       resources = resources_for_project @project, @issue %>
     <% if editable %>
       <%= form_for issue_resource, { remote: true, method: :post } do |f| %>
-        <%= hidden_field_tag :project_id, @project.id %>
-        <%= hidden_field_tag :issue_id, @issue.id %>
+        <%= f.hidden_field :project_id, value: @project.id %>
+        <%= f.hidden_field :issue_id, value: @issue.id %>
         <table id='resources_form'>
           <tr>
             <td class="estimation_cell">
-              <%= text_field_tag :estimation %> h
+              <%= f.text_field :estimation %> h
             </td>
             <td>
-              <%= select_tag 'resource_id', options_from_collection_for_select(resources.values, :id, :code, include_blank: true), class: 'resources_autocomplete' %>
+              <%= f.select :resource_id, "<option></option>#{ options_from_collection_for_select resources.values, :id, :code }".html_safe, class: 'resources_autocomplete' %>
             </td>
             <td class='edit_actions'>
             <%= submit_tag l(:button_save), class: 'small button' %>

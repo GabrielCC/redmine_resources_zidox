@@ -1,26 +1,26 @@
 class IssueResourcesController < ApplicationController
   def create
-    @issue_resource = IssueResource.from_params params
+    @issue_resource = IssueResource.new resource_params
     if @issue_resource.save
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :create
-      render js: 'saved'
+      render partial: 'saved'
     else
-      render js: 'failed'
+      render partial: 'failed'
     end
   end
 
   def update
     @issue_resource = IssueResource.find params[:id]
     old_value = @issue_resource.estimation
-    if @issue_resource.update_attributes params[:issue_resource]
+    if @issue_resource.update_attributes resource_params
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :update, old_value
-      render js: 'updated'
+      render partial: 'updated'
     else
-      render js: 'failed'
+      render partial: 'failed'
     end
   end
 
@@ -30,10 +30,14 @@ class IssueResourcesController < ApplicationController
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
-    render js: 'saved'
+    render partial: 'saved'
   end
 
   private
+
+  def resource_params
+    params.require(:issue_resource).permit(:issue_id, :resource_id, :estimation)
+  end
 
   def update_columns_for(issue)
     unless issue.manually_added_resource_estimation
