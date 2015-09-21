@@ -4,7 +4,7 @@ $(function () {
     $('input.button', $(this)).attr('disabled', true);
     return true;
   });
-  $('.resources_autocomplete').chosen({ width: '90px', placeholder_text_single: 'Select' });
+  $('#issue_resource_resource_id').select2({ width: '90px', placeholder_text_single: 'Select' });
 });
 
 function add_inline_editing() {

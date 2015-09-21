@@ -1,12 +1,9 @@
-#resources {
-}
-#resources input#estimation {
+#resources input#issue_resource_estimation {
   width: 30px;
 }
 #resources input.button {
   width: 45px;
 }
-
 #resources input.button.small {
   width: 52px;
 }
@@ -14,7 +11,7 @@
   width: 120px;
 }
 td.division_name {
-  text-align: right;
+  text-align: left;
 }
 
 td.estimation_cell {
@@ -30,7 +27,6 @@ td.estimation_cell {
   width: 20px !important;
   margin-left: 2px;
 }
-
 .estimation_cell {
   width: 60px;
 }
