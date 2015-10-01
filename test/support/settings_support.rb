@@ -25,11 +25,11 @@ module SettingsSupport
       name: 'Feature'
     @child_tracker = create :tracker, id: 4, default_status_id: @status_new.id,
       name: 'Task'
-    @resource_setting = create resource_setting project_id: @project_id,
-      setting_object_id: @root_tracker
-    @project_resource_email = create :project_resource_email,
-      project_id: @project.id, resource_id: @resource.id, login: @user.login
     @project.trackers << [@root_tracker, @child_tracker]
     @project.save!
+    @resource_setting = create :resource_setting, project_id: @project.id,
+      setting_object_id: @root_tracker, setting_object_id: @root_tracker.id
+    @project_resource_email = create :project_resource_email,
+      project_id: @project.id, resource_id: @resource.id, login: @author.login
   end
 end

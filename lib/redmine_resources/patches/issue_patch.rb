@@ -148,7 +148,7 @@ module RedmineResources
           logger.debug "---issue_gets_resources? #{issue.inspect}"
           logger.debug "Manual estimation: #{issue.manually_added_resource_estimation}"
           return false if issue.manually_added_resource_estimation
-          trackers_with_resources = ResourceSetting.where(project_id: project_id,
+          trackers_with_resources = ResourceSetting.where(project_id: issue.project_id,
             setting: 1, setting_object_type: 'Tracker').pluck(:setting_object_id)
           logger.debug "Trackers with resources: #{trackers_with_resources}"
           logger.debug "Issue tracker_id: #{issue.tracker_id}"

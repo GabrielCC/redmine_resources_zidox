@@ -28,11 +28,11 @@ class IssuePatchTest < ActiveSupport::TestCase
     hours = 12
     issue = build_issue_with @root_tracker, estimated_hours: hours
     issue.save!
-    resources = issue.resource.all
+    resources = issue.issue_resource.all
     assert_not_empty resources
     assert resources.size == 1
-    resource = resources[1]
-    assert_instance_of Resource, resource
-    asset resource.hours == hours
+    resource = resources[0]
+    assert_instance_of IssueResource, resource
+    assert resource.estimation == hours
   end
 end

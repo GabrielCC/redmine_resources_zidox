@@ -2,6 +2,7 @@ class Resource < ActiveRecord::Base
   belongs_to :division
   has_many :project_resource
   has_many :project, through: :project_resource
+  has_many :issue_resources
   attr_accessible :code, :name, :division
   validates :name, uniqueness: true, presence: true
   validates :code, uniqueness: true, presence: true
