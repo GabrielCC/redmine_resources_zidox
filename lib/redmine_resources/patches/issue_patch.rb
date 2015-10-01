@@ -93,15 +93,9 @@ module RedmineResources
             .select([:estimated_hours, :assigned_to_id, :author_id])
           estimated = 0
           issues.each do |issue|
-            user_email = EmailAddress.where(is_default: true, user_id: issue.assigned_to_id).pluck(:address).first
-            logger.debug "user_email: #{user_email}"
-            project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first if user_email
-            unless project_resource
-              user_email = EmailAddress.where(is_default: true, user_id: issue.author_id).pluck(:address).first
-              logger.debug "user_email: #{user_email}"
-              next unless user_email
-              project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first
-            end
+            user_login = User.where(id: issue.assigned_to_id).pluck(:login).first
+            logger.debug "user_login: #{ user_login }"
+            project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
             logger.debug "project_resource: #{project_resource.inspect}"
             next unless project_resource
             user_resource_id = project_resource.resource_id
@@ -117,15 +111,9 @@ module RedmineResources
 
         def determine_resource_type_id
           logger.debug "---determine_resource_type_id"
-          user_email = EmailAddress.where(is_default: true, user_id: assigned_to_id).pluck(:address).first
-          logger.debug "user_email: #{user_email}"
-          project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first if user_email
-          unless project_resource
-            user_email = EmailAddress.where(is_default: true, user_id: author_id).pluck(:address).first
-            logger.debug "user_email: #{user_email}"
-            return unless user_email
-            project_resource = ProjectResourceEmail.where(project_id: project_id, email: user_email).first
-          end
+          user_login = User.where(id: assigned_to_id).pluck(:login).first
+          logger.debug "user_login: #{ user_login }"
+          project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
           logger.debug "project_resource: #{project_resource.inspect}"
           return unless project_resource
           project_resource.resource_id
