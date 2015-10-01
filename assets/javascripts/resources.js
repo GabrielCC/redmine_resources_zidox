@@ -9,9 +9,15 @@ $(function () {
 
 function update_issue_estimation(estimation) {
   var estimation = estimation.toFixed(2);
+  var newEstimation;
   var currentEstimation = $('td.estimated-hours').text();
-  var newEstimation = currentEstimation.strReplace(/(\d+.\d{2})/i, estimation)
-  $('td.estimated-hours').text();
+
+  if (currentEstimation.length > 0) {
+    newEstimation = currentEstimation.replace(/(\d+.\d{2})/i, estimation);
+  } else {
+    newEstimation = estimation;
+  }
+  $('td.estimated-hours').text(newEstimation);
   $('#issue_estimated_hours').val(estimation);
 }
 
@@ -49,7 +55,8 @@ function add_inline_editing() {
             estimation: value
           }
         },
-      }).fail(function(reason) {
+      }).error(function(reason) {
+        console.log(reason);
         alert("Error in request. Please try again later.");
       });
       return hours;
