@@ -7,6 +7,14 @@ $(function () {
   $('#issue_resource_resource_id').select2({ width: '90px', placeholder_text_single: 'Select' });
 });
 
+function update_issue_estimation(estimation) {
+  var estimation = estimation.toFixed(2);
+  var currentEstimation = $('td.estimated-hours').text();
+  var newEstimation = currentEstimation.strReplace(/(\d+.\d{2})/i, estimation)
+  $('td.estimated-hours').text();
+  $('#issue_estimated_hours').val(estimation);
+}
+
 function add_inline_editing() {
   $('.resource_estimation_editable').each(function(element) {
     var $editable_element = $(this);
