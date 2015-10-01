@@ -96,6 +96,11 @@ module RedmineResources
             user_login = User.where(id: issue.assigned_to_id).pluck(:login).first
             logger.debug "user_login: #{ user_login }"
             project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
+            unless project_resource
+              user_login = User.where(id: issue.author_id).pluck(:login).first
+              logger.debug "user_login: #{ user_login }"
+              project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
+            end
             logger.debug "project_resource: #{project_resource.inspect}"
             next unless project_resource
             user_resource_id = project_resource.resource_id
@@ -114,6 +119,11 @@ module RedmineResources
           user_login = User.where(id: assigned_to_id).pluck(:login).first
           logger.debug "user_login: #{ user_login }"
           project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
+          unless project_resource
+            user_login = User.where(id: author_id).pluck(:login).first
+            logger.debug "user_login: #{ user_login }"
+            project_resource = ProjectResourceEmail.where(project_id: project_id, login: user_login).first if user_login
+          end
           logger.debug "project_resource: #{project_resource.inspect}"
           return unless project_resource
           project_resource.resource_id
