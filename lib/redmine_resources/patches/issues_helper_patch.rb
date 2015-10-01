@@ -4,6 +4,8 @@ module RedmineResources
       def self.included(base)
         base.class_eval do
           alias_method :original_show_detail, :show_detail
+          alias_method :original_issue_estimated_hours_details,
+            :issue_estimated_hours_details
 
           def show_detail(detail, no_html = false, options = {})
             output = original_show_detail detail, no_html, options
@@ -17,6 +19,18 @@ module RedmineResources
               output = "#{label} #{value}".html_safe
             end
             output
+          end
+
+          def issue_estimated_hours_details(issue)
+            if issue.total_estimated_hours.present?
+              if issue.total_estimated_hours == issue.estimated_hours
+                l_hours_short(issue.estimated_hours)
+              else
+                s = issue.estimated_hours.present? ? \
+                  l_hours_short(issue.estimated_hours) : ""
+                s.html_safe
+              end
+            end
           end
         end
       end

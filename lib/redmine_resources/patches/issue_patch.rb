@@ -10,7 +10,7 @@ module RedmineResources
           before_destroy :track_estimation_change
           after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :calculate_resource_estimation_for_self,
-            if: -> { tracker_id == 2 && !Issue.where(parent_id: id).exists? }
+            if: -> { [2, 13].include?(tracker_id) && !Issue.where(parent_id: id).exists? }
           after_save :calculate_resource_estimation_for_parent
           after_destroy :calculate_resource_estimation_for_parent
         end
@@ -134,9 +134,9 @@ module RedmineResources
           logger.debug "Blocked? #{parent_issue.blocked?}"
           return if parent_issue.blocked?
           children_estimation_total = Issue.where(
-              'issues.tracker_id NOT IN (2,5,6) AND parent_id = ?', parent_issue.id
+              'issues.tracker_id NOT IN (2,5,6,13) AND parent_id = ?', parent_issue.id
             ).sum(:estimated_hours).to_i
-          children_estimation_total += Issue.where(parent_id: parent_issue.id, tracker_id: 2)
+          children_estimation_total += Issue.where(parent_id: parent_issue.id, tracker_id: [2, 13])
             .sum(:estimated_hours).to_i if parent_issue.tracker_id == 5
           logger.debug "children_estimation_total: #{children_estimation_total}"
           parent_issue.update_column :estimated_hours, children_estimation_total
