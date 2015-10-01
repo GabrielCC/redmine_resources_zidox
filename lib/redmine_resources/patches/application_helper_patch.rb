@@ -9,21 +9,22 @@ module RedmineResources
           end
 
           def resources_visible(issue, project)
+            return false unless issue.tracker.can_view_resources(project)
             return true if User.current.admin?
             roles = User.current.roles_for_project project
-            trackers = issue.tracker
             visible = false
             roles.each {|role| visible = role.can_view_resources(project) if !visible }
-            visible && trackers.can_view_resources(project)
+            visible
           end
 
           def resources_editable(issue, project)
+            return false unless issue.tracker.can_view_resources(project)
             return true if User.current.admin?
             roles = User.current.roles_for_project project
             trackers = issue.tracker
             visible = false
             roles.each {|role| visible = role.can_edit_resources(project) if !visible }
-            visible && trackers.can_view_resources(project)
+            visible
           end
 
           def resources_for_project(project, issue = nil)
