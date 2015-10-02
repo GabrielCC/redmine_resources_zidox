@@ -1,4 +1,4 @@
-require File.expand_path '../../test_helper', __FILE__
+require File.expand_path('../../test_helper', __FILE__)
 
 class IssuePatchTest < ActiveSupport::TestCase
   def create_parent_and_child(hours: 0, manual: false)

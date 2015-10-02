@@ -1,7 +1,11 @@
 # Code coverage setup
 require 'simplecov'
 SimpleCov.start do
+  add_group 'Controllers', 'app/controllers'
+  add_group 'Models', 'app/models'
   add_group 'Libraries', 'lib'
+  add_group 'Hooks', 'lib/redmine_resources/hooks'
+  add_group 'Patches', 'lib/redmine_resources/patches'
   add_filter '/test/'
   add_filter 'init.rb'
   root File.expand_path(File.dirname(__FILE__) << '/../')
@@ -9,7 +13,7 @@ SimpleCov.start do
 end
 
 # Load the Redmine helper
-require File.expand_path File.dirname(__FILE__) << '/../../../test/test_helper'
+require File.expand_path(File.dirname(__FILE__) << '/../../../test/test_helper')
 
 # Load factories
 factories_folder = File.expand_path File.dirname(__FILE__) << '/factories/'
