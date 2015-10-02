@@ -32,6 +32,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     issue = build_issue_with @root_tracker
     issue.save!
     assert_empty issue.issue_resource.all
+    assert_equal nil, issue.estimated_hours
   end
 
   test 'issue with estimation creates one resource' do
@@ -39,20 +40,22 @@ class IssuePatchTest < ActiveSupport::TestCase
     issue.save!
     resources = issue.issue_resource.all
     assert_not_empty resources
-    assert resources.size == 1
+    assert_equal 1, resources.size
     resource = resources[0]
     assert_instance_of IssueResource, resource
-    assert resource.estimation == @hours
+    assert_equal @hours, resource.estimation
+    assert_equal @hours, issue.estimated_hours
   end
 
   test 'issue with a child gets an estimation' do
     create_parent_and_child
     resources = @parent.issue_resource.all
     assert_not_empty resources
-    assert resources.size == 1
+    assert_equal 1, resources.size
     resource = resources[0]
     assert_instance_of IssueResource, resource
-    assert resource.estimation == @hours
+    assert_equal @hours, resource.estimation
+    assert_equal @hours, @parent.estimated_hours
   end
 
   test 'issue with a killed child looses the estimation' do
@@ -60,6 +63,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     @child.status = @status_killed
     @child.save!
     assert_empty @parent.issue_resource.all
+    assert_equal nil, @parent.estimated_hours
   end
 
   test 'issue with a revived child gets the estimation back' do
@@ -71,16 +75,19 @@ class IssuePatchTest < ActiveSupport::TestCase
     @child.save!
     resources = @parent.issue_resource.all
     assert_not_empty resources
-    assert resources.size == 1
+    assert_equal 1, resources.size
     resource = resources[0]
     assert_instance_of IssueResource, resource
-    assert resource.estimation == @hours
+    assert_equal @hours, resource.estimation
+    assert_equal @hours, @parent.estimated_hours
   end
 
   # manually_added_resource_estimation = true
   test 'issues with manual estimation do not get affected by children' do
     create_parent_and_child manual: true
     assert_empty @parent.issue_resource.all
+    assert_equal @hours, @child.estimated_hours
+    assert_equal nil, @parent.estimated_hours
   end
 
   test 'issues with manual estimation keep their estimation' do
@@ -95,9 +102,10 @@ class IssuePatchTest < ActiveSupport::TestCase
     @child.save!
     resources = parent.issue_resource.all
     assert_not_empty resources
-    assert resources.size == 1
+    assert_equal 1, resources.size
     resource = resources[0]
     assert_instance_of IssueResource, resource
-    assert resource.estimation == parent_estimation
+    assert_equal parent_estimation, resource.estimation
+    assert_equal parent_estimation, parent.estimated_hours
   end
 end

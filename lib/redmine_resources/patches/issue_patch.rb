@@ -8,7 +8,6 @@ module RedmineResources
           has_many :resource, through: :issue_resource
           before_save :track_estimation_change
           before_destroy :track_estimation_change
-          after_save :save_resource_estimation, if: -> { @resource_estimation_added }
           after_save :calculate_resource_estimation_for_self,
             if: -> { [2, 13].include?(tracker_id) && !Issue.where(parent_id: id).exists? }
           after_save :calculate_resource_estimation_for_parent
