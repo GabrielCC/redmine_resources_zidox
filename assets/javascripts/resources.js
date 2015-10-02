@@ -55,8 +55,7 @@ function add_inline_editing() {
             estimation: value
           }
         },
-      }).error(function(reason) {
-        console.log(reason);
+      }).fail(function(reason) {
         alert("Error in request. Please try again later.");
       });
       return hours;
