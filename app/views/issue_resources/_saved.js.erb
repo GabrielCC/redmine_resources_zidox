@@ -6,6 +6,5 @@ $('#issue_resource_resource_id').val('');
 options = '<%="<option></option>#{options_from_collection_for_select(resources, 'id', 'code')}".squish.html_safe %>'
 $('#issue_resource_resource_id').empty().append(options).trigger("chosen:updated");
 add_inline_editing();
-$('td.estimated-hours').text('<%=@issue.estimated_hours %> hours');
-$('#issue_estimated_hours').val('<%=@issue.estimated_hours %>');
+update_issue_estimation(<%=@issue.estimated_hours %>)
 $('input.button', $('#new_issue_resource')).removeAttr('disabled');
