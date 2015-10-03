@@ -68,7 +68,7 @@ class ProjectResourcesController < ApplicationController
           pre = ProjectResourceEmail.new
           pre.project = project
           pre.resource = resource_entry
-          pre.email = email
+          pre.login = login
           pre.save
         end
         return true
