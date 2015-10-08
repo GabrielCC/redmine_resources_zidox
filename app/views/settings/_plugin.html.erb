@@ -1,71 +1,17 @@
-<% resources = Resource.select([:id, :name])
-   custom_fields = CustomField.select([:id, :name, :type])
+<% resources = Resource.select([:id, :name]).order(:name)
+   custom_fields = CustomField.where(type: 'IssueCustomField')
+     .select([:id, :name]).order(:name)
    settings = {} unless settings %>
-<h2> Available resources: </h2>
 <table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% resources.each do |resource| %>
-      <tr>
-        <td>
-          <%= resource.id %>
-        </td>
-        <td>
-          <%= resource.name %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<br />
-<h2> Available custom fields: </h2>
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Type</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% custom_fields.each do |custom_field| %>
-      <tr>
-        <td>
-          <%= custom_field.id %>
-        </td>
-        <td>
-          <%= custom_field.name %>
-        </td>
-        <td>
-          <%= custom_field.type %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-<br />
-<h2> Settings: </h2>
-<table>
-  <thead>
-    <tr>
-      <th></th>
-      <th>Values</th>
-    </tr>
-  </thead>
   <tbody>
     <tr>
       <td>
         Default resource id:
       </td>
       <td>
-        <input type="text" id="settings_resource_id"
-          name="settings[resource_id]"
-          value="<%= settings['resource_id'] %>">
+        <%= select_tag 'settings[resource_id]',
+          options_from_collection_for_select(resources, :id, :name,
+            settings['resource_id']), include_blank: true %>
       </td>
     </tr>
     <tr>
@@ -73,9 +19,9 @@
         Default custom field id:
       </td>
       <td>
-        <input type="text" id="settings_custom_field_id"
-          name="settings[custom_field_id]"
-          value="<%= settings['custom_field_id'] %>">
+        <%= select_tag 'settings[custom_field_id]',
+          options_from_collection_for_select(custom_fields, :id, :name,
+            settings['custom_field_id']), include_blank: true %>
       </td>
     </tr>
   </tbody>
