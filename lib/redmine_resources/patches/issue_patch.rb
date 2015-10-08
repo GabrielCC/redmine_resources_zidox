@@ -12,14 +12,14 @@ module RedmineResources
 
       module InstanceMethods
         def resources_with_divisions
-          list = IssueResource.includes(resource: :division).where(issue_id: self.id)
-          result = {}
-          list.each do |element|
-            division_name = element.resource.division.name
-            result[division_name] = [] unless result[division_name]
-            result[division_name] << element
-          end
-          result
+          IssueResource.includes(resource: :division)
+            .where(issue_id: self.id)
+            .reduce({}) do |total, element|
+              division_name = element.resource.division.name
+              total[division_name] = [] unless total[division_name]
+              total[division_name] << element
+              total
+            end
         end
 
         def set_issue_resource
@@ -28,11 +28,14 @@ module RedmineResources
           default_resource = Resource.where(id: resource_id).first
           custom_value = custom_values.where(custom_field_id: custom_field_id)
             .first.value
-          return if custom_value.blank? || custom_value == '0'
-          resource = issue_resources.where(resource_id: default_resource.id)
-            .first_or_initialize
-          resource.assign_attributes(estimation: custom_value.to_i)
-          resource.save!
+          if custom_value.blank? || custom_value == '0'
+            issue_resources.where(resource_id: default_resource.id).destroy_all
+          else
+            resource = issue_resources.where(resource_id: default_resource.id)
+              .first_or_initialize
+            resource.assign_attributes(estimation: custom_value.to_i)
+            resource.save!
+          end
         end
       end
     end

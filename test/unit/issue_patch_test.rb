@@ -14,13 +14,17 @@ class IssuePatchTest < ActiveSupport::TestCase
   end
 
   def expect_issue_with_initial_estimation_to_create_resource
-    create_base_setup_with_settings
     hours = 2
-    @issue = build_issue_with @tracker, inital_estimation: hours
-    @issue.save!
+    create_issue_with_initial_estimation_of hours
     expect_issue_to_have_a_resource_estimation_of hours
   end
 
+  def expect_issue_to_have_no_resource_estimation
+    assert_empty @issue.issue_resources.all
+    custom_value = @issue.custom_values
+      .where(custom_field_id: @custom_field.id).first.value
+    assert custom_value == '' || custom_value == '0'
+  end
 
   test 'Issue is patched with RedmineResources::Patches::IssuePatch' do
     patch = RedmineResources::Patches::IssuePatch
@@ -34,24 +38,31 @@ class IssuePatchTest < ActiveSupport::TestCase
   # Custom field associated with tracker
   test 'creating a issue without initial estimation creates no resource' do
     create_base_setup_with_settings
-    issue = build_issue_with @tracker
-    issue.save!
-    assert_empty issue.issue_resources.all
-    custom_value = issue.custom_values
-      .where(custom_field_id: @custom_field.id).first
-    assert_equal '', custom_value.value
+    create_issue_without_initial_estimation
+    expect_issue_to_have_no_resource_estimation
   end
 
   test 'creating a issue with initial estimation creates a resource' do
+    create_base_setup_with_settings
     expect_issue_with_initial_estimation_to_create_resource
   end
 
   test 'updating an initial estimation updated the resource' do
+    create_base_setup_with_settings
     expect_issue_with_initial_estimation_to_create_resource
     new_estimation = 3
     @issue.update_attributes custom_field_values: {
       @custom_field.id => new_estimation }
     expect_issue_to_have_a_resource_estimation_of new_estimation
+  end
+
+  test 'updating an initial estimation to 0 removes the resource' do
+    create_base_setup_with_settings
+    expect_issue_with_initial_estimation_to_create_resource
+    new_estimation = 0
+    @issue.update_attributes custom_field_values: {
+      @custom_field.id => new_estimation }
+    expect_issue_to_have_no_resource_estimation
   end
 
   # manually_added_resource_estimation = false

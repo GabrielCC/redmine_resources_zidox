@@ -29,7 +29,7 @@ module RedmineResources
 
           def resources_for_project(project, issue = nil)
             resources = {}
-            created_resources = issue.nil? ? [] : issue.resource
+            created_resources = issue.nil? ? [] : issue.resources
             project.resource.each do |resource|
               condition = resource.nil? || created_resources.include?(resource)
               resources[resource.id] = resource unless condition

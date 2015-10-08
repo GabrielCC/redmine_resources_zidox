@@ -8,6 +8,16 @@ module SetupSupport
       custom_field_values: { @custom_field.id => inital_estimation }
   end
 
+  def create_issue_with_initial_estimation_of(value)
+    @issue = build_issue_with @tracker, inital_estimation: value
+    @issue.save!
+  end
+
+  def create_issue_without_initial_estimation
+    @issue = build_issue_with @tracker
+    @issue.save!
+  end
+
   def create_base_setup
     @custom_field = create :custom_field, :issue
     @author = create :user
