@@ -26,4 +26,13 @@ module SetupSupport
     @project_resource_email = create :project_resource_email,
       project_id: @project.id, resource_id: @resource.id, login: @author.login
   end
+
+  def create_base_setup_with_settings
+    create_base_setup
+    hash = ActiveSupport::HashWithIndifferentAccess.new(
+      resource_id: @resource.id,
+      custom_field_id: @custom_field.id
+    )
+    Setting.plugin_redmine_resources = hash
+  end
 end

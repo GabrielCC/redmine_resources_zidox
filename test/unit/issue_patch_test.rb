@@ -4,28 +4,29 @@ class IssuePatchTest < ActiveSupport::TestCase
   test 'Issue is patched with RedmineResources::Patches::IssuePatch' do
     patch = RedmineResources::Patches::IssuePatch
     assert_includes Issue.included_modules, patch
-    %i().each do |method|
+    %i(create_issue_resource).each do |method|
         assert_includes Issue.instance_methods, method
       end
   end
 
+  ## With plugin settings defined
   # Custom field associated with tracker
   test 'creating a issue without initial estimation creates no resource' do
-    create_base_setup
+    create_base_setup_with_settings
     issue = build_issue_with @tracker
     issue.save!
-    assert_empty issue.issue_resource.all
+    assert_empty issue.issue_resources.all
     custom_value = issue.custom_values
       .where(custom_field_id: @custom_field.id).first
     assert_equal '', custom_value.value
   end
 
   test 'creating a issue with initial estimation creates a resource' do
-    create_base_setup
+    create_base_setup_with_settings
     hours = 2
     issue = build_issue_with @tracker, inital_estimation: hours
     issue.save!
-    resources = issue.issue_resource.all
+    resources = issue.issue_resources.all
     assert_not_empty resources
     assert_equal 1, resources.size
     resource = resources[0]
@@ -33,9 +34,8 @@ class IssuePatchTest < ActiveSupport::TestCase
     assert_equal hours, resource.estimation
     custom_value = issue.custom_values
       .where(custom_field_id: @custom_field.id).first.value
-    assert_equal hours, custom_value
+    assert_equal hours.to_s, custom_value
   end
-
 
   # manually_added_resource_estimation = false
   # test 'issue without estimation creates no resource' do
