@@ -1,0 +1,82 @@
+<% resources = Resource.select([:id, :name])
+   custom_fields = CustomField.select([:id, :name, :type])
+   settings = {} unless settings %>
+<h2> Available resources: </h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% resources.each do |resource| %>
+      <tr>
+        <td>
+          <%= resource.id %>
+        </td>
+        <td>
+          <%= resource.name %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br />
+<h2> Available custom fields: </h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% custom_fields.each do |custom_field| %>
+      <tr>
+        <td>
+          <%= custom_field.id %>
+        </td>
+        <td>
+          <%= custom_field.name %>
+        </td>
+        <td>
+          <%= custom_field.type %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br />
+<h2> Settings: </h2>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Values</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        Default resource id:
+      </td>
+      <td>
+        <input type="text" id="settings_resource_id"
+          name="settings[resource_id]"
+          value="<%= settings['resource_id'] %>">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Default custom field id:
+      </td>
+      <td>
+        <input type="text" id="settings_custom_field_id"
+          name="settings[custom_field_id]"
+          value="<%= settings['custom_field_id'] %>">
+      </td>
+    </tr>
+  </tbody>
+</table>

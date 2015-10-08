@@ -35,4 +35,9 @@ module SetupSupport
     )
     Setting.plugin_redmine_resources = hash
   end
+
+  def create_base_setup_without_settings
+    create_base_setup
+    Setting.plugin_redmine_resources = ActiveSupport::HashWithIndifferentAccess.new
+  end
 end
