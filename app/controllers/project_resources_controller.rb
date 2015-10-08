@@ -64,7 +64,7 @@ class ProjectResourcesController < ApplicationController
       if resource[:users].nil?
          return 'Users array not provided';
       else
-        resource[:users].each do |email|
+        resource[:users].each do |login|
           pre = ProjectResourceEmail.new
           pre.project = project
           pre.resource = resource_entry
