@@ -1,10 +1,31 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class IssuePatchTest < ActiveSupport::TestCase
+  def expect_issue_to_have_a_resource_estimation_of(value)
+    resources = @issue.issue_resources.all
+    assert_not_empty resources
+    assert_equal 1, resources.size
+    resource = resources[0]
+    assert_instance_of IssueResource, resource
+    assert_equal value, resource.estimation
+    custom_value = @issue.custom_values
+      .where(custom_field_id: @custom_field.id).first.value
+    assert_equal value.to_s, custom_value
+  end
+
+  def expect_issue_with_initial_estimation_to_create_resource
+    create_base_setup_with_settings
+    hours = 2
+    @issue = build_issue_with @tracker, inital_estimation: hours
+    @issue.save!
+    expect_issue_to_have_a_resource_estimation_of hours
+  end
+
+
   test 'Issue is patched with RedmineResources::Patches::IssuePatch' do
     patch = RedmineResources::Patches::IssuePatch
     assert_includes Issue.included_modules, patch
-    %i(create_issue_resource).each do |method|
+    %i(resources_with_divisions set_issue_resource).each do |method|
         assert_includes Issue.instance_methods, method
       end
   end
@@ -22,19 +43,15 @@ class IssuePatchTest < ActiveSupport::TestCase
   end
 
   test 'creating a issue with initial estimation creates a resource' do
-    create_base_setup_with_settings
-    hours = 2
-    issue = build_issue_with @tracker, inital_estimation: hours
-    issue.save!
-    resources = issue.issue_resources.all
-    assert_not_empty resources
-    assert_equal 1, resources.size
-    resource = resources[0]
-    assert_instance_of IssueResource, resource
-    assert_equal hours, resource.estimation
-    custom_value = issue.custom_values
-      .where(custom_field_id: @custom_field.id).first.value
-    assert_equal hours.to_s, custom_value
+    expect_issue_with_initial_estimation_to_create_resource
+  end
+
+  test 'updating an initial estimation updated the resource' do
+    expect_issue_with_initial_estimation_to_create_resource
+    new_estimation = 3
+    @issue.update_attributes custom_field_values: {
+      @custom_field.id => new_estimation }
+    expect_issue_to_have_a_resource_estimation_of new_estimation
   end
 
   # manually_added_resource_estimation = false

@@ -22,7 +22,10 @@ Redmine::Plugin.register :redmine_resources do
 end
 
 Rails.application.config.after_initialize do
-  dependencies = { redmine_new_issue_view: '1.0.1' }
+  dependencies = {
+    redmine_new_issue_view: '1.0.1',
+    a_common_libs: '1.1.5'
+  }
   test_dependencies = { redmine_testing_gems: '1.0.0' }
   redmine_resources = Redmine::Plugin.find :redmine_resources
   check_dependencies = proc do |plugin, version|
