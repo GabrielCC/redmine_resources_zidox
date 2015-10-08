@@ -1,7 +1,33 @@
-<% resources = Resource.select([:id, :name]).order(:name)
-   custom_fields = CustomField.where(type: 'IssueCustomField')
-     .select([:id, :name]).order(:name)
-   settings = {} unless settings %>
+<%  resources = Resource.select([:id, :name]).order(:name)
+    custom_fields = CustomField.where(type: 'IssueCustomField')
+      .select([:id, :name]).order(:name)
+    custom_field_id = settings['custom_field_id']
+    if custom_field_id && custom_field_id.present?
+      current_custom_field = CustomField.where(id: custom_field_id)
+        .first
+      trackers = current_custom_field.trackers.all
+    else
+      current_custom_field = nil
+      trackers = []
+    end
+    roles = Role.select([:id, :name, :builtin]).order(:name)
+    settings = {} unless settings
+    settings['visible'] = {} unless settings['visible']
+    settings['editable'] = {} unless settings['editable'] %>
+<h3>
+  <% if current_custom_field %>
+    <% unless trackers.empty? %>
+      <%  trackers_names = trackers.map do |tracker|
+            tracker.name.pluralize.capitalize
+          end.join(', ') %>
+      Resources are avaliable for: <%= trackers_names %>
+    <% else %>
+      No trackers configures for the selected custom field.
+    <% end %>
+  <% else %>
+    Select a custom field to attach resources to its trackers!
+  <% end %>
+</h3>
 <table>
   <tbody>
     <tr>
@@ -24,5 +50,39 @@
             settings['custom_field_id']), include_blank: true %>
       </td>
     </tr>
+  </tbody>
+</table>
+<br />
+<h3>Visible for:</h3>
+<table>
+  <tbody>
+    <% roles.each do |role| %>
+      <tr>
+        <td>
+          <%= role.name %>
+        </td>
+        <td>
+          <%= check_box_tag "settings[visible][#{ role.id }]", '1',
+                settings['visible'][role.id.to_s] == '1' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br />
+<h3>Editable for:</h3>
+<table>
+  <tbody>
+    <% roles.each do |role| %>
+      <tr>
+        <td>
+          <%= role.name %>
+        </td>
+        <td>
+          <%= check_box_tag "settings[editable][#{ role.id }]", '1',
+                settings['editable'][role.id.to_s] == '1' %>
+        </td>
+      </tr>
+    <% end %>
   </tbody>
 </table>
