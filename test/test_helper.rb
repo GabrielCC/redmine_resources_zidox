@@ -16,7 +16,7 @@ end
 require File.expand_path(File.dirname(__FILE__) << '/../../../test/test_helper')
 
 # Load factories
-factories_folder = File.expand_path File.dirname(__FILE__) << '/factories/'
+factories_folder = File.expand_path(File.dirname(__FILE__) << '/factories/')
 FactoryGirl.definition_file_paths << factories_folder
 FactoryGirl.find_definitions
 
@@ -32,12 +32,12 @@ end
 
 # Including support for unit tests
 base = ActiveSupport::TestCase
-support = SettingsSupport
+support = SetupSupport
 base.send :include, support unless base.included_modules.include? support
 
 # Including supprot for functional tests
 base = ActionController::TestCase
-modules = [LoginSupport, SettingsSupport]
+modules = [LoginSupport, SetupSupport]
 modules.each do |support|
   base.send :include, support unless base.included_modules.include? support
 end

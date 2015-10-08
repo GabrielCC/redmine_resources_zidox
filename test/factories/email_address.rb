@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :email_address do
     sequence(:address) {|count| "sample-email-#{ count }@example.com" }
     is_default true
-    created_on '2006-07-19 19:34:07 +02:00'
-    updated_on '2006-07-19 19:34:07 +02:00'
+    created_on 1.day.ago.to_s(:db)
+    updated_on 1.day.ago.to_s(:db)
   end
 end
