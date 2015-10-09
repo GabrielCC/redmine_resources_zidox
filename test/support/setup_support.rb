@@ -31,10 +31,7 @@ module SetupSupport
       tracker_id: @tracker.id
     @project.trackers << @tracker
     @project.save!
-    @resource_setting = create :resource_setting, project_id: @project.id,
-      setting_object_id: @tracker, setting_object_id: @tracker.id
-    @project_resource_email = create :project_resource_email,
-      project_id: @project.id, resource_id: @resource.id, login: @author.login
+    @project_resource = create :resource, division_id: @division.id
   end
 
   def create_base_setup_with_settings
@@ -92,6 +89,6 @@ module SetupSupport
       project_settings = Setting.send setting_name
     end
     Setting.send setting_assign, { "custom" => "1",
-      "resource_id" => @resource.id.to_s }
+      "resource_id" => @project_resource.id.to_s }
   end
 end

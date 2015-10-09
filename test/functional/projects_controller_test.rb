@@ -71,6 +71,6 @@ class ProjectsControllerTest < ActionController::TestCase
     expect_project_resource_settings_page_to_load
     assert_select 'input#settings_custom[checked=checked]'
     assert_select 'select#settings_resource_id option[selected]',
-      text: @resource.name
+      text: @project_resource.name
   end
 end

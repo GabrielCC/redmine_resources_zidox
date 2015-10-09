@@ -23,8 +23,8 @@ module RedmineResources
         end
 
         def set_issue_resource
-          resource_id = Setting.plugin_redmine_resources[:resource_id]
           custom_field_id = Setting.plugin_redmine_resources[:custom_field_id]
+          resource_id = resource_id_from_settings
           default_resource = Resource.where(id: resource_id).first
           return unless default_resource
           custom_field = custom_values.where(custom_field_id: custom_field_id)
@@ -38,6 +38,24 @@ module RedmineResources
               .first_or_initialize
             resource.assign_attributes(estimation: custom_value.to_i)
             resource.save!
+          end
+        end
+
+        private
+
+        def resource_id_from_settings
+          setting_name = "plugin_redmine_resources_project_#{ project_id }"
+          begin
+            project_settings = Setting.send setting_name
+          rescue NoMethodError
+            Setting.define_setting setting_name, 'serialized' => true
+            project_settings = Setting.send setting_name
+          end
+          project_settings = {} if !project_settings || project_settings.blank?
+          if project_settings['custom'] == '1'
+            project_settings['resource_id']
+          else
+            Setting.plugin_redmine_resources[:resource_id]
           end
         end
       end

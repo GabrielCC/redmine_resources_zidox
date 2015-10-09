@@ -2,12 +2,12 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class IssuePatchTest < ActiveSupport::TestCase
   def expect_issue_to_have_a_resources_of(value)
-    resources = @issue.issue_resources.all
-    assert_not_empty resources
-    assert_equal 1, resources.size
-    resource = resources[0]
-    assert_instance_of IssueResource, resource
-    assert_equal value, resource.estimation
+    @found_resources = @issue.issue_resources.all
+    assert_not_empty @found_resources
+    assert_equal 1, @found_resources.size
+    @found_resource = @found_resources[0]
+    assert_instance_of IssueResource, @found_resource
+    assert_equal value, @found_resource.estimation
   end
 
   def expect_issue_to_have_no_resources
@@ -112,5 +112,15 @@ class IssuePatchTest < ActiveSupport::TestCase
       @custom_field.id => new_estimation }
     expect_issue_to_have_no_resources
     expect_issue_to_have_no_initial_estimation
+  end
+
+  test 'custom project settings are used when enabled' do
+    create_base_setup_with_settings
+    create_project_resource_settings
+    hours = 2
+    create_issue_with_initial_estimation_of hours
+    expect_issue_to_have_a_resource_estimation_of hours
+    expect_issue_to_have_a_resources_of hours
+    assert_equal @project_resource.id, @found_resource.resource_id
   end
 end
