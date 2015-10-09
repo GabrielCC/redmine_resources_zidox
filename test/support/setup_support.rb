@@ -40,25 +40,21 @@ module SetupSupport
   def create_base_setup_with_settings
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
-      resource_id: @resource.id,
-      custom_field_id: @custom_field.id
-    )
+      resource_id: @resource.id, custom_field_id: @custom_field.id)
     Setting.plugin_redmine_resources = hash
   end
 
   def create_base_setup_without_resource_id
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
-      custom_field_id: @custom_field.id
-    )
+      custom_field_id: @custom_field.id)
     Setting.plugin_redmine_resources = hash
   end
 
   def create_base_setup_without_custom_field
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
-      resource_id: @resource.id
-    )
+      resource_id: @resource.id)
     Setting.plugin_redmine_resources = hash
   end
 
@@ -66,14 +62,13 @@ module SetupSupport
     create_base_setup
     @incomplete_custom_field = create :custom_field, :issue
     hash = ActiveSupport::HashWithIndifferentAccess.new(
-      resource_id: @resource.id,
-      custom_field_id: @incomplete_custom_field.id
-    )
+      resource_id: @resource.id, custom_field_id: @incomplete_custom_field.id)
     Setting.plugin_redmine_resources = hash
   end
 
   def create_base_setup_without_settings
     create_base_setup
-    Setting.plugin_redmine_resources = ActiveSupport::HashWithIndifferentAccess.new
+    Setting.plugin_redmine_resources = \
+      ActiveSupport::HashWithIndifferentAccess.new
   end
 end

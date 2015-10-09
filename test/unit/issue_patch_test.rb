@@ -44,7 +44,8 @@ class IssuePatchTest < ActiveSupport::TestCase
       end
   end
 
-  ## Without default resource defined
+  ## With plugin settings defined
+  # Without default resource defined
   test 'without resource creating a issue is possible' do
     create_base_setup_without_resource_id
     create_issue_without_initial_estimation
@@ -72,7 +73,14 @@ class IssuePatchTest < ActiveSupport::TestCase
     expect_issue_to_have_a_resource_estimation_of new_estimation
   end
 
-  ## With plugin settings defined
+  # Without custom field defined
+  test 'without custom field creating a issue is possible' do
+    create_base_setup_without_custom_field
+    @issue = build_issue_with @tracker
+    @issue.save
+    assert @issue.valid?
+  end
+
   # Custom field associated with tracker
   test 'creating a issue without initial estimation creates no resource' do
     create_base_setup_with_settings
