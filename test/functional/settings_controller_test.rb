@@ -5,8 +5,8 @@ class SettingsControllerTest < ActionController::TestCase
     get :plugin, id: 'redmine_resources'
     assert_response :success
     assert_select 'h2', text: /Redmine Resources/
-    assert_select 'td', text: 'Default resource id:'
-    assert_select 'td', text: 'Default custom field id:'
+    assert_select 'td', text: 'Default resource:'
+    assert_select 'td', text: 'Default custom field:'
     assert_select 'h3', text: 'Visible for:'
     assert_select 'h3', text: 'Editable for:'
     assert_select 'select[name="settings[resource_id]"]'

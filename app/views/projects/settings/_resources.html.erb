@@ -1,31 +1,101 @@
-<%= form_tag '/resources/settings/trackers', method: :post do %>
-  <%  map = { 'Tracker' => { visible: [], editable: [] },
-        'Role' => { visible: [], editable: [] } }
-      ResourceSetting.where(project_id: @project.id).each do |element|
-        map[element.setting_object_type][element.setting_key] << element.setting_object_id
-      end %>
+<%= form_tag '/resources/settings', method: :post do %>
+  <%  resources = Resource.select([:id, :name]).order(:name)
+      custom_fields = CustomField.where(type: 'IssueCustomField')
+        .select([:id, :name]).order(:name)
+      settings = Setting.plugin_redmine_resources
+      settings = {} if !settings || settings.blank?
+      custom_field_id = settings['custom_field_id']
+      if custom_field_id && custom_field_id.present?
+        current_custom_field = CustomField.where(id: custom_field_id)
+          .first
+        trackers = current_custom_field.trackers.all
+      else
+        current_custom_field = nil
+        trackers = []
+      end
+      roles = Role.select([:id, :name, :builtin]).order(:name)
+      setting_name = "plugin_redmine_resources_project_#{ @project.id }"
+      begin
+        project_settings = Setting.send setting_name
+      rescue NoMethodError
+        Setting.define_setting setting_name, 'serialized' => true
+        project_settings = Setting.send setting_name
+      end
+      project_settings = {} if !project_settings || project_settings.blank?
+      project_settings['visible'] = {} unless project_settings['visible']
+      project_settings['editable'] = {} unless project_settings['editable'] %>
   <%= hidden_field_tag 'project_id', @project.id %>
-  <fieldset>
-    <legend>Trackers</legend>
-      <% Tracker.all.each do |tracker| %>
-        <% check_box = check_box_tag 'trackers[visible][]', tracker.id, (map['Tracker'][:visible].include? tracker.id), { id: 'trackers_' + tracker.name } %>
-        <%= label_tag 'trackers_' + tracker.name, check_box.html_safe + tracker.to_s %>
+  <h3>
+    <% if current_custom_field %>
+      <% unless trackers.empty? %>
+        <%  trackers_names = trackers.map do |tracker|
+              tracker.name.pluralize.capitalize
+            end.join(', ') %>
+        Resources are avaliable for: <%= trackers_names %>
+      <% else %>
+        No trackers configures for resource estimation!
       <% end %>
-  </fieldset>
-  <fieldset>
-    <legend>Visible for</legend>
-      <% Role.all.each do |role| %>
-        <% check_box = check_box_tag 'roles[visible][]', role.id, (map['Role'][:visible].include? role.id), { id: "roles_visible_#{ role.id }" } %>
-        <%= label_tag "roles_visible_#{ role.id }", check_box.html_safe + role.to_s %>
+    <% else %>
+      No custom field selected for resource estimation!
+    <% end %>
+  </h3>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          Use project specific settings:
+        </td>
+        <td>
+          <%= check_box_tag "settings[custom]", '1',
+                project_settings['custom'] == '1' %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Resource for initial estimation:
+        </td>
+        <td>
+          <%= select_tag 'settings[resource_id]',
+            options_from_collection_for_select(resources, :id, :name,
+              project_settings['resource_id']), include_blank: true %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <br />
+  <h3>Visible for:</h3>
+  <table>
+    <tbody>
+      <% roles.each do |role| %>
+        <tr>
+          <td>
+            <%= role.name %>
+          </td>
+          <td>
+            <%= check_box_tag "settings[visible][#{ role.id }]", '1',
+                  project_settings['visible'][role.id.to_s] == '1' %>
+          </td>
+        </tr>
       <% end %>
-  </fieldset>
-  <fieldset>
-    <legend>Editable for</legend>
-      <% Role.all.each do |role| %>
-         <% check_box = check_box_tag 'roles[editable][]', role.id, (map['Role'][:editable].include? role.id), { id: "roles_editable_#{role.id}" } %>
-        <%= label_tag "roles_editable_#{ role.id }", check_box.html_safe + role.to_s %>
+    </tbody>
+  </table>
+  <br />
+  <h3>Editable for:</h3>
+  <table>
+    <tbody>
+      <% roles.each do |role| %>
+        <tr>
+          <td>
+            <%= role.name %>
+          </td>
+          <td>
+            <%= check_box_tag "settings[editable][#{ role.id }]", '1',
+                  project_settings['editable'][role.id.to_s] == '1' %>
+          </td>
+        </tr>
       <% end %>
-  </fieldset>
+    </tbody>
+  </table>
   <p>
     <%= submit_tag l(:button_save) %>
   </p>

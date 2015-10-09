@@ -37,15 +37,19 @@ class ResourcesController < ApplicationController
     end
   end
 
-  def trackers
-    ResourceSetting.destroy_all project_id: @project.id
-    params[:trackers] = {} if params[:trackers].nil?
-    params[:roles] = {} if params[:roles].nil?
-    map = { visible: ResourceSetting::VIEW_RESOURCES,
-      editable: ResourceSetting::EDIT_RESOURCES }
-    map.each_pair {|key, val| create_resource_settings key, val }
-    flash[:notice] = l(:notice_successful_update)
-    redirect_to_settings_project
+  def settings
+    @project = Project.where(id: params[:project_id]).first
+    render :not_found, status: 404 and return unless @project
+    setting_name = "plugin_redmine_resources_project_#{ @project.id }"
+    setting_assign = setting_name + '='
+    begin
+      project_settings = Setting.send setting_name
+    rescue NoMethodError
+      Setting.define_setting setting_name, 'serialized' => true
+      project_settings = Setting.send setting_name
+    end
+    Setting.send setting_assign, params[:settings]
+    redirect_to settings_project_path @project, tab: 'resources'
   end
 
   private
@@ -67,10 +71,6 @@ class ResourcesController < ApplicationController
       settings.setting = val
       settings.save
     end
-  end
-
-  def redirect_to_settings_project(tab = 'resources')
-    redirect_to settings_project_path(@project, tab: tab) and return
   end
 
   def set_division

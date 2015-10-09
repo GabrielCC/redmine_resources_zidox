@@ -71,4 +71,27 @@ module SetupSupport
     Setting.plugin_redmine_resources = \
       ActiveSupport::HashWithIndifferentAccess.new
   end
+
+  def enable_plugin_for_project
+    @project.enabled_module_names = @project.enabled_module_names \
+      << 'redmine_resources'
+  end
+
+  def disable_plugin_for_project
+    @project.enabled_module_names = @project.enabled_module_names \
+      - ['redmine_resources']
+  end
+
+  def create_project_resource_settings
+    setting_name = "plugin_redmine_resources_project_#{ @project.id }"
+    setting_assign = setting_name + '='
+    begin
+      project_settings = Setting.send setting_name
+    rescue NoMethodError
+      Setting.define_setting setting_name, 'serialized' => true
+      project_settings = Setting.send setting_name
+    end
+    Setting.send setting_assign, { "custom" => "1",
+      "resource_id" => @resource.id.to_s }
+  end
 end
