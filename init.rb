@@ -18,7 +18,7 @@ Redmine::Plugin.register :redmine_resources do
     permission :view_resources_plugin,
       { resources: [:index, :edit, :trackers] }, public: true
   end
-  settings partial: 'settings/plugin'
+  settings partial: 'redmine_resources/plugin_settings'
 end
 
 Rails.application.config.after_initialize do
