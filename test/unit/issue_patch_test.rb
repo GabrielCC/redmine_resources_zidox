@@ -14,7 +14,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     assert_empty @issue.issue_resources.all
   end
 
-  def expect_issue_to_have_a_resource_estimation_of(value)
+  def expect_issue_to_have_an_initial_estimation_of(value)
     custom_field = @issue.custom_values
       .where(custom_field_id: @custom_field.id).first
     custom_value = custom_field.value
@@ -25,7 +25,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     hours = 2
     create_issue_with_initial_estimation_of hours
     expect_issue_to_have_a_resources_of hours
-    expect_issue_to_have_a_resource_estimation_of hours
+    expect_issue_to_have_an_initial_estimation_of hours
   end
 
   def expect_issue_to_have_no_initial_estimation
@@ -57,7 +57,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     hours = 4
     create_issue_with_initial_estimation_of hours
     expect_issue_to_have_no_resources
-    expect_issue_to_have_a_resource_estimation_of hours
+    expect_issue_to_have_an_initial_estimation_of hours
   end
 
   test 'without resource adding an initial estimation is possible' do
@@ -65,12 +65,12 @@ class IssuePatchTest < ActiveSupport::TestCase
     hours = 4
     create_issue_with_initial_estimation_of hours
     expect_issue_to_have_no_resources
-    expect_issue_to_have_a_resource_estimation_of hours
+    expect_issue_to_have_an_initial_estimation_of hours
     new_estimation = 3
     @issue.update_attributes custom_field_values: {
       @custom_field.id => new_estimation }
     expect_issue_to_have_no_resources
-    expect_issue_to_have_a_resource_estimation_of new_estimation
+    expect_issue_to_have_an_initial_estimation_of new_estimation
   end
 
   # Without custom field defined
@@ -101,7 +101,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     @issue.update_attributes custom_field_values: {
       @custom_field.id => new_estimation }
     expect_issue_to_have_a_resources_of new_estimation
-    expect_issue_to_have_a_resource_estimation_of new_estimation
+    expect_issue_to_have_an_initial_estimation_of new_estimation
   end
 
   test 'updating an initial estimation to 0 removes the resource' do
@@ -119,8 +119,19 @@ class IssuePatchTest < ActiveSupport::TestCase
     create_project_resource_settings
     hours = 2
     create_issue_with_initial_estimation_of hours
-    expect_issue_to_have_a_resource_estimation_of hours
     expect_issue_to_have_a_resources_of hours
+    expect_issue_to_have_an_initial_estimation_of hours
     assert_equal @project_resource.id, @found_resource.resource_id
+  end
+
+  test 'readonly custom fields does not create resource' do
+    create_base_setup_with_settings
+    create_project_resource_settings
+    create_project_membership
+    make_the_custom_field_read_only
+    hours = 2
+    create_issue_with_initial_estimation_of hours
+    expect_issue_to_have_no_resources
+    expect_issue_to_have_an_initial_estimation_of hours
   end
 end

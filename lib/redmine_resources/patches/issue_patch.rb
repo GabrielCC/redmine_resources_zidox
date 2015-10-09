@@ -30,6 +30,7 @@ module RedmineResources
           custom_field = custom_values.where(custom_field_id: custom_field_id)
             .first
           return unless custom_field
+          return if custom_field_read_only_for_al_roles custom_field_id
           custom_value = custom_field.value
           if custom_value.blank? || custom_value == '0'
             issue_resources.where(resource_id: default_resource.id).destroy_all
@@ -42,6 +43,12 @@ module RedmineResources
         end
 
         private
+
+        def custom_field_read_only_for_al_roles(custom_field_id)
+          editable_custom_field_values(User.current).reject do |value|
+            value.custom_field.id != custom_field_id.to_i
+          end.count == 0
+        end
 
         def resource_id_from_settings
           setting_name = "plugin_redmine_resources_project_#{ project_id }"

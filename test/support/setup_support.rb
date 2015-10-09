@@ -34,6 +34,12 @@ module SetupSupport
     @project_resource = create :resource, division_id: @division.id
   end
 
+  def create_project_membership
+    @role = create :role, :manager
+    @member = create :member, user_id: @author.id, project_id: @project.id,
+      role_ids: [@role.id]
+  end
+
   def create_base_setup_with_settings
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
@@ -90,5 +96,23 @@ module SetupSupport
     end
     Setting.send setting_assign, { "custom" => "1",
       "resource_id" => @project_resource.id.to_s }
+  end
+
+  def create_workflow_permission_with_rule(value)
+    @permission = create :workflow_permission, tracker_id: @tracker.id,
+      role_id: @role.id, old_status_id: @status.id,
+      field_name: @custom_field.id.to_s, rule: value
+  end
+
+  def make_the_custom_field_read_only
+    create_workflow_permission_with_rule 'readonly'
+  end
+
+  def make_the_custom_field_required
+    create_workflow_permission_with_rule 'required'
+  end
+
+  def remove_the_custom_field_workflow_permission
+    @permission.destroy if @permission
   end
 end
