@@ -23,7 +23,7 @@ class SettingsControllerTest < ActionController::TestCase
 
   test 'GET plugin settings with incomplete settings' do
     login_as_admin
-    create_base_setup_with_incomplete_settings
+    create_base_setup_without_trackers_for_custom_field
     expect_plugin_settings_page_to_load
     assert_select 'h3',
       text: 'No trackers configures for the selected custom field.'

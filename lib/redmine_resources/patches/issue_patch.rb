@@ -26,6 +26,7 @@ module RedmineResources
           resource_id = Setting.plugin_redmine_resources[:resource_id]
           custom_field_id = Setting.plugin_redmine_resources[:custom_field_id]
           default_resource = Resource.where(id: resource_id).first
+          return unless default_resource
           custom_value = custom_values.where(custom_field_id: custom_field_id)
             .first.value
           if custom_value.blank? || custom_value == '0'
