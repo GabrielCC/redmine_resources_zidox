@@ -19,25 +19,29 @@ module SetupSupport
   end
 
   def create_base_setup
-    @custom_field = create :custom_field, :issue
     @author = create :user
+    User.current = @author
     @division = create :division
     @resource = create :resource, division_id: @division.id
     @priority = create :issue_priority
     @status = create :issue_status
     @project = create :project
-    @tracker = create :tracker, id: 2, default_status_id: @status.id
+    @tracker = create :tracker, default_status_id: @status.id
+    @role = create :role, :manager
+    @custom_field = create :custom_field, :issue
     create :custom_fields_tracker, custom_field_id: @custom_field.id,
       tracker_id: @tracker.id
+    create :custom_fields_role, custom_field_id: @custom_field.id,
+      role_id: @role.id
     @project.trackers << @tracker
     @project.save!
     @project_resource = create :resource, division_id: @division.id
   end
 
   def create_project_membership
-    @role = create :role, :manager
     @member = create :member, user_id: @author.id, project_id: @project.id,
       role_ids: [@role.id]
+    @member_role = create :member_role, member_id: @member.id, role_id: @role.id
   end
 
   def create_base_setup_with_settings
