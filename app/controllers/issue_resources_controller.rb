@@ -5,9 +5,11 @@ class IssueResourcesController < ApplicationController
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :create
-      render partial: 'saved'
+      resources = @issue.project.resources_list @issue
+      divisions = @issue.resources_with_divisions
+      render json: { divisions: divisions, resources: resources }
     else
-      render partial: 'failed'
+      render_errors
     end
   end
 
@@ -18,9 +20,9 @@ class IssueResourcesController < ApplicationController
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :update, old_value
-      render partial: 'updated'
+      render json: { success: 'Updated!' }
     else
-      render partial: 'failed'
+      render_errors
     end
   end
 
@@ -30,13 +32,17 @@ class IssueResourcesController < ApplicationController
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
-    render partial: 'saved'
+    render json: { success: 'Deleted!' }
   end
 
   private
 
   def resource_params
     params.require(:issue_resource).permit(:issue_id, :resource_id, :estimation)
+  end
+
+  def render_errors
+    render json: { errors: @issue_resource.errors.full_messages }, status: 400
   end
 
   def update_columns_for(issue)

@@ -2,27 +2,25 @@
     issue ||= @issue_resource.issue
     divisions = issue.resources_with_divisions %>
 <%= hidden_field_tag 'has_resources', divisions.count %>
-<div id="resources_list">
-  <% divisions.each_pair do |division_name, issues_list| %>
-    <table>
+<% divisions.each do |id, division| %>
+  <table>
+    <tr>
+      <td colspan="3" class="division-name">
+        <strong><%= division[:name] %></strong>
+      </td>
+    </tr>
+    <% division[:elements].each do |issue_resource| %>
       <tr>
-        <td colspan="3" class="division_name">
-          <strong><%= division_name %></strong>
+        <td class="estimation-cell" id="cell-<%= issue_resource[:id] %>">
+        <div id="resource-<%= issue_resource[:id] %>" class="resource-estimation <%= editable_class %>" data-resource-id="<%= issue_resource[:id] %>">
+          <%= issue_resource[:estimation] %>
+        </div> h
         </td>
+        <td><%= issue_resource[:code] %></td>
+        <td>
+          <%= delete_link issue_resource_path(issue_resource[:id]), remote: true if editable %>
+         </td>
       </tr>
-      <% issues_list.each do |ri| %>
-        <tr>
-          <td class="estimation-cell" id="cell-<%= ri.id %>">
-          <div id="resource-<%=ri.id %>" class="resource_estimation <%= editable_class %>" data-resource-id="<%= ri.id %>">
-            <%= ri.estimation %>
-          </div> h
-          </td>
-          <td><%= ri.resource.code %></td>
-          <td>
-            <%= delete_link issue_resource_path(ri), remote: true if editable %>
-           </td>
-        </tr>
-      <% end %>
-    </table>
-  <% end %>
-</div>
+    <% end %>
+  </table>
+<% end %>

@@ -26,16 +26,6 @@ module RedmineResources
             roles.each {|role| visible = role.can_edit_resources(project) if !visible }
             visible
           end
-
-          def resources_for_project(project, issue = nil)
-            resources = {}
-            created_resources = issue.nil? ? [] : issue.resources
-            project.resource.each do |resource|
-              condition = resource.nil? || created_resources.include?(resource)
-              resources[resource.id] = resource unless condition
-            end
-            resources
-          end
         end
       end
     end

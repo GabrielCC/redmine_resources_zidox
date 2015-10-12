@@ -2,10 +2,17 @@ module RedmineResources
   module Patches
     module ProjectPatch
       def self.included(base)
+        base.send :include, InstanceMethods
         base.class_eval do
-          has_many :project_resource, dependent: :destroy
-          has_many :resource, through: :project_resource
+          has_many :project_resources, dependent: :destroy
+          has_many :resources, through: :project_resources
         end
+      end
+    end
+
+    module InstanceMethods
+      def resources_list(issue)
+        resources.all - issue.resources.all
       end
     end
   end

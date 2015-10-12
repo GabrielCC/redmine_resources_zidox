@@ -1,4 +1,4 @@
-#resources input#issue_resource_estimation {
+#resources input.estimation {
   width: 30px;
 }
 #resources input.button {
@@ -7,26 +7,26 @@
 #resources input.button.small {
   width: 52px;
 }
-#resources td.edit_actions {
+#resources td.actions {
   width: 120px;
 }
-td.division_name {
+td.division-name {
   text-align: left;
 }
 
-td.estimation_cell {
+td.estimation-cell {
   text-align: left;
   cursor: pointer;
 }
-.resource_estimation {
+.resource-estimation {
   display: inline;
   text-align: right;
   margin-left: 2px;
 }
-.resource_estimation input {
+.resource-estimation input {
   width: 20px !important;
   margin-left: 2px;
 }
-.estimation_cell {
+.estimation-cell {
   width: 60px;
 }

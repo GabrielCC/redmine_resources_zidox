@@ -1,73 +1,98 @@
-$(function () {
-  add_inline_editing();
-  $('#new_issue_resource').bind('submit', function() {
-    $('input.button', $(this)).attr('disabled', true);
-    return true;
-  });
-  $('#issue_resource_resource_id').select2({ width: '90px', placeholder_text_single: 'Select' });
-});
+'use strict';
+var ResourceWindow = (function (me, $) {
+  var self = me || function (selector) {
+    this.root = $(selector);
+    this.initialize();
+  };
 
-function update_issue_estimation(estimation) {
-  var estimation = estimation.toFixed(2);
-  var newEstimation;
-  var currentEstimation = $('td.estimated-hours').text();
+  var def = self.prototype;
 
-  if (currentEstimation.length > 0) {
-    newEstimation = currentEstimation.replace(/(\d+.\d{2})/i, estimation);
-  } else {
-    newEstimation = estimation;
+  def.createEstimationElement = function (element) {
+    return '<tr>\
+        <td class="estimation-cell">\
+        <div class="resource-estimation editable"\
+          data-resource-id="' + element.id + '">' + element.estimation +
+        '</div> h\
+        </td>\
+        <td>' + element.code + '</td>\
+        <td>\
+          <a data-confirm="Are you sure?" class="icon icon-del"\
+            data-remote="true" rel="nofollow" data-method="delete"\
+            href="/issue_resources/' + element.id + '">Delete</a>\
+         </td>\
+      </tr>';
   }
-  $('td.estimated-hours').text(newEstimation);
-  $('#issue_estimated_hours').val(estimation);
-}
 
-function add_inline_editing() {
-  $('.resource_estimation_editable').each(function(element) {
-    var $editable_element = $(this);
-    var id = $editable_element.data('resource-id');
-    var old_value = $editable_element.text();
-    $editable_element.editable(function(value, settings) {
-      var hours = parseInt(value);
-      if (isNaN(hours)) {
-        setTimeout(function() {
-          alert("Failed to save resource: estimation is not a number.");
-        }, 1);
-        return(old_value);
-      }
-      if (hours <= 0) {
-        setTimeout(function() {
-          alert("Failed to save resource: estimation must be greater than 0.");
-        }, 1);
-        return(old_value);
-      }
-      if (!(parseFloat(value) === parseInt(value))) {
-        setTimeout(function() {
-          alert("Failed to save resource: estimation must be an integer.");
-        }, 1);
-        return(old_value);
-      }
-      $.ajax({
-        url:'/issue_resources/'+ id,
-        type:'PUT',
-        data: {
-          id: id,
-          issue_resource: {
-            estimation: value
-          }
-        },
-      }).fail(function(reason) {
-        alert("Error in request. Please try again later.");
-      });
-      return hours;
-    },
-    {
-      onblur: 'submit',
-      tooltip: "Click to edit...",
-      'event': 'editable',
+  def.createDivisionElement = function (division) {
+    var partial =  '<table><tbody><tr>\
+        <td colspan="3" class="division-name">\
+          <strong>' + division.name + '</strong>\
+        </td>\
+      </tr>';
+    $.each(division.elements, function (index, element) {
+      partial += this.createEstimationElement(element);
+    }.bind(this));
+    partial += '</tbody></table>';
+    return partial;
+  };
+
+  def.loadIssueResources = function (divisions) {
+    var list = this.root.find('.resources-list');
+    list.empty();
+    var newElements = '';
+    $.each(divisions, function (key, value) {
+      newElements += this.createDivisionElement(value);
+    }.bind(this));
+    list.append(newElements);
+  };
+
+  def.loadAvailableResources = function (resources) {
+    var select = this.root.find('.resource-id');
+    select.empty();
+    select.append('<option value="">&nbsp;</option>');
+    $.each(resources, function (index, value) {
+      select.append('<option value="' + value.id + '">' + value.code +
+        '</option>');
     });
-    $('#cell-' + id).on('click', function() {
-      $editable_element.trigger('editable');
-      $('input', $editable_element).trigger('focus').trigger('select');
-    })
-  });
-};
+  };
+
+  def.reloadIssueResources = function (response) {
+    this.loadIssueResources(response.divisions);
+    this.loadAvailableResources(response.resources);
+    this.root.find('input.estimation').val('');
+  };
+
+  def.createIssueResource = function() {
+    var data = { issue_resource: {
+      issue_id: this.root.find('.issue-id').val(),
+      estimation: this.root.find('.estimation').val(),
+      resource_id: this.root.find('.resource-id').val()
+    }};
+    $.ajax({
+      data: data,
+      dataType: 'json',
+      type: 'POST',
+      url: '/issue_resources'
+    }).done(this.reloadIssueResources.bind(this))
+    .fail(function (response){
+      console.log('Failed to create issue resource!');
+    }.bind(this));
+  };
+
+  def.addButtonEvents =function () {
+    this.root.find('.actions .save').on('click', function (event) {
+      event.preventDefault();
+      this.createIssueResource();
+    }.bind(this));
+  };
+
+  def.initialize = function () {
+    this.addButtonEvents();
+  };
+
+  return self;
+}(ResourceWindow, $));
+
+$(function () {
+  var resourceWindow = new ResourceWindow('#resources');
+});

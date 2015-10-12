@@ -3,29 +3,30 @@
 <% if visible || editable %>
   <div id="resources" class="hidden sidebar-content sidebar-resources">
     <h3>Resources</h3>
-    <% issue_resource = IssueResource.new
-      resources = resources_for_project @project, @issue %>
+    <% resources = @project.resources_list @issue %>
     <% if editable %>
-      <%= form_for issue_resource, { remote: true, method: :post } do |f| %>
-        <%= f.hidden_field :project_id, value: @project.id %>
-        <%= f.hidden_field :issue_id, value: @issue.id %>
-        <table id='resources_form'>
+      <div>
+        <%= hidden_field_tag :issue_id, @issue.id, class: 'issue-id' %>
+        <table id='resources-form'>
           <tr>
-            <td class="estimation_cell">
-              <%= f.text_field :estimation %> h
+            <td class="estimation-cell">
+              <%= text_field_tag :estimation, '', class: 'estimation' %> h
             </td>
             <td>
-              <%= f.select :resource_id, "<option></option>#{ options_from_collection_for_select resources.values, :id, :code }".html_safe, class: 'resources_autocomplete' %>
+              <%= select_tag :resource_id,
+                    options_from_collection_for_select(resources, :id, :code),
+                    include_blank: true, class: 'resource-id' %>
             </td>
-            <td class='edit_actions'>
-            <%= submit_tag l(:button_save), class: 'small button' %>
-           </td>
+            <td class="actions">
+              <a href="#" class="small button save"><%= l(:button_save) %></a>
+            </td>
           </tr>
         </table>
-      <% end %>
+      </div>
     <% end %>
-    <div id="resources_list_container">
-      <%= render partial: 'resources/list', locals: { issue: @issue, editable: editable } %>
+    <div class="resources-list">
+      <%= render partial: 'resources/list',
+            locals: { issue: @issue, editable: editable } %>
     </div>
   </div>
 <% end %>

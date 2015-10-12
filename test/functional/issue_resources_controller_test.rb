@@ -12,29 +12,40 @@ class IssueResourcesControllerTest < ActionController::TestCase
       resource_id: @resource.id, estimation: @hours
   end
 
-  test 'POST #create as JS' do
+  test 'POST #create as JSON' do
     create_test_setup
     @hours = 2
-    post :create, format: :js, issue_resource: { project_id: @project.id,
+    post :create, format: :json, issue_resource: { project_id: @project.id,
         issue_id: @issue.id, estimation: @hours, resource_id: @resource.id }
     assert_response :success
   end
 
-  test 'PUT #update as JS' do
+  test 'POST #create as JSON twice with the same data returns 400' do
+    create_test_setup
+    @hours = 2
+    data = { format: :json, issue_resource: { project_id: @project.id,
+        issue_id: @issue.id, estimation: @hours, resource_id: @resource.id } }
+    post :create, data
+    assert_response :success
+    post :create, data
+    assert_response :bad_request
+  end
+
+  test 'PUT #update as JSON' do
     create_test_setup
     @hours = 2
     create_existing_issue_resource_of @hours
     @new_estimation = 3
-    put :update, format: :js, id: @issue_resource.id,
+    put :update, format: :json, id: @issue_resource.id,
       issue_resource: { estimation: @new_estimation }
     assert_response :success
   end
 
-  test 'DELETE #destroy as JS' do
+  test 'DELETE #destroy as JSON' do
     create_test_setup
     @hours = 2
     create_existing_issue_resource_of @hours
-    delete :destroy, format: :js, id: @issue_resource.id
+    delete :destroy, format: :json, id: @issue_resource.id
     assert_response :success
   end
 end

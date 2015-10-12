@@ -15,9 +15,11 @@ module RedmineResources
           IssueResource.includes(resource: :division)
             .where(issue_id: self.id)
             .reduce({}) do |total, element|
-              division_name = element.resource.division.name
-              total[division_name] = [] unless total[division_name]
-              total[division_name] << element
+              division = element.resource.division
+              division_id = division.id
+              total[division_id] = { name: division.name, elements: [] } unless total[division_id]
+              total[division_id][:elements] << { id: element.id,
+                estimation: element.estimation, code: element.resource.code }
               total
             end
         end

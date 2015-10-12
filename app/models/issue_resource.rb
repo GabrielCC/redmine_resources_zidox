@@ -11,10 +11,6 @@ class IssueResource < ActiveRecord::Base
 
   JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
 
-  def to_json
-    { estimation: estimation, code: resource.code }
-  end
-
   def journal_entry(operation, old_value = nil)
     JournalDetail.new property: IssueResource::JOURNAL_DETAIL_PROPERTY,
       prop_key: issue.id, old_value: '',
