@@ -53,6 +53,7 @@ var ResourceWindow = (function (me, $) {
       select.append('<option value="' + value.id + '">' + value.code +
         '</option>');
     });
+    this.initializeSelect2();
   };
 
   def.reloadIssueResources = function (response) {
@@ -96,7 +97,7 @@ var ResourceWindow = (function (me, $) {
     var data = { issue_resource: {
       issue_id: this.root.find('.issue-id').val(),
       estimation: this.root.find('.estimation').val(),
-      resource_id: this.root.find('.resource-id').val()
+      resource_id: this.root.find('.resource-id').select2('val')
     }};
     $.ajax({
       data: data,
@@ -117,8 +118,14 @@ var ResourceWindow = (function (me, $) {
     this.addDeleteEvents();
   };
 
+  def.initializeSelect2 = function () {
+    this.root.find('select#resource_id').select2({ width: '90px',
+      placeholder_text_single: 'Select' });
+  };
+
   def.initialize = function () {
     this.addButtonEvents();
+    this.initializeSelect2();
   };
 
   return self;
