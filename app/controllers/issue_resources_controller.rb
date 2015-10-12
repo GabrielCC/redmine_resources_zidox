@@ -43,11 +43,6 @@ class IssueResourcesController < ApplicationController
     unless issue.manually_added_resource_estimation
       issue.update_column :manually_added_resource_estimation, true
     end
-    return if Issue.where(parent_id: issue.id).count > 0
-    estimation = IssueResource.where(issue_id: issue.id).sum(:estimation)
-    if issue.estimated_hours != estimation
-      issue.update_column :estimated_hours, estimation
-    end
   end
 
   def add_journal_entry(mode, old_value = nil)

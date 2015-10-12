@@ -20,7 +20,6 @@ module SetupSupport
 
   def create_base_setup
     @author = create :user
-    User.current = @author
     @division = create :division
     @resource = create :resource, division_id: @division.id
     @priority = create :issue_priority

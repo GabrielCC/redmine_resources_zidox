@@ -129,6 +129,7 @@ class IssuePatchTest < ActiveSupport::TestCase
     create_project_resource_settings
     create_project_membership
     make_the_custom_field_read_only
+    User.current = @author
     hours = 2
     create_issue_with_initial_estimation_of hours
     expect_issue_to_have_no_resources
