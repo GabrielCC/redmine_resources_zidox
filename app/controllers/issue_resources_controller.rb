@@ -32,7 +32,8 @@ class IssueResourcesController < ApplicationController
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
-    render json: { success: 'Deleted!' }
+    resources = @issue.project.resources_list @issue
+    render json: resources
   end
 
   private

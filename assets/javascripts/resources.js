@@ -11,14 +11,13 @@ var ResourceWindow = (function (me, $) {
     return '<tr>\
         <td class="estimation-cell">\
         <div class="resource-estimation editable"\
-          data-resource-id="' + element.id + '">' + element.estimation +
+          data-id="' + element.id + '">' + element.estimation +
         '</div> h\
         </td>\
         <td>' + element.code + '</td>\
         <td>\
-          <a data-confirm="Are you sure?" class="icon icon-del"\
-            data-remote="true" rel="nofollow" data-method="delete"\
-            href="/issue_resources/' + element.id + '">Delete</a>\
+          <a class="icon icon-del remove" rel="nofollow" data-id="' +
+            element.id + '" href="#">Delete</a>\
          </td>\
       </tr>';
   }
@@ -59,7 +58,38 @@ var ResourceWindow = (function (me, $) {
   def.reloadIssueResources = function (response) {
     this.loadIssueResources(response.divisions);
     this.loadAvailableResources(response.resources);
+    this.addDeleteEvents();
     this.root.find('input.estimation').val('');
+  };
+
+  def.removeIssueResourceElement = function (target) {
+    var row = target.closest('tr');
+    var siblings = row.siblings();
+    target.off('click');
+    if (siblings.length > 1) {
+      row.remove();
+    } else {
+      row.closest('table').remove();
+    }
+  };
+
+  def.addDeleteEvents = function () {
+    var buttons = this.root.find('a.remove');
+    buttons.on('click', function (event) {
+      event.preventDefault();
+      var target = $(event.target);
+      var id = target.data('id');
+       $.ajax({
+        dataType: 'json',
+        type: 'DELETE',
+        url: '/issue_resources/' + id
+      }).done(function (response) {
+        this.removeIssueResourceElement(target);
+        this.loadAvailableResources(response);
+      }.bind(this)).fail(function (response) {
+        console.log('Failed to delete issue resource!');
+      }.bind(this));
+    }.bind(this));
   };
 
   def.createIssueResource = function() {
@@ -74,7 +104,7 @@ var ResourceWindow = (function (me, $) {
       type: 'POST',
       url: '/issue_resources'
     }).done(this.reloadIssueResources.bind(this))
-    .fail(function (response){
+    .fail(function (response) {
       console.log('Failed to create issue resource!');
     }.bind(this));
   };
@@ -84,6 +114,7 @@ var ResourceWindow = (function (me, $) {
       event.preventDefault();
       this.createIssueResource();
     }.bind(this));
+    this.addDeleteEvents();
   };
 
   def.initialize = function () {

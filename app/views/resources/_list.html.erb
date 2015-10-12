@@ -11,14 +11,16 @@
     </tr>
     <% division[:elements].each do |issue_resource| %>
       <tr>
-        <td class="estimation-cell" id="cell-<%= issue_resource[:id] %>">
-        <div id="resource-<%= issue_resource[:id] %>" class="resource-estimation <%= editable_class %>" data-resource-id="<%= issue_resource[:id] %>">
+        <td class="estimation-cell">
+        <div class="resource-estimation <%= editable_class %>"
+          data-id="<%= issue_resource[:id] %>">
           <%= issue_resource[:estimation] %>
         </div> h
         </td>
         <td><%= issue_resource[:code] %></td>
         <td>
-          <%= delete_link issue_resource_path(issue_resource[:id]), remote: true if editable %>
+          <a href="#" class="icon icon-del remove"
+            data-id="<%= issue_resource[:id] %>">Delete</a>
          </td>
       </tr>
     <% end %>
