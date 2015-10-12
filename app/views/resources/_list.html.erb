@@ -1,4 +1,4 @@
-<%  editable_class = editable ? 'resource_estimation_editable' : ''
+<%  editable_class = editable ? 'editable' : ''
     issue ||= @issue_resource.issue
     divisions = issue.resources_with_divisions %>
 <%= hidden_field_tag 'has_resources', divisions.count %>
@@ -12,10 +12,9 @@
     <% division[:elements].each do |issue_resource| %>
       <tr>
         <td class="estimation-cell">
-        <div class="resource-estimation <%= editable_class %>"
-          data-id="<%= issue_resource[:id] %>">
-          <%= issue_resource[:estimation] %>
-        </div> h
+        <div class="hours <%= editable_class %>"
+          data-id="<%= issue_resource[:id] %>"
+          data-value="<%= issue_resource[:estimation] %>"><%= issue_resource[:estimation] %></div> h
         </td>
         <td><%= issue_resource[:code] %></td>
         <td>

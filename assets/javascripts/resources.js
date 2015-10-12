@@ -10,9 +10,8 @@ var ResourceWindow = (function (me, $) {
   def.createEstimationElement = function (element) {
     return '<tr>\
         <td class="estimation-cell">\
-        <div class="resource-estimation editable"\
-          data-id="' + element.id + '">' + element.estimation +
-        '</div> h\
+        <div class="hours editable"\
+          data-id="' + element.id + '">' + element.estimation + '</div> h\
         </td>\
         <td>' + element.code + '</td>\
         <td>\
@@ -20,7 +19,7 @@ var ResourceWindow = (function (me, $) {
             element.id + '" href="#">Delete</a>\
          </td>\
       </tr>';
-  }
+  };
 
   def.createDivisionElement = function (division) {
     var partial =  '<table><tbody><tr>\
@@ -123,8 +122,65 @@ var ResourceWindow = (function (me, $) {
       placeholder_text_single: 'Select' });
   };
 
+  def.hoursAreValid = function (hours) {
+    if (isNaN(hours)) {
+      alert('Resource estimation is not a number!');
+      return false;
+    }
+    if (hours <= 0) {
+      alert('Resource estimation must be greater than 0!');
+      return false;
+    }
+    if (!(parseFloat(hours) === parseInt(hours))) {
+      alert('Resource estimation must be an integer!');
+      return false;
+    }
+    return true;
+  };
+
+  def.editIssueResourceElement = function (field, value) {
+    var oldValue = parseInt(field.data('value'));
+    var hours = parseInt(value);
+    if (oldValue === hours) { return oldValue };
+    if (this.hoursAreValid(hours)) {
+      var id = field.data('id');
+      $.ajax({
+        data: { issue_resource: { estimation: value } },
+        type:'PUT',
+        url:'/issue_resources/' + id
+      }).fail(function(reason) {
+        alert('Could not update issue resource!');
+      });
+      field.data('value', hours);
+      return hours;
+    } else {
+      return oldValue;
+    }
+  };
+
+  def.makeEstimationsEditable = function () {
+    var elements = this.root.find('.hours.editable');
+    var settings = { onblur: 'submit', tooltip: 'Click to edit.',
+      'event': 'editable' }
+    var self = this;
+    elements.editable(function (value) {
+      return self.editIssueResourceElement($(this), value);
+    }, settings);
+    this.root.find('.estimation-cell').on('click', function (event) {
+      var target = $(event.target);
+      var editable = target.find('.hours.editable');
+      if (editable.length === 0 && target.hasClass('editable')) {
+        editable = target;
+      }
+      editable.trigger('editable');
+      var input = target.find('input');
+      input.focus().select();
+    }.bind(this));
+  };
+
   def.initialize = function () {
     this.addButtonEvents();
+    this.makeEstimationsEditable();
     this.initializeSelect2();
   };
 
