@@ -25,6 +25,7 @@ module RedmineResources
         end
 
         def set_issue_resource
+          return if manually_added_resource_estimation
           custom_field_id = Setting.plugin_redmine_resources[:custom_field_id]
           resource_id = resource_id_from_settings
           default_resource = Resource.where(id: resource_id).first

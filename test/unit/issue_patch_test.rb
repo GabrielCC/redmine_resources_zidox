@@ -135,4 +135,16 @@ class IssuePatchTest < ActiveSupport::TestCase
     expect_issue_to_have_no_resources
     expect_issue_to_have_an_initial_estimation_of hours
   end
+
+  test 'issue with manually added estimation creates no resource' do
+    create_base_setup_with_settings
+    create_issue_without_initial_estimation
+    expect_issue_to_have_no_resources
+    expect_issue_to_have_no_initial_estimation
+    @issue.update_attributes manually_added_resource_estimation: true
+    hours = 8
+    @issue.update_attributes custom_field_values: { @custom_field.id => hours }
+    expect_issue_to_have_no_resources
+    expect_issue_to_have_an_initial_estimation_of hours
+  end
 end
