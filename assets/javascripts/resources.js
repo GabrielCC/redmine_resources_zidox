@@ -84,6 +84,7 @@ var ResourceWindow = (function (me, $) {
       var target = $(event.target);
       var id = target.data('id');
        $.ajax({
+        data: { key: this.root.find('.api-key').val() },
         dataType: 'json',
         type: 'DELETE',
         url: '/issue_resources/' + id
@@ -97,10 +98,11 @@ var ResourceWindow = (function (me, $) {
   };
 
   def.createIssueResource = function() {
-    var data = { issue_resource: {
-      issue_id: this.root.find('.issue-id').val(),
-      estimation: this.root.find('.estimation').val(),
-      resource_id: this.root.find('.resource-id').select2('val')
+    var data = { key: this.root.find('.api-key').val(),
+      issue_resource: {
+        issue_id: this.root.find('.issue-id').val(),
+        estimation: this.root.find('.estimation').val(),
+        resource_id: this.root.find('.resource-id').select2('val')
     }};
     $.ajax({
       data: data,
@@ -148,10 +150,10 @@ var ResourceWindow = (function (me, $) {
     if (oldValue === hours) { return oldValue };
     if (this.hoursAreValid(hours)) {
       var id = field.data('id');
-      var data = { issue_resource: {
-        id: id,
-        issue_id: this.root.find('.issue_id').val(),
-        estimation: value
+      var data = { key: this.root.find('.api-key').val(),
+        issue_resource: {
+          issue_id: this.root.find('.issue_id').val(),
+          estimation: value
       } }
       $.ajax({
         data: data,

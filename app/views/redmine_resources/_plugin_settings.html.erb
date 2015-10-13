@@ -1,6 +1,9 @@
 <%  resources = Resource.select([:id, :name]).order(:name)
     custom_fields = CustomField.where(type: 'IssueCustomField')
       .select([:id, :name]).order(:name)
+    settings = {} if !settings || settings.blank?
+    settings['visible'] = {} unless settings['visible']
+    settings['editable'] = {} unless settings['editable']
     custom_field_id = settings['custom_field_id']
     if custom_field_id && custom_field_id.present?
       current_custom_field = CustomField.where(id: custom_field_id)
@@ -10,10 +13,7 @@
       current_custom_field = nil
       trackers = []
     end
-    roles = Role.select([:id, :name, :builtin]).order(:name)
-    settings = {} unless settings
-    settings['visible'] = {} unless settings['visible']
-    settings['editable'] = {} unless settings['editable'] %>
+    roles = Role.select([:id, :name, :builtin]).order(:name) %>
 <h3>
   <% if current_custom_field %>
     <% unless trackers.empty? %>

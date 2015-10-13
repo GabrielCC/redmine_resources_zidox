@@ -1,4 +1,6 @@
 class IssueResourcesController < ApplicationController
+  accept_api_auth :create, :update, :destroy
+
   def create
     return unless authorized_to_create?
     @issue_resource = IssueResource.new resource_params

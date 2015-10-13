@@ -7,6 +7,7 @@
     <% if editable %>
       <div>
         <%= hidden_field_tag :issue_id, @issue.id, class: 'issue-id' %>
+        <%= hidden_field_tag :api_key, User.current.api_key, class: 'api-key' %>
         <table id='resources-form'>
           <tr>
             <td class="estimation-cell">

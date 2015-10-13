@@ -46,7 +46,8 @@ module SetupSupport
   def create_base_setup_with_settings
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
-      resource_id: @resource.id, custom_field_id: @custom_field.id)
+      resource_id: @resource.id, custom_field_id: @custom_field.id,
+      visible: { @role.id.to_s => '1' }, editable: { @role.id.to_s => '1' })
     Setting.plugin_redmine_resources = hash
   end
 
