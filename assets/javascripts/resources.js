@@ -7,10 +7,10 @@ var ResourceWindow = (function (me, $) {
 
   var def = self.prototype;
 
-  def.createEstimationElement = function (element) {
+  def.createEstimationElement = function (editableClass, element) {
     return '<tr>\
-        <td class="estimation-cell">\
-        <div class="hours editable"\
+        <td class="estimation-cell ' + editableClass + '">\
+        <div class="hours ' + editableClass + '"\
           data-id="' + element.id + '">' + element.estimation + '</div> h\
         </td>\
         <td>' + element.code + '</td>\
@@ -21,14 +21,15 @@ var ResourceWindow = (function (me, $) {
       </tr>';
   };
 
-  def.createDivisionElement = function (division) {
+  def.createDivisionElement = function (editable, division) {
     var partial =  '<table><tbody><tr>\
         <td colspan="3" class="division-name">\
           <strong>' + division.name + '</strong>\
         </td>\
       </tr>';
+    var editableClass = editable ? 'editable' : '';
     $.each(division.elements, function (index, element) {
-      partial += this.createEstimationElement(element);
+      partial += this.createEstimationElement(editableClass, element);
     }.bind(this));
     partial += '</tbody></table>';
     return partial;
@@ -38,10 +39,12 @@ var ResourceWindow = (function (me, $) {
     var list = this.root.find('.resources-list');
     list.empty();
     var newElements = '';
+    var isEditable = this.root.find('.estimation').length === 1
     $.each(divisions, function (key, value) {
-      newElements += this.createDivisionElement(value);
+      newElements += this.createDivisionElement(isEditable, value);
     }.bind(this));
     list.append(newElements);
+
   };
 
   def.loadAvailableResources = function (resources) {
@@ -58,6 +61,7 @@ var ResourceWindow = (function (me, $) {
   def.reloadIssueResources = function (response) {
     this.loadIssueResources(response.divisions);
     this.loadAvailableResources(response.resources);
+    this.makeEstimationsEditable();
     this.addDeleteEvents();
     this.root.find('input.estimation').val('');
   };
@@ -144,10 +148,15 @@ var ResourceWindow = (function (me, $) {
     if (oldValue === hours) { return oldValue };
     if (this.hoursAreValid(hours)) {
       var id = field.data('id');
+      var data = { issue_resource: {
+        id: id,
+        issue_id: this.root.find('.issue_id').val(),
+        estimation: value
+      } }
       $.ajax({
-        data: { issue_resource: { estimation: value } },
-        type:'PUT',
-        url:'/issue_resources/' + id
+        data: data,
+        type: 'PUT',
+        url: '/issue_resources/' + id
       }).fail(function(reason) {
         alert('Could not update issue resource!');
       });

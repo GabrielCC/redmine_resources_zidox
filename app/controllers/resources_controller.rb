@@ -1,6 +1,5 @@
 class ResourcesController < ApplicationController
   before_filter :set_divisions
-  before_filter :find_project_by_project_id, only: :trackers
   before_filter :set_division, only: [:create, :update]
 
   def create
@@ -57,19 +56,6 @@ class ResourcesController < ApplicationController
   def set_divisions
     @divisions = Division.select([:id, :name]).all.map do |division|
       [division.name, division.id]
-    end
-  end
-
-  def create_resource_settings(key, val)
-    trackers = Tracker.where(id: params[:trackers][key]).all
-    roles = Role.where(id: params[:roles][key]).all
-    elements = trackers + roles
-    elements.each do |element|
-      settings = ResourceSetting.new
-      settings.setting_object = element
-      settings.project = @project
-      settings.setting = val
-      settings.save
     end
   end
 

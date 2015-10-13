@@ -13,9 +13,10 @@
 #resources td.division-name {
   text-align: left;
 }
-
 #resources td.estimation-cell {
   text-align: left;
+}
+#resources td.estimation-cell.editable {
   cursor: pointer;
 }
 #resources .hours {
@@ -30,7 +31,6 @@
 #resources .estimation-cell {
   width: 60px;
 }
-
 #resources .resources-list table {
   background-color: #ebf3f6;
   border-radius: 5px;

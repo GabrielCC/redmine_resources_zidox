@@ -89,14 +89,8 @@ module SetupSupport
   end
 
   def create_project_resource_settings
-    setting_name = "plugin_redmine_resources_project_#{ @project.id }"
-    setting_assign = setting_name + '='
-    begin
-      project_settings = Setting.send setting_name
-    rescue NoMethodError
-      Setting.define_setting setting_name, 'serialized' => true
-      project_settings = Setting.send setting_name
-    end
+    Setting.initialize_project_settings @project
+    setting_assign = "plugin_redmine_resources_project_#{ @project.id }="
     Setting.send setting_assign, { "custom" => "1",
       "resource_id" => @project_resource.id.to_s }
   end

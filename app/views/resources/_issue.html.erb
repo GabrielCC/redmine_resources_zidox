@@ -1,5 +1,5 @@
-<%  visible = resources_visible(@issue, @project)
-    editable = resources_editable(@issue, @project) %>
+<%  visible = resources_visible @issue
+    editable = resources_editable @issue %>
 <% if visible || editable %>
   <div id="resources" class="hidden sidebar-content sidebar-resources">
     <h3>Resources</h3>

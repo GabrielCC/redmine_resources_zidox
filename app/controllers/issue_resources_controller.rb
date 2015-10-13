@@ -1,8 +1,8 @@
 class IssueResourcesController < ApplicationController
   def create
+    return unless authorized_to_create?
     @issue_resource = IssueResource.new resource_params
     if @issue_resource.save
-      @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :create
       resources = @issue.project.resources_list @issue
@@ -14,7 +14,7 @@ class IssueResourcesController < ApplicationController
   end
 
   def update
-    @issue_resource = IssueResource.find params[:id]
+    return unless authorized_to_modify?
     old_value = @issue_resource.estimation
     if @issue_resource.update_attributes resource_params
       @issue = @issue_resource.issue
@@ -27,8 +27,7 @@ class IssueResourcesController < ApplicationController
   end
 
   def destroy
-    @issue_resource = IssueResource.find params[:id]
-    @issue = @issue_resource.issue
+    return unless authorized_to_modify?
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
@@ -42,8 +41,40 @@ class IssueResourcesController < ApplicationController
     params.require(:issue_resource).permit(:issue_id, :resource_id, :estimation)
   end
 
+  def render_not_found(entity)
+    render json: { errors: "#{ entity.capitalize } not found!" }, status: 404
+  end
+
+  def render_forbidden
+    render json: { errors: 'You are not alowed to do that!' }, status: 403
+  end
+
   def render_errors
     render json: { errors: @issue_resource.errors.full_messages }, status: 400
+  end
+
+  def authorized_to_create?
+    @issue = Issue.where(id: resource_params[:issue_id]).first
+    render_not_found 'issue' and return unless @issue
+    @project = @issue.project
+    render_not_found 'project' and return unless @project
+    unless User.current.can_edit_resources? @project
+      render_forbidden and return
+    end
+    true
+  end
+
+  def authorized_to_modify?
+    @issue_resource = IssueResource.where(id: params[:id]).first
+    render_not_found 'issue resource' and return unless @issue_resource
+    @issue = @issue_resource.issue
+    render_not_found 'issue' and return unless @issue
+    @project = @issue.project
+    render_not_found 'project' and return unless @project
+    unless User.current.can_edit_resources? @project
+      render_forbidden and return
+    end
+    true
   end
 
   def update_columns_for(issue)
