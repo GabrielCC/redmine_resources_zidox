@@ -1,6 +1,7 @@
 <h2><%= l :label_settings %></h2>
 <%  tabs = project_settings_tabs
-    if @project.module_enabled? 'redmine_resources'
+    if @project.module_enabled?('redmine_resources') &&
+        User.current.allowed_to?(:select_project_modules, @project)
       tabs << { name: 'resources', action: 'resources/settings',
                 partial: 'projects/settings/resources',
                 label: :project_module_resources }

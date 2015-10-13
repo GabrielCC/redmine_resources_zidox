@@ -39,6 +39,9 @@ class ResourcesController < ApplicationController
   def settings
     @project = Project.where(id: params[:project_id]).first
     render :not_found, status: 404 and return unless @project
+    unless User.current.allowed_to?(:select_project_modules, @project)
+      render :unauthorized, status: 401
+    end
     setting_name = "plugin_redmine_resources_project_#{ @project.id }"
     setting_assign = setting_name + '='
     begin
