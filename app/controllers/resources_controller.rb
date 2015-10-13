@@ -3,7 +3,7 @@ class ResourcesController < ApplicationController
   before_filter :set_division, only: [:create, :update]
 
   def create
-    @resource = Resource.new params[:resource]
+    @resource = Resource.new resources_params
     respond_to do |format|
       format.json do
         if @resource.save
@@ -19,7 +19,7 @@ class ResourcesController < ApplicationController
     @resource = Resource.find params[:id]
     respond_to do |format|
       format.json do
-        if @resource.update_attributes params[:resource]
+        if @resource.update_attributes resources_params
           head :no_content
         else
           render json: @resource.errors, status: :unprocessable_entity
@@ -55,6 +55,10 @@ class ResourcesController < ApplicationController
   end
 
   private
+
+  def resources_params
+    params.require(:resource).permit(:name, :code, :division_id)
+  end
 
   def set_divisions
     @divisions = Division.select([:id, :name]).all.map do |division|
