@@ -7,11 +7,13 @@ module RedmineResources
 
       module InstanceMethods
         def can_view_resources?(project)
+          return true if User.current.admin?
           role_ids = role_ids_for_project project
           any_roles_in_settings? role_ids, project,'visible'
         end
 
         def can_edit_resources?(project)
+          return true if User.current.admin?
           role_ids = role_ids_for_project project
           any_roles_in_settings? role_ids, project,'editable'
         end

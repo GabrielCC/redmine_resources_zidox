@@ -20,18 +20,6 @@ module RedmineResources
             end
             output
           end
-
-          def issue_estimated_hours_details(issue)
-            if issue.total_estimated_hours.present?
-              if issue.total_estimated_hours == issue.estimated_hours
-                l_hours_short(issue.estimated_hours)
-              else
-                s = issue.estimated_hours.present? ? \
-                  l_hours_short(issue.estimated_hours) : ""
-                s.html_safe
-              end
-            end
-          end
         end
       end
     end
