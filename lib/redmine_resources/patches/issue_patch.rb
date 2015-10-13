@@ -48,6 +48,7 @@ module RedmineResources
         private
 
         def custom_field_read_only_for_al_roles(custom_field_id)
+          return false if User.current.admin?
           editable_custom_field_values(User.current).reject do |value|
             value.custom_field.id != custom_field_id.to_i
           end.count == 0

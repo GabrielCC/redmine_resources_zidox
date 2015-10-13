@@ -7,6 +7,12 @@
     <% if editable %>
       <div>
         <%= hidden_field_tag :issue_id, @issue.id, class: 'issue-id' %>
+        <%= hidden_field_tag :manually_estimated,
+              @issue.manually_added_resource_estimation,
+              class: 'manually_estimated' %>
+        <%= hidden_field_tag :custom_field_id,
+              Setting.plugin_redmine_resources['custom_field_id'],
+              class: 'custom_field_id' %>
         <%= hidden_field_tag :api_key, User.current.api_key, class: 'api-key' %>
         <table id='resources-form'>
           <tr>

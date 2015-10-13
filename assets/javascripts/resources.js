@@ -77,6 +77,19 @@ var ResourceWindow = (function (me, $) {
     }
   };
 
+  def.updateInitialEstimationField = function (response) {
+    var id = this.root.find('.custom_field_id').val();
+    var total = response.total;
+    var textField = $('td.cf_' + id);
+    var input = $('input#issue_custom_field_values_' + id);
+    textField.text(total);
+    input.val(total);
+    if (!response.editable) {
+      input.attr('disabled', 'disabled');
+      input.attr('readonly', 'readonly');
+    }
+  };
+
   def.addDeleteEvents = function () {
     var buttons = this.root.find('a.remove');
     buttons.on('click', function (event) {
@@ -90,7 +103,8 @@ var ResourceWindow = (function (me, $) {
         url: '/issue_resources/' + id
       }).done(function (response) {
         this.removeIssueResourceElement(target);
-        this.loadAvailableResources(response);
+        this.loadAvailableResources(response.resources);
+        this.updateInitialEstimationField(response);
       }.bind(this)).fail(function (response) {
         console.log('Failed to delete issue resource!');
       }.bind(this));
@@ -109,8 +123,10 @@ var ResourceWindow = (function (me, $) {
       dataType: 'json',
       type: 'POST',
       url: '/issue_resources'
-    }).done(this.reloadIssueResources.bind(this))
-    .fail(function (response) {
+    }).done(function (response) {
+      this.reloadIssueResources(response);
+      this.updateInitialEstimationField(response);
+    }.bind(this)).fail(function (response) {
       console.log('Failed to create issue resource!');
     }.bind(this));
   };
@@ -159,7 +175,9 @@ var ResourceWindow = (function (me, $) {
         data: data,
         type: 'PUT',
         url: '/issue_resources/' + id
-      }).fail(function(reason) {
+      }).done(function (response) {
+        this.updateInitialEstimationField(response);
+      }.bind(this)).fail(function (reason) {
         alert('Could not update issue resource!');
       });
       field.data('value', hours);
@@ -200,4 +218,11 @@ var ResourceWindow = (function (me, $) {
 
 $(function () {
   var resourceWindow = new ResourceWindow('#resources');
+  var manuallEstimated = $('#manually_estimated').val();
+  if (manuallEstimated === 'true') {
+    var id = $('.custom_field_id').val();
+    var input = $('input#issue_custom_field_values_' + id);
+    input.attr('disabled', 'disabled');
+    input.attr('readonly', 'readonly');
+  }
 });
