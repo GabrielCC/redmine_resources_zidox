@@ -45,14 +45,16 @@ module RedmineResources
           end
         end
 
-        private
-
-        def custom_field_read_only_for_al_roles(custom_field_id)
-          return false if User.current.admin?
+        def custom_field_read_only_for_al_roles(custom_field_id = nil)
+          unless custom_field_id
+            custom_field_id = Setting.plugin_redmine_resources[:custom_field_id]
+          end
           editable_custom_field_values(User.current).reject do |value|
             value.custom_field.id != custom_field_id.to_i
           end.count == 0
         end
+
+        private
 
         def resource_id_from_settings_for(project)
           settings = Setting.plugin_redmine_resources_for_project project

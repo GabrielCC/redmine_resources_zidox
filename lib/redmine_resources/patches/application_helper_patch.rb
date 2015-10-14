@@ -19,7 +19,7 @@ module RedmineResources
             project = issue.project
             return false unless issue.tracker.gets_resources?(project)
             return true if User.current.admin?
-            User.current.can_edit_resources? project
+            User.current.can_edit_resources? project, issue
           end
         end
       end

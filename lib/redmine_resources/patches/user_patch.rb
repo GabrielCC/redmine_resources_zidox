@@ -12,9 +12,10 @@ module RedmineResources
           any_roles_in_settings? role_ids, project,'visible'
         end
 
-        def can_edit_resources?(project)
+        def can_edit_resources?(project, issue)
           return true if User.current.admin?
           role_ids = role_ids_for_project project
+          return false unless issue.custom_field_read_only_for_al_roles
           any_roles_in_settings? role_ids, project,'editable'
         end
 
