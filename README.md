@@ -14,8 +14,8 @@ rake redmine:plugins:migrate NAME=redmine_resources
 # Configure
 
 1. Go to "Administration > Custom fields" and create a new issue custom field,
-format integer. Set it's trackers to the ones you want to recieve resource
-estimations and make it avalialbe for shich projects your heart desiers.
+format Integer. Set its trackers to the ones you want to recieve resource
+estimations and make it avalialbe for which projects your heart desiers.
 2. Go to "Administration > Plugins > Redmine Resources - Configure" and choose
 the default values.
 3. On individual projects you can go to "Settings > Resources" and override the
@@ -29,13 +29,13 @@ git clone git@github.com:sdwolf/redmine_testing_gems.git
 bundle install
 ```
 
-Then run
+Then run:
 ```
 rake redmine:plugins:test NAME=redmine_resources
 ```
 
 To view test coverage go to `plugins/redmine_resources/tmp/coverage`
-and open `index.html` in a browser
+and open `index.html` in a browser.
 
 ## License
 
