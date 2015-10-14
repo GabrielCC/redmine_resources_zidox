@@ -74,7 +74,7 @@ class IssueResourcesController < ApplicationController
     render_not_found 'issue' and return unless @issue
     @project = @issue.project
     render_not_found 'project' and return unless @project
-    unless User.current.can_edit_resources? @project
+    unless User.current.can_edit_resources? @project, @issue
       render_forbidden and return
     end
     true
@@ -87,7 +87,7 @@ class IssueResourcesController < ApplicationController
     render_not_found 'issue' and return unless @issue
     @project = @issue.project
     render_not_found 'project' and return unless @project
-    unless User.current.can_edit_resources? @project
+    unless User.current.can_edit_resources? @project, @issue
       render_forbidden and return
     end
     true
