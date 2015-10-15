@@ -43,6 +43,40 @@ module SetupSupport
     @member_role = create :member_role, member_id: @member.id, role_id: @role.id
   end
 
+  def expect_issue_to_have_a_resources_of(value)
+    @found_resources = @issue.issue_resources.all
+    expect(@found_resources).not_to be_empty
+    expect(@found_resources.size).to eq(1)
+    @found_resource = @found_resources[0]
+    expect(@found_resource).to be_an_instance_of(IssueResource)
+    expect(@found_resource.estimation).to eq(value)
+  end
+
+  def expect_issue_to_have_no_resources
+    expect(@issue.issue_resources.all).to be_empty
+  end
+
+  def expect_issue_to_have_an_initial_estimation_of(value)
+    custom_field = @issue.custom_values
+      .where(custom_field_id: @custom_field.id).first
+    custom_value = custom_field.value
+    expect(custom_value).to eq(value.to_s)
+  end
+
+  def expect_issue_with_initial_estimation_to_create_resource
+    hours = 2
+    create_issue_with_initial_estimation_of hours
+    expect_issue_to_have_a_resources_of hours
+    expect_issue_to_have_an_initial_estimation_of hours
+  end
+
+  def expect_issue_to_have_no_initial_estimation
+    custom_field = @issue.custom_values
+      .where(custom_field_id: @custom_field.id).first
+    custom_value = custom_field.value
+    expect(custom_value.to_i).to eq(0)
+  end
+
   def create_base_setup_with_settings
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
@@ -71,6 +105,11 @@ module SetupSupport
     hash = ActiveSupport::HashWithIndifferentAccess.new(
       resource_id: @resource.id, custom_field_id: @incomplete_custom_field.id)
     Setting.plugin_redmine_resources = hash
+  end
+
+  def create_existing_issue_resource_of(value)
+    @issue_resource = create :issue_resource, issue_id: @issue.id,
+      resource_id: @resource.id, estimation: @hours
   end
 
   def create_base_setup_without_settings
@@ -112,5 +151,15 @@ module SetupSupport
 
   def remove_the_custom_field_workflow_permission
     @permission.destroy if @permission
+  end
+
+  def expect_project_resource_settings_page_to_load
+    get :settings, id: @project.identifier, tab: 'resources'
+    expect(response).to have_http_status(:ok)
+  end
+
+  def expect_plugin_settings_page_to_load
+    get :plugin, id: 'redmine_resources'
+    expect(response).to have_http_status(:ok)
   end
 end
