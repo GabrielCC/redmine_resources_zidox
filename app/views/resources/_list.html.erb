@@ -1,30 +1,29 @@
-<%
-editable_class = editable ? 'resource_estimation_editable' : ''
-issue ||= @issue_resource.issue
-divisions = issue.resources_with_divisions
-%>
+<%  editable_class = editable ? 'editable' : ''
+    issue ||= @issue_resource.issue
+    divisions = issue.resources_with_divisions %>
 <%= hidden_field_tag 'has_resources', divisions.count %>
-<div id='resources_list'>
-    <% divisions.each_pair { |division_name, issues_list|  %>
-    	<table>
-	        <tr>
-	          <td colspan='3' class='division_name'>
-	            <strong><%=division_name%></strong>
-	          </td>
-	        </tr>
-	        <% issues_list.each { |ri| %>
-	          <tr>
-	            <td class='estimation_cell' id='cell-<%=ri.id %>'>
-	            <div id='resource-<%=ri.id %>' class='resource_estimation <%=editable_class %>' data-resource-id='<%= ri.id %>'><%= ri.estimation %></div>h
-	            </td>
-	            <td><%= ri.resource.code %></td>
-
-	             <td>
-	                <%= delete_link issue_resource_path(ri),
-	                                :remote => true if editable %>
-	             </td>
-	          </tr>
-	        <% } %>
-        </table>
-      <% } %>
-</div>
+<% divisions.each do |id, division| %>
+  <table>
+    <tr>
+      <td colspan="3" class="division-name">
+        <strong><%= division[:name] %></strong>
+      </td>
+    </tr>
+    <% division[:elements].each do |issue_resource| %>
+      <tr>
+        <td class="estimation-cell <%= editable_class %>">
+        <div class="hours <%= editable_class %>"
+          data-id="<%= issue_resource[:id] %>"
+          data-value="<%= issue_resource[:estimation] %>"><%= issue_resource[:estimation] %></div> h
+        </td>
+        <td><%= issue_resource[:code] %></td>
+        <% if editable %>
+          <td>
+            <a href="#" class="icon icon-del remove"
+              data-id="<%= issue_resource[:id] %>">Delete</a>
+           </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

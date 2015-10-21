@@ -6,34 +6,37 @@ module RedmineResources
       end
 
       module InstanceMethods
-        def resource_names
-          @resource_names ||= begin
-            result = resources.map do |resource|
-              "#{ resource.name }, #{ resource.code }, #{ resource.division.name }"
-            end.join(', ')
-            if Redmine::Plugin.installed?(:redmine_people)
-              person = Person.find(id)
-              result << ", #{ person.department.name }" if person.department
-            end
-          end
+        def can_view_resources?(project)
+          return true if User.current.admin?
+          role_ids = role_ids_for_project project
+          any_roles_in_settings? role_ids, project,'visible'
         end
 
-        def resources
-          Resource.joins('INNER JOIN project_resources ON project_resources.resource_id = resources.id')
-            .joins('INNER JOIN projects ON projects.id = project_resources.project_id')
-            .joins('INNER JOIN project_resource_emails ON project_resource_emails.project_id = projects.id AND project_resource_emails.resource_id = resources.id')
-            .joins('INNER JOIN members ON members.project_id = projects.id')
-            .joins('INNER JOIN users ON users.id = members.user_id ')
-            .where('users.id = ?', id)
-            .where('project_resource_emails.email = ?', mail)
-            .select('DISTINCT resources.name, resources.code')
-            .includes(:division)
+        def can_edit_resources?(project, issue)
+          return true if User.current.admin?
+          role_ids = role_ids_for_project project
+          return false if issue.custom_field_read_only_for_al_roles
+          any_roles_in_settings? role_ids, project,'editable'
+        end
+
+        private
+
+        def role_ids_for_project(project)
+          roles_for_project(project).map(&:id).map(&:to_s)
+        end
+
+        def any_roles_in_settings?(role_ids, project, setting_name)
+          settings = Setting.plugin_redmine_resources_for_project project
+          accessible = settings[setting_name]
+          setting_ids = accessible ? accessible.keys : []
+          role_ids.each {|role_id| return true if setting_ids.include? role_id }
+          false
         end
       end
     end
   end
 end
 
-unless User.included_modules.include? RedmineResources::Patches::UserPatch
-  User.send :include, RedmineResources::Patches::UserPatch
-end
+base = User
+patch = RedmineResources::Patches::UserPatch
+base.send :include, patch unless base.included_modules.include? patch

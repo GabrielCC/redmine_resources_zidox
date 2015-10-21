@@ -1,9 +1,10 @@
-<h2><%=l(:label_settings)%></h2>
-<% tabs = project_settings_tabs
-if @project.module_enabled?("redmine_resources")
-  tabs << {:name => 'resources', :action => 'resources/trackers', :partial => 'projects/settings/resources', :label => :project_module_resources}
-end
-%>
+<h2><%= l :label_settings %></h2>
+<%  tabs = project_settings_tabs
+    if @project.module_enabled?('redmine_resources') &&
+        User.current.allowed_to?(:select_project_modules, @project)
+      tabs << { name: 'resources', action: 'resources/settings',
+                partial: 'projects/settings/resources',
+                label: :project_module_resources }
+    end %>
 <%= render_tabs tabs %>
-
-<% html_title(l(:label_settings)) -%>
+<% html_title l(:label_settings) %>

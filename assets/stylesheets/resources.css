@@ -1,36 +1,40 @@
-#resources {
-}
-#resources input#estimation {
+#resources input.estimation {
   width: 30px;
 }
 #resources input.button {
   width: 45px;
 }
-
 #resources input.button.small {
   width: 52px;
 }
-#resources td.edit_actions {
+#resources td.actions {
   width: 120px;
 }
-td.division_name {
-  text-align: right;
-}
-
-td.estimation_cell {
+#resources td.division-name {
   text-align: left;
+}
+#resources td.estimation-cell {
+  text-align: left;
+}
+#resources td.estimation-cell.editable {
   cursor: pointer;
 }
-.resource_estimation {
+#resources .hours {
   display: inline;
   text-align: right;
   margin-left: 2px;
 }
-.resource_estimation input {
+#resources .hours input {
   width: 20px !important;
   margin-left: 2px;
 }
-
-.estimation_cell {
+#resources .estimation-cell {
   width: 60px;
+}
+#resources .resources-list table {
+  background-color: #ebf3f6;
+  border-radius: 5px;
+  width: 100%;
+  border: 1px solid #a2bcc6;
+  margin-bottom: 8px;
 }

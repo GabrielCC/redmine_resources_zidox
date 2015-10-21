@@ -1,115 +1,67 @@
-class ResourcesController < BaseController
+class ResourcesController < ApplicationController
   before_filter :set_divisions
-  before_filter :find_project_by_project_id, :only => [:trackers]
-  before_filter :set_division, :only => [:update,:create]
-
-  def index
-    @resources = Resource.all
-    respond_to do |format|
-      format.html
-      format.json { render json: @resources }
-    end
-  end
-
-  def show
-    @resource = Resource.find(params[:id])
-    respond_to do |format|
-      format.html
-      format.json { render json: @resource }
-    end
-  end
-
-  def new
-    @resource = Resource.new
-    respond_to do |format|
-      format.html
-      format.json { render json: @resource }
-    end
-  end
-
-  def edit
-    @resource = Resource.find(params[:id])
-  end
+  before_filter :set_division, only: [:create, :update]
 
   def create
-    @resource = Resource.new(params[:resource])
+    @resource = Resource.new resources_params
     respond_to do |format|
-      if @resource.save
-        format.html { redirect_to @resource, notice: 'Resource was successfully created.' }
-        format.json { render json: @resource, status: :created, location: @resource }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
+      format.json do
+        if @resource.save
+          render json: @resource, status: :created, location: @resource
+        else
+          render json: @resource.errors, status: :unprocessable_entity
+        end
       end
     end
   end
 
   def update
-    @resource = Resource.find(params[:id])
+    @resource = Resource.find params[:id]
     respond_to do |format|
-      if @resource.update_attributes(params[:resource])
-        format.html { redirect_to @resource, notice: 'Resource was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @resource.errors, status: :unprocessable_entity }
+      format.json do
+        if @resource.update_attributes resources_params
+          head :no_content
+        else
+          render json: @resource.errors, status: :unprocessable_entity
+        end
       end
     end
   end
 
   def destroy
-    @resource = Resource.find(params[:id])
+    @resource = Resource.find params[:id]
     @resource.destroy
     respond_to do |format|
-      format.html { redirect_to resources_url }
       format.json { head :no_content }
     end
   end
 
-  def set_divisions
-    @divisions = Division.all
-    @divisions.map! do |e|
-      [e.name, e.id.to_i]
+  def settings
+    @project = Project.where(id: params[:project_id]).first
+    render :not_found, status: 404 and return unless @project
+    unless User.current.allowed_to?(:select_project_modules, @project)
+      render :unauthorized, status: 401
     end
-  end
-
-  def trackers
-    ResourceSetting.destroy_all(:project_id => @project.id)
-    params[:trackers] = {} if params[:trackers].nil?
-    params[:roles] = {} if params[:roles].nil?
-    map = {:visible => ResourceSetting::VIEW_RESOURCES,
-      :editable => ResourceSetting::EDIT_RESOURCES
-    }
-    map.each_pair do |key, val|
-      create_resource_settings(key, val)
-    end
-    flash[:notice] = l(:notice_successful_update)
-    redirect_to_settings_project
+    setting_assign = "plugin_redmine_resources_project_#{ @project.id }="
+    Setting.initialize_project_settings @project
+    Setting.send setting_assign, params[:settings]
+    redirect_to settings_project_path @project, tab: 'resources'
   end
 
   private
 
-  def create_resource_settings(key, val)
-    trackers = Tracker.find_all_by_id params[:trackers][key]
-    roles = Role.find_all_by_id params[:roles][key]
-    elements = trackers + roles
-    elements.each do |element|
-      settings = ResourceSetting.new
-      settings.setting_object = element
-      settings.project = @project
-      settings.setting = val
-      settings.save
-    end
+  def resources_params
+    params.require(:resource).permit(:name, :code, :division_id)
   end
 
-  def redirect_to_settings_project(tab = 'resources')
-    redirect_to settings_project_path(@project, :tab => tab) and return
+  def set_divisions
+    @divisions = Division.select([:id, :name]).all.map do |division|
+      [division.name, division.id]
+    end
   end
 
   def set_division
-    division = Division.find(params[:resource][:division_id])
-    if !division.nil?
-      params[:resource][:division] = division
-    end
+    division = Division.where(id: params[:resource][:division_id]).first
+    params[:resource][:division] = division if division
   end
 end

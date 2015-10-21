@@ -1,81 +1,109 @@
-class IssueResourcesController < BaseController
-
-  def index
-    @issue_resources = IssueResource.all
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resources }
-    end
-  end
-
-  def show
-    @issue_resource = IssueResource.find params[:id]
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resource }
-    end
-  end
-
-  def new
-    @issue_resource = IssueResource.new
-    respond_to do |format|
-      format.html
-      format.json { render json: @issue_resource }
-    end
-  end
-
-  def edit
-    @issue_resource = IssueResource.find params[:id]
-  end
+class IssueResourcesController < ApplicationController
+  accept_api_auth :create, :update, :destroy
+  before_action :find_custom_field_id
 
   def create
-    @issue_resource = IssueResource.from_params params
+    return unless authorized_to_create?
+    @issue_resource = IssueResource.new resource_params
     if @issue_resource.save
-      @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :create
-      partial = 'issue_resources/saved'
+      resources = @issue.project.resources_list @issue
+      divisions = @issue.resources_with_divisions
+      total = @issue.issue_resources.sum(:estimation)
+      render json: { divisions: divisions, resources: resources, total: total,
+        custom_field_id: @custom_field_id,
+        editable: !@issue.manually_added_resource_estimation }
     else
-      partial = 'issue_resources/failed'
+      render_errors
     end
-    render partial: partial, layout: false, content_type: 'application/javascript'
   end
 
   def update
-    @issue_resource = IssueResource.find params[:id]
+    return unless authorized_to_modify?
     old_value = @issue_resource.estimation
-    if @issue_resource.update_attributes params[:issue_resource]
+    if @issue_resource.update_attributes resource_params
       @issue = @issue_resource.issue
       update_columns_for @issue
       add_journal_entry :update, old_value
-      partial = 'issue_resources/updated'
+      total = @issue.issue_resources.sum(:estimation)
+      render json: { total: total, custom_field_id: @custom_field_id,
+        editable: !@issue.manually_added_resource_estimation }
     else
-      partial = 'issue_resources/failed'
+      render_errors
     end
-    render partial: partial, layout: false, content_type: 'application/javascript'
   end
 
   def destroy
-    @issue_resource = IssueResource.find params[:id]
-    @issue = @issue_resource.issue
+    return unless authorized_to_modify?
     @issue_resource.destroy
     update_columns_for @issue
     add_journal_entry :destroy
-    partial = 'issue_resources/saved'
-    render partial: partial, layout: false, content_type: 'application/javascript'
+    resources = @issue.project.resources_list @issue
+    total = @issue.issue_resources.sum(:estimation)
+    render json: { resources: resources, total: total,
+      custom_field_id: @custom_field_id,
+      editable: !@issue.manually_added_resource_estimation }
   end
 
   private
 
+  def find_custom_field_id
+    settings = Setting.plugin_redmine_resources
+    @custom_field_id = settings['custom_field_id']
+  end
+
+  def resource_params
+    params.require(:issue_resource).permit(:issue_id, :resource_id, :estimation)
+  end
+
+  def render_not_found(entity)
+    render json: { errors: "#{ entity.capitalize } not found!" }, status: 404
+  end
+
+  def render_forbidden
+    render json: { errors: 'You are not alowed to do that!' }, status: 403
+  end
+
+  def render_errors
+    render json: { errors: @issue_resource.errors.full_messages }, status: 400
+  end
+
+  def authorized_to_create?
+    @issue = Issue.where(id: resource_params[:issue_id]).first
+    render_not_found 'issue' and return unless @issue
+    @project = @issue.project
+    render_not_found 'project' and return unless @project
+    unless User.current.can_edit_resources? @project, @issue
+      render_forbidden and return
+    end
+    true
+  end
+
+  def authorized_to_modify?
+    @issue_resource = IssueResource.where(id: params[:id]).first
+    render_not_found 'issue resource' and return unless @issue_resource
+    @issue = @issue_resource.issue
+    render_not_found 'issue' and return unless @issue
+    @project = @issue.project
+    render_not_found 'project' and return unless @project
+    unless User.current.can_edit_resources? @project, @issue
+      render_forbidden and return
+    end
+    true
+  end
+
   def update_columns_for(issue)
-    issue.update_column(:manually_added_resource_estimation, true) unless issue.manually_added_resource_estimation
-    return if Issue.where(parent_id: issue.id).count > 0
-    estimation = IssueResource.where(issue_id: issue.id).sum(:estimation)
-    issue.update_column(:estimated_hours, estimation) if issue.estimated_hours != estimation
+    unless issue.manually_added_resource_estimation
+      issue.update_column :manually_added_resource_estimation, true
+    end
+    estimation = issue.issue_resources.sum(:estimation)
+    issue.update_attributes custom_field_values: {
+      @custom_field_id => estimation }
   end
 
   def add_journal_entry(mode, old_value = nil)
-    @issue = Issue.where(id: @issue_resource.issue_id).first
+    @issue = Issue.where(id: @issue_resource.issue_id).first or return
     journal = @issue.init_journal User.current, nil
     return unless journal
     journal.details << @issue_resource.journal_entry(mode, old_value)

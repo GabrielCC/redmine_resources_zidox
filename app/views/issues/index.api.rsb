@@ -32,12 +32,12 @@ api.array :issues, api_meta(:total_count => @issue_count, :offset => @offset, :l
         end
       end if include_in_api_response?('relations')
       api.array :estimations do
-        issue.resources_with_divisions.each_pair { |division,resources|
+        issue.resources_with_divisions.each { |id , division|
           api.estimation do
-            api.division division
+            api.division id
             api.array :resources do
-              resources.each {|ir|
-                api.resource :estimation => ir.estimation, :code => ir.resource.code
+              division[:elements].each {|ir|
+                api.resource :estimation => ir[:estimation], :code => ir[:code]
               }
             end
           end

@@ -11,41 +11,20 @@ class IssueResource < ActiveRecord::Base
 
   JOURNAL_DETAIL_PROPERTY = 'resource-estimation'
 
-  def to_json
-    {
-      estimation: estimation,
-      code: resource.code
-    }
-  end
-
   def journal_entry(operation, old_value = nil)
-    JournalDetail.new(
-      property: IssueResource::JOURNAL_DETAIL_PROPERTY,
-      prop_key: issue.id,
-      old_value: '',
+    JournalDetail.new property: IssueResource::JOURNAL_DETAIL_PROPERTY,
+      prop_key: issue.id, old_value: '',
       value: journal_note(operation, old_value)
-    )
-  end
-
-  def self.from_params(params)
-    issue_resource = IssueResource.new
-    issue_resource.issue_id = params[:issue_id]
-    issue_resource.resource_id = params[:resource_id]
-    issue_resource.estimation = params[:estimation]
-    issue_resource
   end
 
   private
 
   def journal_note(operation, old_value = nil)
-    @messages ||= {
-      create: " created #{resource.code} #{estimation}h",
+    @messages ||= { create: " created #{resource.code} #{estimation}h",
       update: " changed from #{resource.code} #{old_value}h to #{resource.code} #{estimation}h",
-      destroy: " deleted #{resource.code} #{estimation}h"
-    }
+      destroy: " deleted #{resource.code} #{estimation}h" }
     @messages[operation]
   end
-
 
   def update_issue_timestamp_without_lock
     issue.update_column :updated_on, Time.now
