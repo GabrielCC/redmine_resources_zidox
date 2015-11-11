@@ -85,7 +85,6 @@ var ResourceWindow = (function (me, $) {
     textField.text(total);
     input.val(total);
     if (!response.editable) {
-      input.attr('disabled', 'disabled');
       input.attr('readonly', 'readonly');
     }
   };
