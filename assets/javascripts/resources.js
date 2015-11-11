@@ -222,7 +222,6 @@ $(function () {
   if (manuallEstimated === 'true') {
     var id = $('.custom_field_id').val();
     var input = $('input#issue_custom_field_values_' + id);
-    input.attr('disabled', 'disabled');
     input.attr('readonly', 'readonly');
   }
 });
