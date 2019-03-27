@@ -1,6 +1,6 @@
 class ResourcesController < ApplicationController
-  before_filter :set_divisions
-  before_filter :set_division, only: [:create, :update]
+  before_action :set_divisions
+  before_action :set_division, only: [:create, :update]
 
   def create
     @resource = Resource.new resources_params

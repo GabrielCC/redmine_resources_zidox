@@ -1,4 +1,4 @@
-class AddLoginToProjectResourceEmails < ActiveRecord::Migration
+class AddLoginToProjectResourceEmails < ActiveRecord::Migration[4.2]
   def up
     add_column :project_resource_emails, :login, :string, limit: 100
     sql = <<-SQL
