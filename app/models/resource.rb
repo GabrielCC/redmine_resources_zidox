@@ -1,13 +1,17 @@
 class Resource < ActiveRecord::Base
+  include Redmine::SafeAttributes
+
   belongs_to :division
+
   has_many :project_resource
   has_many :project, through: :project_resource
   has_many :issue_resources
-  attr_accessible :code, :name, :division
+
   validates :name, uniqueness: true, presence: true
   validates :code, uniqueness: true, presence: true
   validates :division, presence: true
 
+  safe_attributes :code, :name, :division
   def self.find_or_create_by_params(params)
   	resource = where(name: params[:name], code: params[:code])
       .first_or_initialize
