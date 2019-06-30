@@ -42,7 +42,7 @@ class ResourcesController < ApplicationController
     unless User.current.allowed_to?(:select_project_modules, @project)
       render :unauthorized, status: 401
     end
-    setting_assign = "plugin_redmine_resources_project_#{ @project.id }="
+    setting_assign = "plugin_redmine_zidox_project_#{ @project.id }="
     Setting.initialize_project_settings @project
     Setting.send setting_assign, params[:settings]
     redirect_to settings_project_path @project, tab: 'resources'

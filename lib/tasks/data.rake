@@ -1,7 +1,7 @@
-namespace :redmine_resources do
+namespace :redmine_zidox do
   desc 'Moves settings from ResourceSetting to Setting'
   task move_settings: :environment do
-    defaults = Setting.plugin_redmine_resources
+    defaults = Setting.plugin_redmine_zidox
     if !defaults || defaults.blank?
       puts 'Please configure the plugin from the admin settings'
       return
@@ -13,14 +13,14 @@ namespace :redmine_resources do
       settings['resource_id'] = resource_id
       setting_name = setting.setting == 1 ? 'visible' : 'editable'
       settings[setting_name][setting.setting_object_id.to_s] = '1'
-      setting_assign = "plugin_redmine_resources_project_#{ project.id }="
+      setting_assign = "plugin_redmine_zidox_project_#{ project.id }="
       Setting.send setting_assign, settings
     end
   end
 
   desc 'Populate initial estimation for all issues'
   task populate_estimation: :environment do
-    defaults = Setting.plugin_redmine_resources
+    defaults = Setting.plugin_redmine_zidox
     if !defaults || defaults.blank?
       puts 'Please configure the plugin from the admin settings'
       return

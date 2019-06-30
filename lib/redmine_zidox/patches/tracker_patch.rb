@@ -7,7 +7,7 @@ module RedmineResources
 
       module InstanceMethods
         def gets_resources?(project)
-          settings = Setting.plugin_redmine_resources
+          settings = Setting.plugin_redmine_zidox
           custom_field_id = settings['custom_field_id']
           current_custom_field = CustomField.where(id: custom_field_id).first
           tracker_ids = current_custom_field.trackers.pluck(:id)

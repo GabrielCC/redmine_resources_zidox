@@ -82,21 +82,21 @@ module SetupSupport
     hash = ActiveSupport::HashWithIndifferentAccess.new(
       resource_id: @resource.id, custom_field_id: @custom_field.id,
       visible: { @role.id.to_s => '1' }, editable: { @role.id.to_s => '1' })
-    Setting.plugin_redmine_resources = hash
+    Setting.plugin_redmine_zidox = hash
   end
 
   def create_base_setup_without_resource_id
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
       custom_field_id: @custom_field.id)
-    Setting.plugin_redmine_resources = hash
+    Setting.plugin_redmine_zidox = hash
   end
 
   def create_base_setup_without_custom_field
     create_base_setup
     hash = ActiveSupport::HashWithIndifferentAccess.new(
       resource_id: @resource.id)
-    Setting.plugin_redmine_resources = hash
+    Setting.plugin_redmine_zidox = hash
   end
 
   def create_base_setup_without_trackers_for_custom_field
@@ -104,7 +104,7 @@ module SetupSupport
     @incomplete_custom_field = create :custom_field, :issue
     hash = ActiveSupport::HashWithIndifferentAccess.new(
       resource_id: @resource.id, custom_field_id: @incomplete_custom_field.id)
-    Setting.plugin_redmine_resources = hash
+    Setting.plugin_redmine_zidox = hash
   end
 
   def create_existing_issue_resource_of(value)
@@ -114,23 +114,23 @@ module SetupSupport
 
   def create_base_setup_without_settings
     create_base_setup
-    Setting.plugin_redmine_resources = \
+    Setting.plugin_redmine_zidox = \
       ActiveSupport::HashWithIndifferentAccess.new
   end
 
   def enable_plugin_for_project
     @project.enabled_module_names = @project.enabled_module_names \
-      << 'redmine_resources'
+      << 'redmine_zidox'
   end
 
   def disable_plugin_for_project
     @project.enabled_module_names = @project.enabled_module_names \
-      - ['redmine_resources']
+      - ['redmine_zidox']
   end
 
   def create_project_resource_settings
     Setting.initialize_project_settings @project
-    setting_assign = "plugin_redmine_resources_project_#{ @project.id }="
+    setting_assign = "plugin_redmine_zidox_project_#{ @project.id }="
     Setting.send setting_assign, { "custom" => "1",
       "resource_id" => @project_resource.id.to_s }
   end
@@ -159,7 +159,7 @@ module SetupSupport
   end
 
   def expect_plugin_settings_page_to_load
-    get :plugin, id: 'redmine_resources'
+    get :plugin, id: 'redmine_zidox'
     expect(response).to have_http_status(:ok)
   end
 end

@@ -7,8 +7,8 @@ Zidox specific integration for Redmine.
 Clone the repository in the `plugins` direcotry, run migrations and restart
 redmine:
 ```
-git clone git@github.com:ZitecCOM/redmine_resources.git
-rake redmine:plugins:migrate NAME=redmine_resources
+git clone git@github.com:ZitecCOM/redmine_zidox.git
+rake redmine:plugins:migrate NAME=redmine_zidox
 ```
 
 # Configure
@@ -31,10 +31,10 @@ bundle install
 
 Then run:
 ```
-rake redmine:plugins:spec RAILS_ENV=test NAME=redmine_resources
+rake redmine:plugins:spec RAILS_ENV=test NAME=redmine_zidox
 ```
 
-To view test coverage go to `plugins/redmine_resources/tmp/coverage`
+To view test coverage go to `plugins/redmine_zidox/tmp/coverage`
 and open `index.html` in a browser.
 
 ## License

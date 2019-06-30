@@ -49,7 +49,7 @@ class IssueResourcesController < ApplicationController
   private
 
   def find_custom_field_id
-    settings = Setting.plugin_redmine_resources
+    settings = Setting.plugin_redmine_zidox
     @custom_field_id = settings['custom_field_id']
   end
 
