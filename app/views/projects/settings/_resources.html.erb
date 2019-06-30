@@ -2,7 +2,7 @@
   <%  resources = Resource.select([:id, :name]).order(:name)
       custom_fields = CustomField.where(type: 'IssueCustomField')
         .select([:id, :name]).order(:name)
-      settings = Setting.plugin_redmine_resources
+      settings = Setting.plugin_redmine_zidox
       settings = {} if !settings || settings.blank?
       custom_field_id = settings['custom_field_id']
       if custom_field_id && custom_field_id.present?

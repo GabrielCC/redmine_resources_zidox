@@ -6,17 +6,17 @@ module RedmineResources
       end
 
       module ClassMethods
-        def plugin_redmine_resources_for_project(project)
+        def plugin_redmine_zidox_for_project(project)
           settings = initialize_project_settings project
           if settings['custom']
             settings
           else
-            Setting.plugin_redmine_resources
+            Setting.plugin_redmine_zidox
           end
         end
 
         def initialize_project_settings(project)
-          setting_name = "plugin_redmine_resources_project_#{ project.id }"
+          setting_name = "plugin_redmine_zidox_project_#{ project.id }"
           begin
             settings = Setting.send setting_name
           rescue NoMethodError
