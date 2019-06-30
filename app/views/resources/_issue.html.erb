@@ -1,39 +1,43 @@
 <%  visible = resources_visible @issue
     editable = resources_editable @issue %>
 <% if visible || editable %>
-  <div id="resources" class="sidebar-content sidebar-resources">
-    <h3>Resources</h3>
-    <% resources = @project.resources_list @issue %>
-    <% if editable %>
-      <div>
-        <%= hidden_field_tag :issue_id, @issue.id, class: 'issue-id' %>
-        <%= hidden_field_tag :manually_estimated,
-              @issue.manually_added_resource_estimation,
-              class: 'manually_estimated' %>
-        <%= hidden_field_tag :custom_field_id,
-              Setting.plugin_redmine_zidox['custom_field_id'],
-              class: 'custom_field_id' %>
-        <%= hidden_field_tag :api_key, User.current.api_key, class: 'api-key' %>
-        <table id='resources-form'>
-          <tr>
-            <td class="estimation-cell">
-              <%= text_field_tag :estimation, '', class: 'estimation' %> h
-            </td>
-            <td>
-              <%= select_tag :resource_id,
-                    options_from_collection_for_select(resources, :id, :code),
-                    include_blank: true, class: 'resource-id' %>
-            </td>
-            <td class="actions">
-              <a href="#" class="small button save"><%= l(:button_save) %></a>
-            </td>
-          </tr>
-        </table>
+
+  <% resources = @project.resources_list @issue %>
+  <% unless resources.empty? %>
+    <div id="resources" class="sidebar-content sidebar-resources">
+      <h3>Resources</h3>
+      <% resources = @project.resources_list @issue %>
+      <% if editable %>
+        <div>
+          <%= hidden_field_tag :issue_id, @issue.id, class: 'issue-id' %>
+          <%= hidden_field_tag :manually_estimated,
+                @issue.manually_added_resource_estimation,
+                class: 'manually_estimated' %>
+          <%= hidden_field_tag :custom_field_id,
+                Setting.plugin_redmine_zidox['custom_field_id'],
+                class: 'custom_field_id' %>
+          <%= hidden_field_tag :api_key, User.current.api_key, class: 'api-key' %>
+          <table id='resources-form'>
+            <tr>
+              <td class="estimation-cell">
+                <%= text_field_tag :estimation, '', class: 'estimation' %> h
+              </td>
+              <td>
+                <%= select_tag :resource_id,
+                      options_from_collection_for_select(resources, :id, :code),
+                      include_blank: true, class: 'resource-id' %>
+              </td>
+              <td class="actions">
+                <a href="#" class="small button save"><%= l(:button_save) %></a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      <% end %>
+      <div class="resources-list">
+        <%= render partial: 'resources/list',
+              locals: { issue: @issue, editable: editable } %>
       </div>
-    <% end %>
-    <div class="resources-list">
-      <%= render partial: 'resources/list',
-            locals: { issue: @issue, editable: editable } %>
     </div>
-  </div>
+  <% end %>
 <% end %>

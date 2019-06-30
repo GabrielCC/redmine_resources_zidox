@@ -32,7 +32,7 @@ Rails.application.config.after_initialize do
       redmine_zidox.requires_redmine_plugin plugin, version
     rescue Redmine::PluginNotFound => error
       raise Redmine::PluginNotFound,
-        "Redmine Resources depends on plugin: " \
+        "Redmine Zidox depends on plugin: " \
           "#{ plugin } version: #{ version }"
     end
   end

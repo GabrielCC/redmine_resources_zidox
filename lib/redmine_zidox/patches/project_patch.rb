@@ -12,7 +12,7 @@ module RedmineResources
 
     module InstanceMethods
       def resources_list(issue)
-        resources.all - issue.resources.all
+        issue.respond_to?(:resources) ? resources.all - issue.resources.all : []
       end
     end
   end
