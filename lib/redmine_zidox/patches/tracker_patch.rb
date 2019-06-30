@@ -1,4 +1,4 @@
-module RedmineResources
+module RedmineZidox
   module Patches
     module TrackerPatch
       def self.included(base)
@@ -19,5 +19,5 @@ module RedmineResources
 end
 
 base = Tracker
-patch = RedmineResources::Patches::TrackerPatch
+patch = RedmineZidox::Patches::TrackerPatch
 base.send :include, patch unless base.included_modules.include? patch

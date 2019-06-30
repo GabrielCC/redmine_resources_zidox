@@ -1,4 +1,4 @@
-module RedmineResources
+module RedmineZidox
   module Patches
     module IssuesHelperPatch
       def self.included(base)
@@ -27,5 +27,5 @@ module RedmineResources
 end
 
 base = IssuesHelper
-patch = RedmineResources::Patches::IssuesHelperPatch
+patch = RedmineZidox::Patches::IssuesHelperPatch
 base.send :include, patch unless base.included_modules.include? patch

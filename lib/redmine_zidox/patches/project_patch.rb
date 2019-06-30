@@ -1,4 +1,4 @@
-module RedmineResources
+module RedmineZidox
   module Patches
     module ProjectPatch
       def self.included(base)
@@ -12,12 +12,12 @@ module RedmineResources
 
     module InstanceMethods
       def resources_list(issue)
-        issue.respond_to?(:resources) ? resources.all - issue.resources.all : []
+        resources.all - issue.resources.all
       end
     end
   end
 end
 
 base = Project
-patch = RedmineResources::Patches::ProjectPatch
+patch = RedmineZidox::Patches::ProjectPatch
 base.send :include, patch unless base.included_modules.include? patch
