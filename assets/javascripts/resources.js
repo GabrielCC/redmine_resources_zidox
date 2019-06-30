@@ -99,7 +99,7 @@ var ResourceWindow = (function (me, $) {
         data: { key: this.root.find('.api-key').val() },
         dataType: 'json',
         type: 'DELETE',
-        url: '/issue_resources/' + id
+        url: '/issue_zidox/' + id
       }).done(function (response) {
         this.removeIssueResourceElement(target);
         this.loadAvailableResources(response.resources);
@@ -121,7 +121,7 @@ var ResourceWindow = (function (me, $) {
       data: data,
       dataType: 'json',
       type: 'POST',
-      url: '/issue_resources'
+      url: '/issue_zidox'
     }).done(function (response) {
       this.reloadIssueResources(response);
       this.updateInitialEstimationField(response);
@@ -173,7 +173,7 @@ var ResourceWindow = (function (me, $) {
       $.ajax({
         data: data,
         type: 'PUT',
-        url: '/issue_resources/' + id
+        url: '/issue_zidox/' + id
       }).done(function (response) {
         this.updateInitialEstimationField(response);
       }.bind(this)).fail(function (reason) {

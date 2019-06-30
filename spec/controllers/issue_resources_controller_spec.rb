@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe IssueResourcesController, type: :controller do
+describe IssueZidoxController, type: :controller do
   include LoginSupport
   include SetupSupport
   render_views

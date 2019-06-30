@@ -1,4 +1,4 @@
-class ResourcesController < ApplicationController
+class ZidoxController < ApplicationController
   before_action :set_divisions
   before_action :set_division, only: [:create, :update]
 

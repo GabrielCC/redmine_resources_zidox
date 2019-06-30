@@ -1,4 +1,4 @@
-class IssueResourcesController < ApplicationController
+class IssueZidoxController < ApplicationController
   accept_api_auth :create, :update, :destroy
   before_action :find_custom_field_id
 

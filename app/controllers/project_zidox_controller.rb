@@ -1,4 +1,4 @@
-class ProjectResourcesController < ApplicationController
+class ProjectZidoxController < ApplicationController
   accept_api_auth :index, :create
 
   def index
